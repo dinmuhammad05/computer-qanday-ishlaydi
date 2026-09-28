@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>7-bob. Protsessor buyruqni qanday bajaradi · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Fetch-Decode-Execute sikli, assembler misoli, konveyer, sakrashlarni bashorat qilish va uzilishlar.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 14-rasm: aylanuvchi sikl */
+.fde4 .st{animation:fdeLit 4s linear infinite;animation-delay:calc(var(--i) * 1s)}
+@keyframes fdeLit{0%,24%{opacity:1}28%,96%{opacity:.4}100%{opacity:1}}
+.fde4 .token{offset-path:path('M280 48 H360 Q470 48 470 152 V208 Q470 312 360 312 H200 Q90 312 90 208 V152 Q90 48 200 48 H280');offset-rotate:0deg;animation:travel 4s linear infinite}
+.fde4 .pc{animation:pcTick 4s linear infinite}
+@keyframes pcTick{0%,72%{fill:var(--ink)}76%,92%{fill:var(--accent)}100%{fill:var(--ink)}}
+/* 7.1: qadamlagich (index.html dagi demo) */
+.fde{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-top:8px}
+@media (max-width:560px){.fde{grid-template-columns:1fr}}
+.prog{font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.prog div{padding:5px 10px;display:grid;grid-template-columns:12px 22px 1fr;gap:8px;border-bottom:1px solid var(--line);transition:background .2s}
+.prog div:last-child{border-bottom:0}
+.prog div.pc{background:var(--accent-soft)}
+.prog div::before{content:"";color:var(--accent)}
+.prog div.pc::before{content:"▶"}
+.prog span{color:var(--muted)}
+.prog .cm{color:var(--muted);font-size:11.5px;display:block}
+.regs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-family:var(--mono);font-size:13px}
+.regs div{border:1px solid var(--line);border-radius:8px;padding:6px 8px;text-align:center;transition:background .3s}
+.regs div small{display:block;color:var(--muted);font-size:11px}
+.regs div b{font-size:18px}
+.phases{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px;font-family:var(--display);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.phases div{border:1px solid var(--line);border-radius:6px;padding:5px 2px;text-align:center;color:var(--muted)}
+.phases div.on{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+/* 15-rasm: konveyer */
+.pipe{display:grid;grid-template-columns:90px repeat(7,1fr);gap:4px;font-family:var(--mono);font-size:12px;margin-top:8px;min-width:420px}
+.pipe-wrap{overflow-x:auto}
+.pipe .h{color:var(--muted);text-align:center}
+.pipe .l{color:var(--muted)}
+.pipe .c{height:30px;border-radius:5px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-weight:600;color:transparent;transition:all .3s}
+.pipe .c.has{border-style:solid;color:var(--muted)}
+.pipe .c.has.lit{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.pipe .c.has.now{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.pipe-note{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">7-bob</div>
+  <h1>Protsessor buyruqni qanday bajaradi</h1>
+  <p class="lede">Yoqilgandan o'chirilguncha protsessor bitta siklni aylantiradi: ol, tushun, bajar, yoz — sekundiga milliardlab marta.</p>
+</div>
+
+<p>Protsessor ishi, ajablanarli darajada, bitta oddiy siklni cheksiz takrorlashdan iborat. Bu sikl <strong>Fetch - Decode - Execute</strong> (olish - dekodlash - bajarish) deb ataladi. Kompyuter yoqilgan paytdan to o'chirilguncha protsessor boshqa hech narsa qilmaydi — faqat shu siklni sekundiga milliardlab marta aylantiradi.</p>
+
+<figure class="fig">
+  <svg class="sv fde4" viewBox="0 0 560 360" role="img" aria-label="Buyruq bajarilish sikli: Fetch, Decode, Execute, Store, so'ng PC = PC + 1 va yana boshidan">
+    <path class="flow" d="M360 48 Q470 48 470 152"/>
+    <path class="flow" d="M470 208 Q470 312 360 312"/>
+    <path class="flow" d="M200 312 Q90 312 90 208"/>
+    <path class="flow" d="M90 152 Q90 48 200 48"/>
+    <polygon class="arrow on" points="470,152 464,140 476,140"/>
+    <polygon class="arrow on" points="360,312 372,306 372,318"/>
+    <polygon class="arrow on" points="90,208 84,220 96,220"/>
+    <polygon class="arrow on" points="200,48 188,42 188,54"/>
+    <g class="st" style="--i:0"><rect x="200" y="20" width="160" height="56" rx="10" class="box on"/><text x="280" y="44" text-anchor="middle" class="ttl">1. FETCH</text><text x="280" y="64" text-anchor="middle">RAMdan buyruqni ol</text></g>
+    <g class="st" style="--i:1"><rect x="390" y="152" width="160" height="56" rx="10" class="box blue"/><text x="470" y="176" text-anchor="middle" class="ttl">2. DECODE</text><text x="470" y="196" text-anchor="middle">buyruqni tushun</text></g>
+    <g class="st" style="--i:2"><rect x="200" y="284" width="160" height="56" rx="10" class="box copper"/><text x="280" y="308" text-anchor="middle" class="ttl">3. EXECUTE</text><text x="280" y="328" text-anchor="middle">ALU bajaradi</text></g>
+    <g class="st" style="--i:3"><rect x="10" y="152" width="160" height="56" rx="10" class="box on"/><text x="90" y="176" text-anchor="middle" class="ttl">4. STORE</text><text x="90" y="196" text-anchor="middle">natijani yoz</text></g>
+    <text x="280" y="176" text-anchor="middle" class="ttl pc" style="font-size:16px">PC = PC + 1</text>
+    <text x="280" y="196" text-anchor="middle">keyingi buyruq</text>
+    <circle class="token dot" r="8"/>
+  </svg>
+  <figcaption><span><b>14-rasm.</b> Buyruq bajarilish sikli</span></figcaption>
+</figure>
+
+<p><strong>1. Fetch (olish).</strong> Boshqaruv qurilmasi PC registridagi manzilni manzil shinasi orqali xotiraga yuboradi. Xotira shu manzildagi buyruqni ma'lumot shinasi orqali qaytaradi va u IR registriga yoziladi. PC keyingi buyruqni ko'rsatishi uchun oshiriladi.</p>
+<p><strong>2. Decode (dekodlash).</strong> Buyruq bitlar ketma-ketligi. Uning bir qismi <strong>opkod</strong> — qanday amal bajarilishi kerakligini bildiradi (masalan, 0001 = qo'shish), qolgan qismlari esa <strong>operandlar</strong> — qaysi registrlar yoki sonlar ishtirok etishini ko'rsatadi. Dekoder bu bitlarni tahlil qilib, kerakli sxemalarni yoqadigan boshqaruv signallariga aylantiradi.</p>
+<p><strong>3. Execute (bajarish).</strong> ALU amalni bajaradi: sonlarni qo'shadi, solishtiradi yoki xotira manzilini hisoblaydi. Agar buyruq sakrash bo'lsa, PC yangi qiymat bilan almashtiriladi — shu tarzda if, for, while kabi konstruksiyalar amalga oshiriladi.</p>
+<p><strong>4. Store (yozish).</strong> Natija registrga yoki xotiraga yoziladi, flag registrlari yangilanadi. Sikl yana boshidan boshlanadi.</p>
+
+<h2 id="7-1">7.1. Amaliy misol</h2>
+<p>Quyidagi oddiy JavaScript kodini ko'rib chiqamiz va u protsessor darajasida qanday ko'rinishini tasavvur qilamiz:</p>
+<pre><code>let a = 5;
+let b = 7;
+let c = a + b;
+if (c &gt; 10) c = 10;</code></pre>
+<p>Kompilyatsiyadan keyin u taxminan quyidagi buyruqlarga aylanadi (soddalashtirilgan assembler):</p>
+<pre><code>MOV  R1, 5          ; a = 5
+MOV  R2, 7          ; b = 7
+ADD  R3, R1, R2     ; c = a + b  → R3 = 12
+CMP  R3, 10         ; c ni 10 bilan solishtir
+JLE  tugadi         ; c &lt;= 10 bo'lsa, sakrab o't
+MOV  R3, 10         ; aks holda c = 10
+tugadi:
+MOV  [c_manzil], R3 ; natijani xotiraga yoz</code></pre>
+
+<figure class="fig" id="fdeFig">
+  <div class="controls"><label class="small" for="inA">a =</label><input type="number" id="inA" value="5" min="0" max="99"><label class="small" for="inB">b =</label><input type="number" id="inB" value="7" min="0" max="99"><button id="stepBtn" class="primary" type="button">Qadam</button><button id="runBtn" type="button">Avto</button><button id="resetBtn" type="button">Qayta</button><span class="small muted">Har bosish = bitta bosqich</span></div>
+  <pre style="margin-top:0">let a = <span id="ca">5</span>; let b = <span id="cb">7</span>;
+let c = a + b;
+if (c &gt; 10) c = 10;</pre>
+  <div class="fde" data-replay>
+    <div class="prog" id="prog"></div>
+    <div>
+      <div class="regs">
+        <div><small>R1 (a)</small><b id="rR1">–</b></div><div><small>R2 (b)</small><b id="rR2">–</b></div><div><small>R3 (c)</small><b id="rR3">–</b></div>
+        <div><small>PC</small><b id="rPC">0</b></div><div><small>Flags</small><b id="rFL">–</b></div><div><small>[c_manzil]</small><b id="rMEM">–</b></div>
+      </div>
+      <div class="phases"><div id="ph0">Fetch</div><div id="ph1">Decode</div><div id="ph2">Execute</div><div id="ph3">Store</div></div>
+      <div class="out small" id="fdeOut">PC = 0. "Qadam" tugmasini bosing.</div>
+    </div>
+  </div>
+  <figcaption><span><b>7.1-misol.</b> Protsessorni qadamlab yuriting: a va b qiymatini o'zgartirib, sakrash qachon bajarilishini kuzating.</span></figcaption>
+</figure>
+
+<p>Har bir satr — bitta Fetch-Decode-Execute sikli. Bitta oddiy if ifodasi CMP (solishtirish) va shartli sakrash buyrug'iga aylanadi. CMP buyrug'i aslida ayirish amali: protsessor R3 - 10 ni hisoblaydi, natijani saqlamaydi, lekin flag registrlarida uning manfiy yoki nol ekanini belgilaydi. JLE buyrug'i esa shu flaglarga qarab PC'ni o'zgartiradi yoki o'zgartirmaydi.</p>
+
+<h2 id="7-2">7.2. Konveyer (pipeline)</h2>
+<p>Agar protsessor har bir buyruqni to'liq tugatib, keyingisini boshlasa, uning ko'p qismlari bo'sh turib qolardi: dekoder ishlayotganda ALU dam oladi. Buning oldini olish uchun <strong>konveyer</strong> ishlatiladi — xuddi zavoddagi yig'uv liniyasi kabi. Birinchi buyruq dekodlanayotganda, ikkinchisi allaqachon olinadi; birinchisi bajarilayotganda, ikkinchisi dekodlanadi, uchinchisi olinadi va hokazo. Natijada har bir takt oxirida bitta buyruq tugallanadi.</p>
+
+<figure class="fig" id="pipeFig">
+  <div class="controls"><button id="pipeBtn" class="primary" type="button">Ishga tushir</button><span class="small muted" id="pipeTxt">Konveyersiz 4 buyruq = 16 takt. Konveyer bilan = 7 takt.</span></div>
+  <div class="pipe-wrap"><div class="pipe" id="pipe" data-replay></div></div>
+  <div class="pipe-note">F = Fetch, D = Decode, E = Execute, S = Store. Konveyer: har taktda bir vaqtda 4 xil buyruq turli bosqichda</div>
+  <figcaption><span><b>15-rasm.</b> 4 bosqichli konveyer: bir vaqtda to'rtta buyruq ustida ishlash</span></figcaption>
+</figure>
+
+<p>Zamonaviy protsessorlarda konveyer 15-20 bosqichdan iborat bo'lib, ular bir taktda 4-8 ta buyruqni parallel bajara oladi (<strong>superskalyar arxitektura</strong>). Bundan tashqari ular buyruqlarni navbatdan tashqari tartibda bajaradi (<strong>out-of-order execution</strong>): agar keyingi buyruq oldingisining natijasiga bog'liq bo'lmasa, u kutmasdan bajariladi.</p>
+
+<h2 id="7-3">7.3. Shartli sakrashlarni bashorat qilish</h2>
+<p>Konveyerga muammo tug'diradigan narsa — shartli sakrashlar. Protsessor if sharti natijasini bilmasdan turib, qaysi buyruqni navbatga olishni bilmaydi. Shuning uchun u <strong>bashorat qiladi</strong> (branch prediction). Maxsus blok o'tgan tarixga qarab, masalan, sikl oxirida sakrash 99% hollarda "orqaga qaytish" bo'lishini o'rganadi. Zamonaviy bashoratchilar 95-99% aniqlikka ega. Xato bashoratda konveyer tozalanadi va 15-20 takt yo'qotiladi. Shuning uchun saralangan massivni qayta ishlash saralanmaganiga qaraganda sezilarli tezroq bo'lishi mumkin.</p>
+
+<h2 id="7-4">7.4. Uzilishlar (interrupts)</h2>
+<p>Protsessor dasturni bajarayotganda tashqi hodisalar sodir bo'ladi: klaviatura tugmasi bosiladi, tarmoqdan paket keladi, disk ma'lumotni o'qib bo'ladi. Protsessor bu qurilmalarni doimiy tekshirib turishi samarasiz bo'lardi. Buning o'rniga qurilma protsessorga <strong>uzilish signali</strong> (IRQ) yuboradi. Protsessor joriy buyruqni tugatadi, holatini saqlaydi, maxsus uzilishni qayta ishlovchi funksiyaga o'tadi, so'ng to'xtagan joyiga qaytadi. Bu jarayon mikrosoniyalar ichida sodir bo'lgani uchun foydalanuvchi uni sezmaydi.</p>
+
+<figure class="fig">
+  <div class="controls"><button class="primary" type="button" data-chain="irqChain">Tugmani bos</button><span class="small muted">Uzilish qanday qayta ishlanadi</span></div>
+  <div class="chain" id="irqChain">
+    <div>Klaviatura tugmasi bosildi<small>qurilma protsessorga IRQ signalini yuboradi</small></div>
+    <div>Protsessor joriy buyruqni tugatadi<small>sikl o'rtasida to'xtamaydi</small></div>
+    <div>Holatini saqlaydi<small>PC, registrlar, flaglar stekka yoziladi</small></div>
+    <div>Uzilishni qayta ishlovchi funksiyaga o'tadi<small>drayver tugma kodini o'qiydi</small></div>
+    <div>To'xtagan joyiga qaytadi<small>holat tiklanadi, dastur davom etadi — mikrosoniyalar ichida</small></div>
+  </div>
+  <figcaption><span><b>Uzilish.</b> Protsessor qurilmalarni so'roqlab o'tirmaydi — qurilma o'zi signal beradi.</span></figcaption>
+</figure>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="7">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s8">8-savol</a>, <a href="../savollar.html#s9">9-savol</a></span></div>
+
+<nav class="pager">
+  <a href="06.html"><small>Oldingi</small>6-bob. Markaziy protsessor (CPU)</a>
+  <a class="next" href="08.html"><small>Keyingi</small>8-bob. Xotira</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+(function(){
+  const $=KQI.$,reduce=KQI.reduce;
+  /* ---------- 7.1: Fetch-Decode-Execute qadamlagich ---------- */
+  const prog=[
+    {t:()=>`MOV R1, ${st.a}`,c:()=>`; a = ${st.a}`,d:'ko\'chirish: sonni R1 registriga yukla',run:()=>st.R1=st.a},
+    {t:()=>`MOV R2, ${st.b}`,c:()=>`; b = ${st.b}`,d:'ko\'chirish: sonni R2 registriga yukla',run:()=>st.R2=st.b},
+    {t:()=>'ADD R3, R1, R2',c:()=>'; c = a + b',d:'arifmetika: ALU R1 + R2 ni hisoblab R3 ga yozadi',run:()=>st.R3=st.R1+st.R2},
+    {t:()=>'CMP R3, 10',c:()=>'; c ni 10 bilan solishtir',d:'taqqoslash: ALU R3 − 10 ni hisoblaydi, natijani saqlamaydi, faqat flaglarni yangilaydi',run:()=>st.FL=st.R3<=10?'LE (≤)':'GT (>)'},
+    {t:()=>'JLE tugadi',c:()=>'; c <= 10 bo\'lsa, sakrab o\'t',d:'shartli sakrash: flag "≤" bo\'lsa PC = 6, aks holda PC + 1',run:()=>{if(st.FL.startsWith('LE'))st.jump=6;}},
+    {t:()=>'MOV R3, 10',c:()=>'; aks holda c = 10',d:'ko\'chirish: c = 10 (chegaralash)',run:()=>st.R3=10},
+    {t:()=>'MOV [c_manzil], R3',c:()=>'; natijani xotiraga yoz',d:'xotiraga yozish: R3 dagi natija c manziliga',run:()=>st.MEM=st.R3,label:'tugadi:'},
+  ];
+  let st,timer=null;
+  function fdeReset(){
+    st={a:+$('#inA').value||0,b:+$('#inB').value||0,R1:'–',R2:'–',R3:'–',PC:0,FL:'–',MEM:'–',ph:0,done:false,jump:null,started:false};
+    $('#ca').textContent=st.a;$('#cb').textContent=st.b;
+    clearInterval(timer);timer=null;$('#runBtn').textContent='Avto';
+    fdeDraw('PC = 0. "Qadam" tugmasini bosing.');
+  }
+  function fdeDraw(msg){
+    const p=$('#prog');p.innerHTML='';
+    prog.forEach((ins,i)=>{const d=document.createElement('div');if(i===st.PC&&!st.done)d.classList.add('pc');
+      d.innerHTML=`<span>${i}</span><span style="color:var(--ink)">${ins.label?'<span style="color:var(--copper)">'+ins.label+'</span> ':''}${ins.t()}<span class="cm">${ins.c()}</span></span>`;p.appendChild(d);});
+    ['R1','R2','R3','PC','FL','MEM'].forEach(k=>{const el=$('#r'+k);const v=String(st[k]);if(el.textContent!==v){el.textContent=v;el.parentElement.classList.remove('flash');void el.offsetWidth;el.parentElement.classList.add('flash');}});
+    for(let i=0;i<4;i++)$('#ph'+i).classList.toggle('on',!st.done&&st.ph===i&&st.started);
+    $('#fdeOut').textContent=msg;
+  }
+  function fdeStep(){
+    if(st.done)return;
+    st.started=true;
+    const ins=prog[st.PC];
+    if(st.ph===0){fdeDraw(`Fetch: PC=${st.PC} manzildagi buyruq xotiradan olinib IR ga yozildi: "${ins.t()}"`);st.ph=1;return;}
+    if(st.ph===1){fdeDraw('Decode: '+ins.d);st.ph=2;return;}
+    if(st.ph===2){st.jump=null;ins.run();fdeDraw('Execute: '+(st.jump!==null?'shart bajarildi, sakrash tayyor':'ALU/CU amalni bajardi'));st.ph=3;return;}
+    const next=st.jump!==null?st.jump:st.PC+1;
+    st.PC=next;st.ph=0;
+    if(st.PC>=prog.length){st.done=true;clearInterval(timer);timer=null;$('#runBtn').textContent='Avto';fdeDraw(`Store: natija yozildi. Dastur tugadi: c = ${st.MEM}. Jami ${st.a+st.b>10?'6':'5'} ta buyruq, har biri 4 bosqich.`);}
+    else fdeDraw(`Store: registrlar yangilandi, PC = ${st.PC}${st.jump!==null?' (sakrash!)':' (PC + 1)'}`);
+  }
+  $('#stepBtn').onclick=fdeStep;
+  $('#resetBtn').onclick=fdeReset;
+  $('#inA').oninput=fdeReset;$('#inB').oninput=fdeReset;
+  $('#runBtn').onclick=()=>{if(timer){clearInterval(timer);timer=null;$('#runBtn').textContent='Avto';return;}if(st.done)fdeReset();$('#runBtn').textContent='To\'xtat';timer=setInterval(fdeStep,reduce?300:650);};
+  $('#fdeFig').addEventListener('replay',fdeReset);
+  fdeReset();
+
+  /* ---------- 15-rasm: konveyer ---------- */
+  const pipe=$('#pipe');const ST=['F','D','E','S'];
+  function pipeBuild(clk){
+    let h='<div class="l">Takt:</div>'+[1,2,3,4,5,6,7].map(n=>`<div class="h">${n}</div>`).join('');
+    for(let i=0;i<4;i++){
+      h+=`<div class="l">Buyruq ${i+1}</div>`;
+      for(let c=1;c<=7;c++){const k=c-i-1;const has=k>=0&&k<4;
+        h+=`<div class="c ${has?'has':''} ${has&&c<clk?'lit':''} ${has&&c===clk?'now':''}">${has?ST[k]:''}</div>`;}
+    }
+    pipe.innerHTML=h;
+  }
+  pipeBuild(0);
+  let pt=null;
+  function pipeRun(){clearInterval(pt);let c=0;pipeBuild(0);
+    pt=setInterval(()=>{c++;pipeBuild(c);$('#pipeTxt').textContent=c<=7?`Takt ${c}: bir vaqtda ${Math.min(c,4,8-c)} ta buyruq turli bosqichda`:'7 taktda 4 buyruq tugadi. Konveyersiz 16 takt bo\'lardi.';if(c>=8)clearInterval(pt);},reduce?200:600);}
+  $('#pipeBtn').onclick=pipeRun;
+  const pf=$('#pipeFig');
+  pf.addEventListener('replay',pipeRun);
+  new MutationObserver(()=>{if(pf.classList.contains('play')&&!pf.dataset.auto){pf.dataset.auto='1';pipeRun();}}).observe(pf,{attributes:true,attributeFilter:['class']});
+})();
+</script>
+</body>
+</html>

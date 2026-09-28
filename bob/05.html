@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>5-bob. Kompyuter arxitekturasi · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Fon Neyman arxitekturasi, uning tor bo'g'izi va kompyuterning abstraksiya qatlamlari.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 11-rasm: fon Neyman arxitekturasi — 10 soniyalik sikl: ish, so'ng tor bo'g'iz */
+.vn .pk{offset-rotate:0deg;opacity:0}
+.vn .pk1{offset-path:path('M520 146 V250 H175 V196');animation:vn1 10s linear infinite}
+.vn .pk2{offset-path:path('M520 146 V250 H175 V196');animation:vn2 10s linear infinite}
+.vn .pk3{offset-path:path('M105 272 V250 H175 V196');animation:vn3 10s linear infinite}
+.vn .pk4{offset-path:path('M175 196 V250 H555 V272');animation:vn4 10s linear infinite}
+.vn .pk5{offset-path:path('M520 146 V250 H175 V196');animation:vn5 10s linear infinite}
+@keyframes vn1{0%{opacity:1;offset-distance:0%}14%{opacity:1;offset-distance:100%}15%,100%{opacity:0;offset-distance:100%}}
+@keyframes vn2{0%,15%{opacity:0;offset-distance:0%}16%{opacity:1}30%{opacity:1;offset-distance:100%}31%,100%{opacity:0;offset-distance:100%}}
+@keyframes vn3{0%,31%{opacity:0;offset-distance:0%}32%{opacity:1}44%{opacity:1;offset-distance:100%}45%,100%{opacity:0;offset-distance:100%}}
+@keyframes vn4{0%,45%{opacity:0;offset-distance:0%}46%{opacity:1}58%{opacity:1;offset-distance:100%}59%,100%{opacity:0;offset-distance:100%}}
+@keyframes vn5{0%,61%{opacity:0;offset-distance:0%}62%{opacity:1}97%{opacity:1;offset-distance:100%}98%,100%{opacity:0;offset-distance:100%}}
+.vn .busy{fill:var(--accent);animation:vnBusy 10s linear infinite}
+.vn .wait{fill:var(--copper);opacity:0;animation:vnWait 10s linear infinite}
+@keyframes vnBusy{0%,58%{opacity:1}61%,100%{opacity:0}}
+@keyframes vnWait{0%,60%{opacity:0}62%,97%{opacity:1}100%{opacity:0}}
+.vn .cpu{animation:vnCpu 10s linear infinite}
+@keyframes vnCpu{0%,58%{stroke:var(--line)}62%,97%{stroke:var(--copper);stroke-width:2.5}100%{stroke:var(--line)}}
+.vn .bus{stroke:var(--wire);stroke-width:8;stroke-linecap:round;animation:vnBus 10s linear infinite}
+@keyframes vnBus{0%,58%{stroke:var(--wire)}62%,97%{stroke:var(--copper)}100%{stroke:var(--wire)}}
+.vn .q{fill:var(--copper);opacity:0;animation:vnQ 10s linear infinite}
+@keyframes vnQ{0%,63%{opacity:0}66%,96%{opacity:1}100%{opacity:0}}
+/* 12-rasm: abstraksiya qatlamlari — pastdan yuqoriga yonadi */
+.layers{display:grid;gap:5px;max-width:560px;margin:0 auto}
+.layers div{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:center;padding:8px 14px;border:1px solid var(--accent);border-radius:8px;background:var(--accent-soft);width:calc(100% - var(--i) * 3%);margin-inline:auto;animation:layerOn .5s both;animation-delay:calc(var(--i) * .42s);font-size:15px}
+.layers div b{font-family:var(--display);font-weight:600}
+.layers div span{color:var(--muted);font-family:var(--mono);font-size:13px}
+@keyframes layerOn{from{opacity:.3;background:var(--surface);border-color:var(--line);transform:translateY(6px)}}
+.layers-note{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);font-family:var(--mono);max-width:560px;margin:8px auto 0}
+@media (max-width:480px){.layers div{grid-template-columns:1fr;gap:0;width:calc(100% - var(--i) * 2%)}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">5-bob</div>
+  <h1>Kompyuter arxitekturasi</h1>
+  <p class="lede">Dastur ham, ma'lumot ham bitta xotirada — shu oddiy g'oya 80 yildan beri barcha kompyuterlarning asosi.</p>
+</div>
+
+<p>1945-yilda matematik Jon fon Neyman kompyuter qurilishining umumiy sxemasini taklif qildi. Bu sxema <strong>fon Neyman arxitekturasi</strong> deb ataladi va bugungi deyarli barcha kompyuterlar unga asoslanadi. Uning asosiy g'oyasi: dastur ham, ma'lumot ham bitta xotirada saqlanadi. Bungacha kompyuterni qayta dasturlash uchun simlarni qo'lda qayta ulash kerak edi (ENIAC'ni qayta dasturlash bir necha kun olardi). Endi esa yangi dasturni xotiraga yuklash kifoya.</p>
+
+<figure class="fig">
+  <svg class="sv vn" viewBox="0 0 660 340" role="img" aria-label="Fon Neyman arxitekturasi: CPU (CU, ALU, registrlar), xotira, kirish va chiqish bitta shina orqali bog'langan">
+    <!-- shina -->
+    <line class="bus" x1="40" y1="250" x2="620" y2="250"/>
+    <text x="330" y="238" text-anchor="middle" class="lbl">shina</text>
+    <line x1="175" y1="196" x2="175" y2="250" class="wire"/>
+    <line x1="520" y1="146" x2="520" y2="250" class="wire"/>
+    <line x1="105" y1="250" x2="105" y2="272" class="wire"/>
+    <line x1="555" y1="250" x2="555" y2="272" class="wire"/>
+    <!-- CPU -->
+    <rect x="20" y="16" width="310" height="180" rx="12" class="box cpu"/>
+    <text x="175" y="40" text-anchor="middle" class="ttl">Markaziy protsessor (CPU)</text>
+    <rect x="36" y="54" width="86" height="64" rx="8" class="box blue"/>
+    <text x="79" y="80" text-anchor="middle" class="ttl">CU</text>
+    <text x="79" y="100" text-anchor="middle">boshqaruv</text>
+    <rect x="132" y="54" width="86" height="64" rx="8" class="box on"/>
+    <text x="175" y="80" text-anchor="middle" class="ttl">ALU</text>
+    <text x="175" y="100" text-anchor="middle">hisob</text>
+    <rect x="228" y="54" width="90" height="64" rx="8" class="box copper"/>
+    <text x="273" y="80" text-anchor="middle" class="ttl">Registrlar</text>
+    <text x="273" y="100" text-anchor="middle">PC, IR, ACC ...</text>
+    <path class="flow blue" style="stroke-width:2" d="M79 118 V138 H273 V118"/>
+    <text x="175" y="172" text-anchor="middle" class="lbl busy">ishlamoqda</text>
+    <text x="175" y="172" text-anchor="middle" class="lbl wait">kutmoqda... (tor bo'g'iz)</text>
+    <!-- RAM -->
+    <rect x="400" y="16" width="240" height="130" rx="12" class="box"/>
+    <text x="520" y="40" text-anchor="middle" class="ttl">Xotira (RAM)</text>
+    <text x="520" y="58" text-anchor="middle">dastur + ma'lumot birga</text>
+    <rect x="418" y="72" width="36" height="18" rx="4" class="box on"/>
+    <rect x="460" y="72" width="36" height="18" rx="4" class="box on"/>
+    <rect x="502" y="72" width="36" height="18" rx="4" class="box copper"/>
+    <rect x="544" y="72" width="36" height="18" rx="4" class="box on"/>
+    <rect x="586" y="72" width="36" height="18" rx="4" class="box copper"/>
+    <rect x="418" y="96" width="36" height="18" rx="4" class="box copper"/>
+    <rect x="460" y="96" width="36" height="18" rx="4" class="box on"/>
+    <rect x="502" y="96" width="36" height="18" rx="4" class="box on"/>
+    <rect x="544" y="96" width="36" height="18" rx="4" class="box copper"/>
+    <rect x="586" y="96" width="36" height="18" rx="4" class="box copper"/>
+    <rect x="440" y="124" width="10" height="10" rx="2" class="box on"/>
+    <text x="456" y="133">buyruq</text>
+    <rect x="520" y="124" width="10" height="10" rx="2" class="box copper"/>
+    <text x="536" y="133">ma'lumot</text>
+    <!-- navbat (tor bo'g'iz paytida) -->
+    <circle class="q" cx="520" cy="160" r="5"/>
+    <circle class="q" cx="520" cy="176" r="5" style="animation-delay:.3s"/>
+    <circle class="q" cx="520" cy="192" r="5" style="animation-delay:.6s"/>
+    <!-- Kirish / Chiqish -->
+    <rect x="30" y="272" width="150" height="54" rx="10" class="box soft"/>
+    <text x="105" y="296" text-anchor="middle" class="ttl">Kirish</text>
+    <text x="105" y="314" text-anchor="middle">klaviatura, mouse</text>
+    <rect x="480" y="272" width="150" height="54" rx="10" class="box soft"/>
+    <text x="555" y="296" text-anchor="middle" class="ttl">Chiqish</text>
+    <text x="555" y="314" text-anchor="middle">monitor, printer</text>
+    <!-- paketlar -->
+    <circle class="pk pk1 dot" r="7"/>
+    <circle class="pk pk2 dot copper" r="7"/>
+    <circle class="pk pk3 dot blue" r="7"/>
+    <circle class="pk pk4 dot" r="7"/>
+    <circle class="pk pk5 dot copper" r="7"/>
+  </svg>
+  <figcaption><span><b>11-rasm.</b> Fon Neyman arxitekturasi. Buyruq (yashil) va ma'lumot (mis rang) bitta shinadan o'tadi; siklning ikkinchi yarmida protsessor xotirani kutib turadi — tor bo'g'iz.</span></figcaption>
+</figure>
+
+<p>Arxitekturaning beshta asosiy qismi bor: (1) <strong>arifmetik-mantiqiy qurilma (ALU)</strong> — hisob-kitob va taqqoslashni bajaradi; (2) <strong>boshqaruv qurilmasi (CU)</strong> — buyruqlarni o'qib, qolgan qismlarga nima qilish kerakligini aytadi; (3) <strong>xotira</strong> — dastur va ma'lumotlarni saqlaydi; (4) <strong>kirish qurilmalari</strong>; (5) <strong>chiqish qurilmalari</strong>. ALU, CU va registrlar birgalikda markaziy protsessor — <strong>CPU</strong>'ni tashkil qiladi.</p>
+
+<h2 id="5-1">5.1. Fon Neyman "tor bo'g'izi"</h2>
+<p>Bu arxitekturaning zaif tomoni ham bor. Protsessor juda tez ishlaydi, lekin xotiraga murojaat ancha sekin. Buyruq ham, ma'lumot ham bitta yo'ldan (shinadan) o'tgani uchun protsessor ko'pincha xotiradan ma'lumot kelishini kutib, "bekor" turadi. Bu muammo <strong>fon Neyman tor bo'g'izi</strong> (bottleneck) deyiladi. Zamonaviy kompyuterlar uni kesh xotira, konveyer, parallel ishlov berish kabi usullar bilan yumshatadi — ular haqida keyingi boblarda gaplashamiz. Ba'zi tizimlar (mikrokontrollerlar, DSP) esa dastur va ma'lumot uchun alohida xotira ishlatadigan <strong>Garvard arxitekturasidan</strong> foydalanadi.</p>
+
+<h2 id="5-2">5.2. Abstraksiya qatlamlari</h2>
+<p>Kompyuterni tushunishning eng yaxshi usuli — uni qatlamlar sifatida ko'rish. Har bir qatlam o'zidan pastdagi qatlamning murakkabligini yashiradi va yuqoridagi qatlamga oddiy "interfeys" taqdim etadi. Siz JavaScript'da kod yozganingizda tranzistorlar haqida o'ylamaysiz — va aynan shu tufayli murakkab dasturlar yaratish mumkin bo'ladi. Bu darslik pastdan yuqoriga qarab harakatlanadi: biz fizika va tranzistorlarni ko'rib chiqdik, endi protsessor ichiga kiramiz.</p>
+
+<figure class="fig">
+  <div class="layers" data-replay role="img" aria-label="To'qqiz abstraksiya qatlami: fizikadan ilovagacha">
+    <div style="--i:8"><b>Ilova</b><span>Telegram bot, sayt</span></div>
+    <div style="--i:7"><b>Dasturlash tili</b><span>JS, Python</span></div>
+    <div style="--i:6"><b>Operatsion tizim</b><span>Linux, Windows</span></div>
+    <div style="--i:5"><b>Mashina kodi (ISA)</b><span>x86, ARM buyruqlari</span></div>
+    <div style="--i:4"><b>Mikroarxitektura</b><span>konveyer, kesh</span></div>
+    <div style="--i:3"><b>Mantiqiy sxemalar</b><span>yig'uvchi, registr</span></div>
+    <div style="--i:2"><b>Ventillar</b><span>AND, OR, NOT</span></div>
+    <div style="--i:1"><b>Tranzistorlar</b><span>kalit</span></div>
+    <div style="--i:0"><b>Fizika</b><span>elektronlar, kremniy</span></div>
+  </div>
+  <div class="layers-note"><span>↓ pastda: apparat, fizika</span><span>yuqorida: dastur, odam ↑</span></div>
+  <figcaption><span><b>12-rasm.</b> Kompyuterning abstraksiya qatlamlari: fizikadan ilovagacha</span></figcaption>
+</figure>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="5">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s7">7-savol</a></span></div>
+
+<nav class="pager">
+  <a href="04.html"><small>Oldingi</small>4-bob. Mantiqiy ventillar</a>
+  <a class="next" href="06.html"><small>Keyingi</small>6-bob. Markaziy protsessor (CPU)</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+</body>
+</html>

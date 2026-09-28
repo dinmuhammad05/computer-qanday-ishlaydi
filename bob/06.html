@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>6-bob. Markaziy protsessor (CPU) · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Protsessorning qismlari: ALU, CU, registrlar, kesh; takt chastotasi, yadrolar va oqimlar, buyruqlar to'plami (ISA).">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 13-rasm: ko'p yadroli protsessor, kesh qidiruvi */
+.cpu4 .probe{transition:transform .55s cubic-bezier(.4,0,.2,1);opacity:0}
+.cpu4 .probe.show{opacity:1}
+.cpu4 .box.miss{stroke:var(--copper);fill:var(--copper-soft)}
+.cpu4 .box.hit{stroke:var(--accent);fill:var(--accent-soft)}
+.cpu4 .box.ask{stroke:var(--blue);fill:var(--blue-soft)}
+.cpu4 .tag{font-weight:600;opacity:0;transition:opacity .3s}
+.cpu4 .tag.show{opacity:1}
+.cpu4 .tag.miss{fill:var(--copper)}
+.cpu4 .tag.hit{fill:var(--accent)}
+/* takt: metronom va to'rtburchak to'lqin */
+.clk .pend{transform-origin:90px 34px;animation:tick .5s ease-in-out infinite alternate}
+@keyframes tick{from{transform:rotate(-26deg)}to{transform:rotate(26deg)}}
+.clk .wavedot{offset-path:path('M230 112 H270 V52 H310 V112 H350 V52 H390 V112 H430 V52 H470 V112 H510 V52 H550 V112 H590');animation:travel 4s linear infinite}
+.clk .edge{animation:edge 1s steps(1) infinite}
+@keyframes edge{0%,49%{fill:var(--line)}50%,100%{fill:var(--copper)}}
+.clk .ffq{animation:ffq 2s steps(1) infinite}
+@keyframes ffq{0%,49%{opacity:1}50%,100%{opacity:.25}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">6-bob</div>
+  <h1>Markaziy protsessor (CPU)</h1>
+  <p class="lede">4x4 sm plastinka ichida milliardlab tranzistor: ALU hisoblaydi, CU boshqaradi, registrlar va kesh ma'lumotni qo'l ostida tutadi.</p>
+</div>
+
+<p><strong>Protsessor</strong> — kompyuterning "miyasi". U xotiradan buyruqlarni birma-bir olib, ularni bajaradi. Tashqi ko'rinishidan u taxminan 4x4 sm o'lchamdagi plastinka bo'lib, pastki qismida yuzlab yoki minglab kontakt (pin) bor. Uning ichida esa kremniy kristali — <strong>die</strong> — joylashgan, unda milliardlab tranzistor bor.</p>
+
+<figure class="fig" id="cpuFig">
+  <div class="controls"><button class="primary" type="button" id="cacheBtn">Kesh qidiruvini ko'rsat</button><span class="small muted">Yadro 1 ma'lumot so'raydi: L1 → L2 → L3 → RAM</span></div>
+  <svg class="sv cpu4" data-replay viewBox="0 0 680 384" role="img" aria-label="Zamonaviy 4 yadroli protsessor: har yadroda ALU, CU, registrlar, L1 va L2 kesh; umumiy L3 kesh; xotira kontrolleri va PCIe">
+    <text x="340" y="18" text-anchor="middle" class="ttl">Zamonaviy 4 yadroli protsessor (soddalashtirilgan)</text>
+    <!-- yadrolar -->
+    <g id="core1">
+      <rect x="20" y="30" width="150" height="166" rx="10" class="box soft" id="c1"/>
+      <text x="95" y="50" text-anchor="middle" class="ttl">Yadro 1</text>
+      <rect x="30" y="60" width="62" height="28" rx="6" class="box on"/><text x="61" y="78" text-anchor="middle" class="lbl">ALU</text>
+      <rect x="98" y="60" width="62" height="28" rx="6" class="box blue"/><text x="129" y="78" text-anchor="middle" class="lbl">CU</text>
+      <rect x="30" y="96" width="130" height="26" rx="6" class="box copper"/><text x="95" y="113" text-anchor="middle" class="lbl">Registrlar</text>
+      <rect x="30" y="130" width="130" height="58" rx="6" class="box"/><text x="95" y="146" text-anchor="middle" class="lbl">L1 + L2 kesh</text>
+      <rect x="36" y="154" width="56" height="26" rx="5" class="box" id="c1L1"/><text x="64" y="171" text-anchor="middle" class="lbl">L1</text>
+      <rect x="98" y="154" width="56" height="26" rx="5" class="box" id="c1L2"/><text x="126" y="171" text-anchor="middle" class="lbl">L2</text>
+    </g>
+    <g id="core2">
+      <rect x="182" y="30" width="150" height="166" rx="10" class="box soft"/>
+      <text x="257" y="50" text-anchor="middle" class="ttl">Yadro 2</text>
+      <rect x="192" y="60" width="62" height="28" rx="6" class="box on"/><text x="223" y="78" text-anchor="middle" class="lbl">ALU</text>
+      <rect x="260" y="60" width="62" height="28" rx="6" class="box blue"/><text x="291" y="78" text-anchor="middle" class="lbl">CU</text>
+      <rect x="192" y="96" width="130" height="26" rx="6" class="box copper"/><text x="257" y="113" text-anchor="middle" class="lbl">Registrlar</text>
+      <rect x="192" y="130" width="130" height="58" rx="6" class="box"/><text x="257" y="146" text-anchor="middle" class="lbl">L1 + L2 kesh</text>
+      <rect x="198" y="154" width="56" height="26" rx="5" class="box"/><text x="226" y="171" text-anchor="middle" class="lbl">L1</text>
+      <rect x="260" y="154" width="56" height="26" rx="5" class="box"/><text x="288" y="171" text-anchor="middle" class="lbl">L2</text>
+    </g>
+    <g id="core3">
+      <rect x="344" y="30" width="150" height="166" rx="10" class="box soft"/>
+      <text x="419" y="50" text-anchor="middle" class="ttl">Yadro 3</text>
+      <rect x="354" y="60" width="62" height="28" rx="6" class="box on"/><text x="385" y="78" text-anchor="middle" class="lbl">ALU</text>
+      <rect x="422" y="60" width="62" height="28" rx="6" class="box blue"/><text x="453" y="78" text-anchor="middle" class="lbl">CU</text>
+      <rect x="354" y="96" width="130" height="26" rx="6" class="box copper"/><text x="419" y="113" text-anchor="middle" class="lbl">Registrlar</text>
+      <rect x="354" y="130" width="130" height="58" rx="6" class="box"/><text x="419" y="146" text-anchor="middle" class="lbl">L1 + L2 kesh</text>
+      <rect x="360" y="154" width="56" height="26" rx="5" class="box"/><text x="388" y="171" text-anchor="middle" class="lbl">L1</text>
+      <rect x="422" y="154" width="56" height="26" rx="5" class="box"/><text x="450" y="171" text-anchor="middle" class="lbl">L2</text>
+    </g>
+    <g id="core4">
+      <rect x="506" y="30" width="150" height="166" rx="10" class="box soft"/>
+      <text x="581" y="50" text-anchor="middle" class="ttl">Yadro 4</text>
+      <rect x="516" y="60" width="62" height="28" rx="6" class="box on"/><text x="547" y="78" text-anchor="middle" class="lbl">ALU</text>
+      <rect x="584" y="60" width="62" height="28" rx="6" class="box blue"/><text x="615" y="78" text-anchor="middle" class="lbl">CU</text>
+      <rect x="516" y="96" width="130" height="26" rx="6" class="box copper"/><text x="581" y="113" text-anchor="middle" class="lbl">Registrlar</text>
+      <rect x="516" y="130" width="130" height="58" rx="6" class="box"/><text x="581" y="146" text-anchor="middle" class="lbl">L1 + L2 kesh</text>
+      <rect x="522" y="154" width="56" height="26" rx="5" class="box"/><text x="550" y="171" text-anchor="middle" class="lbl">L1</text>
+      <rect x="584" y="154" width="56" height="26" rx="5" class="box"/><text x="612" y="171" text-anchor="middle" class="lbl">L2</text>
+    </g>
+    <!-- L3 -->
+    <line x1="95" y1="196" x2="95" y2="212" class="wire thin"/><line x1="257" y1="196" x2="257" y2="212" class="wire thin"/><line x1="419" y1="196" x2="419" y2="212" class="wire thin"/><line x1="581" y1="196" x2="581" y2="212" class="wire thin"/>
+    <rect x="20" y="212" width="636" height="40" rx="8" class="box" id="L3"/>
+    <text x="338" y="237" text-anchor="middle" class="ttl">L3 kesh (umumiy, 8-64 MB)</text>
+    <!-- kontrollerlar -->
+    <line x1="175" y1="252" x2="175" y2="272" class="wire thin"/><line x1="501" y1="252" x2="501" y2="272" class="wire thin"/>
+    <rect x="20" y="272" width="310" height="40" rx="8" class="box" id="MC"/>
+    <text x="175" y="297" text-anchor="middle" class="ttl">Xotira kontrolleri → RAM</text>
+    <rect x="346" y="272" width="310" height="40" rx="8" class="box"/>
+    <text x="501" y="297" text-anchor="middle" class="ttl">PCIe → GPU, SSD</text>
+    <!-- RAM (chip tashqarisida) -->
+    <line x1="175" y1="312" x2="175" y2="336" class="wire"/>
+    <rect x="20" y="336" width="310" height="40" rx="8" class="box soft" id="RAM"/>
+    <text x="175" y="361" text-anchor="middle" class="ttl">RAM (protsessor tashqarisida)</text>
+    <!-- teglar -->
+    <text x="64" y="193" text-anchor="middle" class="tag" id="tL1">–</text>
+    <text x="126" y="193" text-anchor="middle" class="tag" id="tL2">–</text>
+    <text x="600" y="237" text-anchor="middle" class="tag" id="tL3">–</text>
+    <text x="305" y="361" text-anchor="middle" class="tag" id="tRAM">–</text>
+    <!-- so'rov nuqtasi -->
+    <g class="probe" id="probe"><circle r="8" class="dot blue"/><text y="4" text-anchor="middle" style="fill:var(--surface);font-size:9px;font-weight:700">?</text></g>
+  </svg>
+  <div class="out" id="cacheOut">Tugmani bosing: protsessor kerakli ma'lumotni qidiradi.</div>
+  <figcaption><span><b>13-rasm.</b> Zamonaviy ko'p yadroli protsessorning ichki tuzilishi</span></figcaption>
+</figure>
+
+<h2 id="6-1">6.1. Protsessorning asosiy qismlari</h2>
+<p><strong>ALU (arifmetik-mantiqiy qurilma)</strong> — butun sonlar ustida qo'shish, ayirish, bitli amallar va taqqoslashni bajaradi. O'nli kasrli sonlar (float) uchun alohida blok — <strong>FPU</strong> bor. Zamonaviy protsessorlarda bitta buyruq bilan bir nechta sonni birdaniga qayta ishlaydigan SIMD/vektor bloklari ham mavjud (AVX, NEON).</p>
+<p><strong>CU (boshqaruv qurilmasi)</strong> — dirijyor vazifasini bajaradi. U buyruqni dekodlab, qaysi registrdan ma'lumot olish, ALU qaysi amalni bajarishi va natijani qayerga yozish kerakligini aniqlaydi, so'ng tegishli sxemalarga boshqaruv signallarini yuboradi.</p>
+<p><strong>Registrlar</strong> — protsessor ichidagi o'ta tez va kichik xotira yacheykalari. x86-64 protsessorida 16 ta umumiy maqsadli 64 bitli registr bor (RAX, RBX, RCX...). Maxsus registrlar ham bor: <strong>PC</strong> (Program Counter) — keyingi bajariladigan buyruqning xotiradagi manzili; <strong>IR</strong> (Instruction Register) — joriy buyruq; <strong>SP</strong> (Stack Pointer) — stek cho'qqisi; <strong>Flags</strong> — oxirgi amal natijasi haqidagi belgilar (nol chiqdimi, manfiymi, to'lib ketdimi).</p>
+<p><strong>Kesh xotira</strong> — RAM'dan olingan ma'lumotlarning nusxasini protsessor yonida saqlaydigan tezkor xotira. L1 kesh har bir yadroda (32-64 KB, ~1 ns), L2 ham yadroga tegishli (256 KB - 2 MB), L3 esa barcha yadrolar uchun umumiy (8-64 MB). Protsessor ma'lumot kerak bo'lganda avval L1'ga, keyin L2'ga, L3'ga va oxirida RAM'ga murojaat qiladi. Kerakli ma'lumot keshda topilsa — bu <strong>kesh hit</strong>, topilmasa — <strong>kesh miss</strong>. Yaxshi dasturlar 95% dan ortiq hit darajasiga erishadi.</p>
+
+<h2 id="6-2">6.2. Takt chastotasi</h2>
+<p>Protsessordagi barcha jarayonlar <strong>takt generatori</strong> (clock) tomonidan sinxronlashtiriladi. U kvars kristali asosida doimiy chastotada impulslar hosil qiladi — xuddi orkestrdagi metronom kabi. Har bir impulsda flip-floplar yangi qiymatlarni eslab qoladi va sxema bir qadam oldinga siljiydi. 4 GHz chastota — sekundiga 4 milliard takt, ya'ni bitta takt 0.25 nanosekund davom etadi. Bu vaqt ichida yorug'lik atigi 7.5 sm masofani bosib o'tadi!</p>
+
+<figure class="fig">
+  <svg class="sv clk" data-replay viewBox="0 0 640 160" role="img" aria-label="Takt generatori: metronom kabi tebranish va to'rtburchak impulslar; har ko'tarilish chetida flip-flop yangi qiymatni eslab qoladi">
+    <!-- metronom -->
+    <path d="M55 130 L125 130 L110 40 L70 40 Z" class="box soft"/>
+    <g class="pend"><line x1="90" y1="34" x2="90" y2="118" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/><circle cx="90" cy="60" r="7" class="dot copper"/></g>
+    <circle cx="90" cy="34" r="3" fill="var(--ink)"/>
+    <text x="90" y="150" text-anchor="middle" class="lbl">takt generatori</text>
+    <text x="90" y="26" text-anchor="middle">kvars kristali</text>
+    <!-- to'lqin -->
+    <path d="M230 112 H270 V52 H310 V112 H350 V52 H390 V112 H430 V52 H470 V112 H510 V52 H550 V112 H590" class="wire" style="stroke:var(--accent);stroke-width:2.5"/>
+    <circle class="wavedot dot" r="6"/>
+    <circle cx="270" cy="52" r="4" class="edge"/><circle cx="350" cy="52" r="4" class="edge"/><circle cx="430" cy="52" r="4" class="edge"/><circle cx="510" cy="52" r="4" class="edge"/>
+    <text x="215" y="56" text-anchor="end">1</text><text x="215" y="116" text-anchor="end">0</text>
+    <path d="M270 34 V28 H350 V34" fill="none" stroke="var(--muted)" stroke-width="1"/>
+    <text x="310" y="24" text-anchor="middle" class="lbl">1 takt = 0.25 ns (4 GHz)</text>
+    <text x="400" y="140" text-anchor="middle">↑ ko'tarilish chetida flip-floplar yangi qiymatni eslab qoladi</text>
+    <text x="560" y="24" text-anchor="middle">4 GHz = sekundiga 4 mlrd takt</text>
+    <text x="560" y="40" text-anchor="middle">1 taktda yorug'lik 7.5 sm yuradi</text>
+  </svg>
+  <figcaption><span><b>Takt generatori.</b> Metronom kabi doimiy chastotada impuls beradi; sxema har impulsda bir qadam oldinga siljiydi.</span></figcaption>
+</figure>
+
+<p>Nega chastotani cheksiz oshirib bo'lmaydi? Har bir ulanish-uzilishda tranzistor ozgina energiya sarflaydi va issiqlik ajraladi. Chastota oshgani sari issiqlik keskin ortadi. 2005-yildan beri protsessorlar chastotasi 3-5 GHz atrofida to'xtab qoldi — bu <strong>"quvvat devori"</strong> deyiladi. Shundan so'ng ishlab chiqaruvchilar chastota o'rniga yadrolar sonini oshirishga o'tdi.</p>
+
+<h2 id="6-3">6.3. Yadrolar va oqimlar</h2>
+<p><strong>Yadro</strong> (core) — to'liq mustaqil protsessor: o'zining ALU, CU, registrlari va L1/L2 keshi bor. 8 yadroli protsessor bir vaqtning o'zida 8 ta vazifani haqiqatan parallel bajara oladi. <strong>Hyper-Threading / SMT</strong> texnologiyasi esa bitta yadroga ikkita oqimni (thread) navbatma-navbat bajarish imkonini beradi: bitta oqim xotirani kutayotganda, ikkinchisi yadroning bo'sh bloklaridan foydalanadi. Shuning uchun "8 yadro / 16 oqim" degan yozuvlarni ko'rasiz.</p>
+
+<div class="callout blue"><b>Amaliy xulosa:</b> Node.js bitta oqimda ishlaydi, shuning uchun ko'p yadroli serverda uning bitta nusxasi faqat bitta yadrodan to'liq foydalanadi. Barcha yadrolarni ishlatish uchun PM2 cluster rejimi yoki worker_threads ishlatiladi.</div>
+
+<h2 id="6-4">6.4. Buyruqlar to'plami (ISA)</h2>
+<p>Har bir protsessor oilasi o'zi "tushunadigan" buyruqlar ro'yxatiga ega — bu <strong>ISA</strong> (Instruction Set Architecture) deyiladi. ISA — dasturiy ta'minot va apparat o'rtasidagi shartnoma. Eng keng tarqalgan ikkita ISA: <strong>x86-64</strong> (Intel va AMD, stol kompyuterlari va serverlar) va <strong>ARM</strong> (smartfonlar, Apple M-seriya, ko'plab serverlar). x86 — CISC (murakkab buyruqlar to'plami) falsafasiga, ARM esa RISC (qisqartirilgan buyruqlar to'plami) falsafasiga asoslangan. RISC'da buyruqlar oddiy va bir xil uzunlikda, bu esa ularni tezroq va kam energiya bilan bajarish imkonini beradi. Shu sababli bir ISA uchun kompilyatsiya qilingan dastur boshqasida to'g'ridan-to'g'ri ishlamaydi.</p>
+
+<div class="tbl">
+<table>
+<caption>4-jadval. Buyruqlarning asosiy turlari</caption>
+<thead><tr><th>Buyruq turi</th><th>Misol (assembler)</th><th>Ma'nosi</th></tr></thead>
+<tbody>
+<tr><td>Ma'lumot ko'chirish</td><td><code>MOV R1, [1000]</code></td><td>1000-manzildagi qiymatni R1 ga yukla</td></tr>
+<tr><td>Arifmetika</td><td><code>ADD R1, R2</code></td><td>R1 = R1 + R2</td></tr>
+<tr><td>Mantiq</td><td><code>AND R1, 0x0F</code></td><td>R1 ning pastki 4 bitini qoldir</td></tr>
+<tr><td>Taqqoslash</td><td><code>CMP R1, 10</code></td><td>R1 ni 10 bilan solishtir</td></tr>
+<tr><td>Shartli sakrash</td><td><code>JE manzil</code></td><td>teng bo'lsa, manzilga o't</td></tr>
+<tr><td>Funksiya</td><td><code>CALL / RET</code></td><td>funksiyaga kir / qayt</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="6">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s10">10-savol</a></span></div>
+
+<nav class="pager">
+  <a href="05.html"><small>Oldingi</small>5-bob. Kompyuter arxitekturasi</a>
+  <a class="next" href="07.html"><small>Keyingi</small>7-bob. Protsessor buyruqni qanday bajaradi</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+(function(){
+  const $=KQI.$;
+  const fig=$('#cpuFig'),out=$('#cacheOut'),probe=$('#probe');
+  const boxes={c1:$('#c1'),L1:$('#c1L1'),L2:$('#c1L2'),L3:$('#L3'),MC:$('#MC'),RAM:$('#RAM')};
+  const tags={L1:$('#tL1'),L2:$('#tL2'),L3:$('#tL3'),RAM:$('#tRAM')};
+  const pos={core:[95,78],L1:[64,167],L2:[126,167],L3:[338,232],MC:[175,292],RAM:[175,356]};
+  let timers=[],running=false;
+  const move=k=>{probe.style.transform='translate('+pos[k][0]+'px,'+pos[k][1]+'px)';};
+  const set=(k,cls)=>{boxes[k].classList.remove('miss','hit','ask');if(cls)boxes[k].classList.add(cls);};
+  const tag=(k,txt,cls)=>{const t=tags[k];t.textContent=txt;t.classList.remove('miss','hit','show');if(txt){t.classList.add(cls,'show');}};
+  function reset(){
+    timers.forEach(clearTimeout);timers=[];running=false;
+    Object.keys(boxes).forEach(k=>set(k,null));Object.keys(tags).forEach(k=>tag(k,'',''));
+    probe.classList.remove('show');move('core');
+    out.textContent='Tugmani bosing: protsessor kerakli ma\'lumotni qidiradi.';
+  }
+  const steps=[
+    ()=>{set('c1','ask');probe.classList.add('show');move('core');out.innerHTML='Yadro 1: <b>0x1F40</b> manzildagi ma\'lumot kerak. Avval eng yaqin kesh — L1.';},
+    ()=>{move('L1');set('L1','miss');tag('L1','miss','miss');out.innerHTML='L1 (~1 ns): <b>miss</b> — topilmadi. L2 ga o\'tamiz.';},
+    ()=>{move('L2');set('L2','miss');tag('L2','miss','miss');out.innerHTML='L2 (~4 ns): <b>miss</b>. Umumiy L3 ga murojaat.';},
+    ()=>{move('L3');set('L3','miss');tag('L3','miss','miss');out.innerHTML='L3 (~40 ns): <b>miss</b>. Xotira kontrolleri orqali RAM ga boramiz.';},
+    ()=>{move('MC');set('MC','ask');out.innerHTML='Xotira kontrolleri manzilni RAM ga yuboradi...';},
+    ()=>{move('RAM');set('RAM','hit');tag('RAM','topildi','hit');out.innerHTML='RAM (~80 ns): ma\'lumot topildi. Endi u yo\'l bo\'ylab keshlarga nusxalanadi.';},
+    ()=>{move('L3');set('MC',null);set('L3','hit');tag('L3','nusxa saqlandi','hit');out.innerHTML='Qaytish yo\'li: 64 baytlik kesh satri L3 ga yozildi.';},
+    ()=>{move('L2');set('L2','hit');tag('L2','nusxa','hit');out.innerHTML='...L2 ga yozildi.';},
+    ()=>{move('L1');set('L1','hit');tag('L1','nusxa','hit');out.innerHTML='...L1 ga yozildi. Ma\'lumot yadroga yetdi (jami ~125 ns).';},
+    ()=>{move('core');set('c1','hit');out.innerHTML='Yadro 1 ma\'lumotni oldi. Endi <b>yana shu manzil</b> kerak bo\'ldi...';},
+    ()=>{move('L1');tag('L1','hit!','hit');out.innerHTML='L1 (~1 ns): <b>kesh hit!</b> RAM ga bormasdan darhol olindi — 80 barobar tez. Yaxshi dasturlarda 95% dan ortiq murojaat shunday tugaydi.';},
+    ()=>{move('core');probe.classList.remove('show');running=false;}
+  ];
+  function play(){
+    reset();running=true;
+    steps.forEach((fn,i)=>timers.push(setTimeout(fn,KQI.reduce?i*250:400+i*900)));
+  }
+  $('#cacheBtn').onclick=play;
+  fig.addEventListener('replay',play);
+  new MutationObserver(()=>{if(fig.classList.contains('play')&&!running&&!fig.dataset.auto){fig.dataset.auto='1';play();}}).observe(fig,{attributes:true,attributeFilter:['class']});
+  reset();
+})();
+</script>
+</body>
+</html>
