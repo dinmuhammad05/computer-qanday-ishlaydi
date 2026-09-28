@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>1-bob. Kompyuter nima? · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Kompyuter ta'rifi, qisqacha tarix, Mur qonuni va kompyuter turlari.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 1-rasm: vaqt chizig'i */
+.tl .node{animation:rise .6s both;animation-delay:calc(var(--i) * .45s)}
+.tl .line{stroke-dasharray:760;stroke-dashoffset:760;animation:draw 3.6s linear both}
+@keyframes draw{to{stroke-dashoffset:0}}
+.tl .cursor{animation:slide 3.6s linear both}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(700px)}}
+/* 1-jadval: tranzistorlar soni logarifmik chiziq */
+.growth i{display:block;height:100%;background:var(--accent);border-radius:6px;width:0;transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.growth .bar{height:12px;background:var(--code);border-radius:6px;overflow:hidden}
+.growth .row{display:grid;grid-template-columns:140px 1fr 90px;gap:10px;align-items:center;font-family:var(--mono);font-size:13px;margin-top:8px}
+.growth .row span:last-child{text-align:right;color:var(--muted)}
+@media (max-width:480px){.growth .row{grid-template-columns:80px 1fr 80px;font-size:12px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">1-bob</div>
+  <h1>Kompyuter nima?</h1>
+  <p class="lede">Kompyuter aqlli mashina emas. U juda oddiy amallarni aql bovar qilmas tezlikda bajaradi. Aqli esa dasturchi yozgan dasturda.</p>
+</div>
+
+<p>Kompyuter — bu ma'lumotni qabul qiladigan, uni oldindan berilgan buyruqlar (dastur) asosida qayta ishlaydigan, saqlaydigan va natijani chiqaradigan elektron qurilma. Bu ta'rifda to'rtta asosiy harakat bor: <strong>kirish, qayta ishlash, saqlash va chiqish</strong>. Telefoningiz, noutbukingiz, bankomat, avtomobildagi boshqaruv bloki, hatto kir yuvish mashinasidagi mikrokontroller ham shu to'rt harakatni bajaradi — demak ularning barchasi kompyuter.</p>
+
+<figure class="fig">
+  <svg class="sv" viewBox="0 0 640 120" role="img" aria-label="Kompyuterning to'rt harakati: kirish, qayta ishlash, saqlash, chiqish">
+    <g class="seq" style="--step:.9s">
+      <g style="--i:0"><rect x="10" y="30" width="130" height="60" rx="10" class="box on"/><text x="75" y="56" text-anchor="middle" class="ttl">Kirish</text><text x="75" y="76" text-anchor="middle">klaviatura, sensor</text></g>
+      <g style="--i:1"><rect x="175" y="30" width="130" height="60" rx="10" class="box on"/><text x="240" y="56" text-anchor="middle" class="ttl">Qayta ishlash</text><text x="240" y="76" text-anchor="middle">dastur bo'yicha</text></g>
+      <g style="--i:2"><rect x="340" y="30" width="130" height="60" rx="10" class="box on"/><text x="405" y="56" text-anchor="middle" class="ttl">Saqlash</text><text x="405" y="76" text-anchor="middle">xotira, disk</text></g>
+      <g style="--i:3"><rect x="505" y="30" width="125" height="60" rx="10" class="box on"/><text x="567" y="56" text-anchor="middle" class="ttl">Chiqish</text><text x="567" y="76" text-anchor="middle">ekran, karnay</text></g>
+    </g>
+    <path class="flow" d="M140 60 H 175 M305 60 H 340 M470 60 H 505"/>
+    <path class="flow copper" d="M405 90 V 108 H 240 V 90"/>
+  </svg>
+  <figcaption><span><b>Kompyuterning to'rt harakati.</b> Har qanday kompyuter, mikrokontrollerdan superkompyuterga qadar, shu siklni bajaradi.</span></figcaption>
+</figure>
+
+<p>Kompyuterning eng muhim xususiyati — <strong>universalligi</strong>. Kalkulyator faqat hisoblaydi, soat faqat vaqtni ko'rsatadi. Kompyuter esa dastur almashtirilishi bilan butunlay boshqa ishni bajara boshlaydi: bir daqiqa oldin u matn muharriri edi, endi video montaj qiladi, keyin esa Telegram bot serverini ishlatadi. Apparat bir xil qoladi, faqat dastur o'zgaradi. Bu g'oya 1936-yilda ingliz matematigi Alan Tyuring tomonidan nazariy jihatdan isbotlangan: yetarlicha xotirasi bo'lgan har qanday universal mashina boshqa istalgan hisoblash mashinasini taqlid qila oladi.</p>
+
+<h2 id="1-1">1.1. Qisqacha tarix</h2>
+<p>Hisoblash qurilmalari tarixi ming yilliklarga borib taqaladi. Abak (cho'tlar) eramizdan avval ishlatilgan. 1642-yilda Blez Paskal tishli g'ildiraklar yordamida qo'shish va ayirishni bajaradigan mexanik kalkulyator yasadi. 1837-yilda Charlz Bebbij "Analitik mashina" loyihasini taklif qildi — unda zamonaviy kompyuterning deyarli barcha qismlari bor edi: hisoblash bloki ("tegirmon"), xotira ("ombor") va perfokartalar orqali dastur kiritish. Ada Lavleys bu mashina uchun birinchi algoritmni yozgan va shuning uchun birinchi dasturchi hisoblanadi.</p>
+<p>1946-yilda AQShda yaratilgan ENIAC birinchi to'liq elektron universal kompyuterlardan biri edi. U 17 468 ta elektron lampadan iborat bo'lib, 27 tonna og'irlikda edi va 150 kilovatt quvvat sarflardi. 1947-yilda Bell Labs laboratoriyasida tranzistor ixtiro qilindi — u lampaga qaraganda ming marta kichik, ishonchli va kam energiya sarflaydigan edi. 1958-yilda bir nechta tranzistorni bitta kremniy bo'lagiga joylashtirish — integral sxema (mikrochip) — paydo bo'ldi. 1971-yilda Intel 4004 — birinchi mikroprotsessor chiqdi: unda 2 300 ta tranzistor bor edi. Bugungi Apple M-seriya yoki AMD Ryzen protsessorlarida esa bu raqam o'nlab milliardga yetadi.</p>
+
+<figure class="fig">
+  <svg class="sv tl" viewBox="0 0 780 150" role="img" aria-label="Hisoblash texnikasi rivojlanishining asosiy bosqichlari: 1642 dan 2020 gacha">
+    <line x1="30" y1="60" x2="750" y2="60" stroke="var(--line)" stroke-width="3"/>
+    <line class="line" x1="30" y1="60" x2="750" y2="60" stroke="var(--accent)" stroke-width="3"/>
+    <circle class="cursor dot" cx="30" cy="60" r="7"/>
+    <g class="node" style="--i:0"><circle cx="30" cy="60" r="5" class="dot"/><text x="30" y="40" text-anchor="middle" class="lbl">1642</text><text x="30" y="85" text-anchor="middle" class="lbl">Paskal</text><text x="30" y="100" text-anchor="middle">mexanik</text></g>
+    <g class="node" style="--i:1"><circle cx="133" cy="60" r="5" class="dot"/><text x="133" y="40" text-anchor="middle" class="lbl">1837</text><text x="133" y="85" text-anchor="middle" class="lbl">Bebbij</text><text x="133" y="100" text-anchor="middle">analitik</text></g>
+    <g class="node" style="--i:2"><circle cx="236" cy="60" r="5" class="dot"/><text x="236" y="40" text-anchor="middle" class="lbl">1946</text><text x="236" y="85" text-anchor="middle" class="lbl">ENIAC</text><text x="236" y="100" text-anchor="middle">lampali</text></g>
+    <g class="node" style="--i:3"><circle cx="339" cy="60" r="5" class="dot"/><text x="339" y="40" text-anchor="middle" class="lbl">1947</text><text x="339" y="85" text-anchor="middle" class="lbl">Tranzistor</text><text x="339" y="100" text-anchor="middle">Bell Labs</text></g>
+    <g class="node" style="--i:4"><circle cx="442" cy="60" r="5" class="dot"/><text x="442" y="40" text-anchor="middle" class="lbl">1971</text><text x="442" y="85" text-anchor="middle" class="lbl">Intel 4004</text><text x="442" y="100" text-anchor="middle">1-mikroprotsessor</text></g>
+    <g class="node" style="--i:5"><circle cx="545" cy="60" r="5" class="dot"/><text x="545" y="40" text-anchor="middle" class="lbl">1981</text><text x="545" y="85" text-anchor="middle" class="lbl">IBM PC</text><text x="545" y="100" text-anchor="middle">shaxsiy</text></g>
+    <g class="node" style="--i:6"><circle cx="648" cy="60" r="5" class="dot"/><text x="648" y="40" text-anchor="middle" class="lbl">2007</text><text x="648" y="85" text-anchor="middle" class="lbl">iPhone</text><text x="648" y="100" text-anchor="middle">smartfon</text></g>
+    <g class="node" style="--i:7"><circle cx="750" cy="60" r="5" class="dot"/><text x="750" y="40" text-anchor="middle" class="lbl">2020+</text><text x="750" y="85" text-anchor="middle" class="lbl">AI chiplar</text><text x="750" y="100" text-anchor="middle">GPU/NPU</text></g>
+  </svg>
+  <figcaption><span><b>1-rasm.</b> Hisoblash texnikasi rivojlanishining asosiy bosqichlari</span></figcaption>
+</figure>
+
+<h2 id="1-2">1.2. Mur qonuni</h2>
+<p>1965-yilda Intel asoschilaridan biri Gordon Mur bitta chipdagi tranzistorlar soni har ikki yilda taxminan ikki barobar ko'payishini bashorat qildi. Bu kuzatuv <strong>"Mur qonuni"</strong> nomini oldi va 50 yildan ortiq vaqt davomida deyarli aniq bajarildi. Tranzistorlar kichiklashgani sari ular tezroq ishlaydi, kamroq energiya sarflaydi va arzonlashadi. Bugun tranzistor o'lchami bir necha nanometrga yetdi — bu bir necha o'nlab atom kengligi degani. Shuning uchun fizik chegaraga yaqinlashilmoqda va muhandislar endi 3D chiplar, ko'p yadroli arxitekturalar va maxsus tezlatgichlar (GPU, NPU) orqali unumdorlikni oshirmoqda.</p>
+
+<div class="tbl">
+<table>
+<caption>1-jadval. Mikroprotsessorlarning o'sishi</caption>
+<thead><tr><th>Yil</th><th>Protsessor</th><th class="num">Tranzistorlar soni</th><th>Chastota</th></tr></thead>
+<tbody>
+<tr><td>1971</td><td>Intel 4004</td><td class="num">2 300</td><td>0.74 MHz</td></tr>
+<tr><td>1978</td><td>Intel 8086</td><td class="num">29 000</td><td>5–10 MHz</td></tr>
+<tr><td>1993</td><td>Intel Pentium</td><td class="num">3.1 million</td><td>60 MHz</td></tr>
+<tr><td>2006</td><td>Intel Core 2 Duo</td><td class="num">291 million</td><td>2–3 GHz</td></tr>
+<tr><td>2020</td><td>Apple M1</td><td class="num">16 milliard</td><td>3.2 GHz</td></tr>
+<tr><td>2023+</td><td>Apple M3 Max</td><td class="num">92 milliard</td><td>4 GHz</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="fig" id="growthFig">
+  <div class="controls"><button class="primary" type="button" id="growthBtn">Mur qonunini ko'rsat</button><span class="small muted">Logarifmik shkala: har bo'linma 10 barobar</span></div>
+  <div class="growth" id="growth"></div>
+  <figcaption><span><b>Tranzistorlar soni, 1971–2023.</b> Chiziqli shkalada 4004 ko'rinmasdi ham: farq 40 million barobar.</span></figcaption>
+</figure>
+
+<h2 id="1-3">1.3. Kompyuter turlari</h2>
+<p><strong>Shaxsiy kompyuterlar</strong> (stol kompyuteri, noutbuk) — bitta foydalanuvchi uchun. <strong>Serverlar</strong> — tarmoq orqali minglab foydalanuvchiga xizmat qiladi; siz yozgan Telegram bot aynan serverda ishlaydi. <strong>Mobil qurilmalar</strong> — smartfon va planshetlar, ular kam energiya sarflaydigan ARM protsessorlaridan foydalanadi. <strong>O'rnatilgan tizimlar</strong> (embedded) — mikroto'lqinli pech, avtomobil, sanoat uskunalari ichidagi kichik kompyuterlar; zavodlardagi PLC (dasturlanadigan mantiqiy kontroller) ham shunday tizim. <strong>Superkompyuterlar</strong> — ob-havo prognozi, ilmiy hisob va sun'iy intellektni o'qitish uchun ishlatiladigan, yuz minglab protsessordan tashkil topgan ulkan tizimlar.</p>
+
+<div class="callout"><b>Asosiy g'oya:</b> kompyuter — bu "aqlli" mashina emas. U juda oddiy amallarni (qo'shish, solishtirish, ko'chirish) aql bovar qilmas tezlikda — sekundiga milliardlab marta — bajaradigan mashina. Uning "aqli" dasturchi yozgan dasturda.</div>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="1">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s1">1-savol</a></span></div>
+
+<nav class="pager">
+  <a href="../index.html"><small>Boshiga</small>Mundarija va so'zboshi</a>
+  <a class="next" href="02.html"><small>Keyingi</small>2-bob. Ma'lumot qanday ifodalanadi</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+(function(){
+  const data=[['1971 · 4004',2300],['1978 · 8086',29000],['1993 · Pentium',3.1e6],['2006 · Core 2 Duo',2.91e8],['2020 · M1',1.6e10],['2023 · M3 Max',9.2e10]];
+  const fmt=n=>n>=1e9?(n/1e9).toLocaleString('uz')+' mlrd':n>=1e6?(n/1e6).toLocaleString('uz')+' mln':n.toLocaleString('uz');
+  const g=document.getElementById('growth');
+  g.innerHTML=data.map(d=>`<div class="row"><span>${d[0]}</span><div class="bar"><i></i></div><span></span></div>`).join('');
+  const play=()=>{g.querySelectorAll('.row').forEach((r,i)=>{const w=(Math.log10(data[i][1])-3)/8.2*100;r.querySelector('i').style.width='0%';r.querySelector('span:last-child').textContent='';
+    setTimeout(()=>{r.querySelector('i').style.width=Math.max(w,2)+'%';r.querySelector('span:last-child').textContent=fmt(data[i][1]);},KQI.reduce?0:i*300);});};
+  document.getElementById('growthBtn').onclick=play;
+  document.getElementById('growthFig').addEventListener('replay',play);
+})();
+</script>
+</body>
+</html>

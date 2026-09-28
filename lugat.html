@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Atamalar lug'ati · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Darslikdagi 32 ta asosiy atama va ularning izohi.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.search{width:100%;max-width:420px;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin-top:8px}
+.gloss div.hide{display:none}
+.gloss dd a{font-size:12px;font-family:var(--mono);margin-left:6px;white-space:nowrap}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="index.html">Mundarija</a><a href="reja.html">O'quv rejasi</a><a href="lugat.html" aria-current="page">Lug'at</a><a href="savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">Ilova</div>
+  <h1>Atamalar lug'ati</h1>
+  <p class="lede">Darslikda uchraydigan 32 ta asosiy atama. Har biri yonida tegishli bob havolasi.</p>
+  <input class="search" id="q" type="search" placeholder="Atama qidirish: kesh, DNS, MMU..." aria-label="Atama qidirish">
+</div>
+
+<dl class="gloss" id="gloss">
+<div><dt>ALU</dt><dd>Arifmetik-mantiqiy qurilma — protsessorda hisob bajaradigan blok<a href="bob/06.html#6-1">6.1</a></dd></div>
+<div><dt>Bit / Bayt</dt><dd>Eng kichik ma'lumot birligi (0 yoki 1) / 8 bit<a href="bob/02.html#2-2">2.2</a></dd></div>
+<div><dt>BIOS / UEFI</dt><dd>Kompyuter yoqilganda birinchi ishlaydigan, OS'ni yuklovchi dastur<a href="bob/09.html#9-2">9.2</a></dd></div>
+<div><dt>Bootloader</dt><dd>OS yadrosini diskdan RAM'ga yuklovchi dastur<a href="bob/11.html#11-1">11.1</a></dd></div>
+<div><dt>CPU</dt><dd>Markaziy protsessor — buyruqlarni bajaruvchi asosiy chip<a href="bob/06.html">6-bob</a></dd></div>
+<div><dt>CU</dt><dd>Boshqaruv qurilmasi — buyruqlarni dekodlab, signallar yuboradi<a href="bob/06.html#6-1">6.1</a></dd></div>
+<div><dt>DMA</dt><dd>Protsessorsiz qurilma va xotira o'rtasida ma'lumot ko'chirish<a href="bob/10.html#10-4">10.4</a></dd></div>
+<div><dt>DNS</dt><dd>Domen nomlarini IP manzillarga o'giruvchi tizim<a href="bob/13.html#13-2">13.2</a></dd></div>
+<div><dt>DRAM / SRAM</dt><dd>Kondensatorli arzon xotira / flip-flopli tez kesh xotira<a href="bob/08.html#8-1">8.1</a></dd></div>
+<div><dt>Drayver</dt><dd>OS'ga aniq qurilma bilan ishlashni o'rgatuvchi dastur<a href="bob/10.html#10-4">10.4</a></dd></div>
+<div><dt>Flip-flop</dt><dd>1 bitni saqlaydigan sxema<a href="bob/04.html#4-3">4.3</a></dd></div>
+<div><dt>GPU</dt><dd>Minglab yadroli grafik va parallel hisob protsessori<a href="bob/10.html#10-3">10.3</a></dd></div>
+<div><dt>Heap / Stack</dt><dd>Dinamik obyektlar / funksiya chaqiriqlari uchun xotira sohalari<a href="bob/12.html#12-3">12.3</a></dd></div>
+<div><dt>Interrupt (IRQ)</dt><dd>Qurilmaning protsessorga "e'tibor ber" signali<a href="bob/07.html#7-4">7.4</a></dd></div>
+<div><dt>ISA</dt><dd>Protsessor tushunadigan buyruqlar to'plami (x86, ARM)<a href="bob/06.html#6-4">6.4</a></dd></div>
+<div><dt>JIT</dt><dd>Dastur ishlayotgan vaqtda kodni mashina kodiga kompilyatsiya qilish<a href="bob/12.html#12-2">12.2</a></dd></div>
+<div><dt>Kernel</dt><dd>OS yadrosi — imtiyozli rejimda ishlovchi markaziy qism<a href="bob/11.html#11-2">11.2</a></dd></div>
+<div><dt>Kesh</dt><dd>Protsessor yonidagi tez nusxa xotira (L1, L2, L3)<a href="bob/06.html#6-1">6.1</a></dd></div>
+<div><dt>MMU</dt><dd>Virtual manzillarni fizik manzillarga o'giruvchi blok<a href="bob/11.html#11-4">11.4</a></dd></div>
+<div><dt>MOSFET</dt><dd>Zamonaviy chiplarda ishlatiladigan tranzistor turi<a href="bob/03.html#3-3">3.3</a></dd></div>
+<div><dt>PC</dt><dd>Program Counter — keyingi buyruq manzili registri<a href="bob/06.html#6-1">6.1</a></dd></div>
+<div><dt>PCIe</dt><dd>Videokarta va SSD ulanadigan tezkor shina<a href="bob/09.html#9-1">9.1</a></dd></div>
+<div><dt>Pipeline</dt><dd>Konveyer — bir vaqtda bir necha buyruqni turli bosqichda bajarish<a href="bob/07.html#7-2">7.2</a></dd></div>
+<div><dt>Process / Thread</dt><dd>Ishlayotgan dastur / uning ichidagi bajarilish oqimi<a href="bob/11.html#11-3">11.3</a></dd></div>
+<div><dt>RAM</dt><dd>Operativ xotira — tok o'chsa tozalanadi<a href="bob/08.html#8-1">8.1</a></dd></div>
+<div><dt>Registr</dt><dd>Protsessor ichidagi eng tez xotira yacheykasi<a href="bob/06.html#6-1">6.1</a></dd></div>
+<div><dt>SSD / HDD</dt><dd>Flesh asosidagi tez disk / magnitli mexanik disk<a href="bob/08.html#8-3">8.3</a></dd></div>
+<div><dt>Syscall</dt><dd>Ilovaning OS yadrosidan xizmat so'rashi<a href="bob/11.html#11-2">11.2</a></dd></div>
+<div><dt>TCP / UDP</dt><dd>Kafolatli / tez, lekin kafolatsiz transport protokollari<a href="bob/13.html#13-1">13.1</a></dd></div>
+<div><dt>Tranzistor</dt><dd>Elektr signali bilan boshqariladigan kalit<a href="bob/03.html">3-bob</a></dd></div>
+<div><dt>Virtual xotira</dt><dd>Har bir jarayonga alohida manzil maydoni berish texnologiyasi<a href="bob/11.html#11-4">11.4</a></dd></div>
+</dl>
+
+<nav class="pager">
+  <a href="bob/14.html"><small>Oldingi</small>14-bob. Hammasi birgalikda</a>
+  <a class="next" href="savollar.html"><small>Keyingi</small>O'z-o'zini tekshirish uchun savollar</a>
+</nav>
+</main>
+
+<script src="js/site.js"></script>
+<script>
+document.getElementById('q').addEventListener('input',e=>{const v=e.target.value.trim().toLowerCase();
+  document.querySelectorAll('#gloss > div').forEach(d=>d.classList.toggle('hide',v&&!d.textContent.toLowerCase().includes(v)));});
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>O'z-o'zini tekshirish · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Darslikning 22 ta tekshiruv savoli, flesh-karta ko'rinishida.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.qs{list-style:none;padding:0;margin:16px 0;display:grid;gap:8px}
+.qs li{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.qs li:target{border-color:var(--accent);background:var(--accent-soft)}
+.qs .n{font-family:var(--display);font-weight:700;color:var(--accent);font-size:18px}
+.qs a{font-family:var(--mono);font-size:12px;margin-left:8px;white-space:nowrap}
+.tabs{display:flex;gap:6px;margin-top:8px}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="index.html">Mundarija</a><a href="reja.html">O'quv rejasi</a><a href="lugat.html">Lug'at</a><a href="savollar.html" aria-current="page">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">Ilova</div>
+  <h1>O'z-o'zini tekshirish uchun savollar</h1>
+  <p class="lede">Avval savolga o'zingiz, ovoz chiqarib javob bering. Keyin flesh-kartani ochib tekshiring. Har savol yonida tegishli bob.</p>
+  <div class="tabs"><button type="button" class="on" id="tabList">Ro'yxat</button><button type="button" id="tabCards">Flesh-kartalar</button></div>
+</div>
+
+<ol class="qs" id="list">
+<li id="s1"><span class="n">1</span><span>Nega kompyuterlar o'nlik emas, balki ikkilik tizimdan foydalanadi?<a href="bob/02.html">2-bob</a></span></li>
+<li id="s2"><span class="n">2</span><span>11001010 ikkilik sonini o'nlik tizimga, 77 sonini esa ikkilik tizimga o'giring.<a href="bob/02.html#2-1">2.1</a></span></li>
+<li id="s3"><span class="n">3</span><span>Bitta Full HD (1920x1080) siqilmagan rasm necha megabayt joy egallaydi? Hisoblang.<a href="bob/02.html#2-4">2.4</a></span></li>
+<li id="s4"><span class="n">4</span><span>Rele va MOSFET tranzistorning o'xshash va farqli tomonlarini ayting.<a href="bob/03.html#3-2">3.2</a></span></li>
+<li id="s5"><span class="n">5</span><span>XOR ventilining haqiqat jadvalini yozing. Nega u yig'uvchida ishlatiladi?<a href="bob/04.html#4-1">4.1</a></span></li>
+<li id="s6"><span class="n">6</span><span>Flip-flop qanday qilib ma'lumotni "eslab qoladi"?<a href="bob/04.html#4-3">4.3</a></span></li>
+<li id="s7"><span class="n">7</span><span>Fon Neyman arxitekturasining beshta qismini sanab bering. "Tor bo'g'iz" nima?<a href="bob/05.html">5-bob</a></span></li>
+<li id="s8"><span class="n">8</span><span>Fetch-Decode-Execute siklini o'z so'zlaringiz bilan tushuntiring. PC registri qanday rol o'ynaydi?<a href="bob/07.html">7-bob</a></span></li>
+<li id="s9"><span class="n">9</span><span>Konveyer protsessor unumdorligini qanday oshiradi? Shartli sakrashlar unga qanday xalaqit beradi?<a href="bob/07.html#7-2">7.2</a></span></li>
+<li id="s10"><span class="n">10</span><span>Nega protsessor chastotasi 2005-yildan beri deyarli o'smadi?<a href="bob/06.html#6-2">6.2</a></span></li>
+<li id="s11"><span class="n">11</span><span>Xotira ierarxiyasi nima uchun kerak? Lokallik prinsipini misol bilan tushuntiring.<a href="bob/08.html">8-bob</a></span></li>
+<li id="s12"><span class="n">12</span><span>DRAM va SRAM farqi nimada? Qaysi biri kesh uchun ishlatiladi va nega?<a href="bob/08.html#8-1">8.1</a></span></li>
+<li id="s13"><span class="n">13</span><span>SSD nima uchun HDD'dan tezroq?<a href="bob/08.html#8-3">8.3</a></span></li>
+<li id="s14"><span class="n">14</span><span>32 bitli manzil shinasi qancha xotirani adreslay oladi?<a href="bob/09.html#9-1">9.1</a></span></li>
+<li id="s15"><span class="n">15</span><span>CPU va GPU arxitekturasining farqini tushuntiring. Nega AI modellari GPU'da o'qitiladi?<a href="bob/10.html#10-3">10.3</a></span></li>
+<li id="s16"><span class="n">16</span><span>Kompyuter yoqilgandan ish stoli paydo bo'lguncha qanday bosqichlar bajariladi?<a href="bob/11.html#11-1">11.1</a></span></li>
+<li id="s17"><span class="n">17</span><span>Kernel mode va user mode nima uchun ajratilgan?<a href="bob/11.html#11-2">11.2</a></span></li>
+<li id="s18"><span class="n">18</span><span>Virtual xotiraning uchta afzalligini ayting. "Segmentation fault" qachon yuz beradi?<a href="bob/11.html#11-4">11.4</a></span></li>
+<li id="s19"><span class="n">19</span><span>Kompilyator, interpretator va JIT o'rtasidagi farq nimada?<a href="bob/12.html">12-bob</a></span></li>
+<li id="s20"><span class="n">20</span><span>Stack va heap nima? "Stack overflow" xatosi qachon yuz beradi?<a href="bob/12.html#12-3">12.3</a></span></li>
+<li id="s21"><span class="n">21</span><span>TCP va UDP farqi nima? Har biriga misol keltiring.<a href="bob/13.html#13-1">13.1</a></span></li>
+<li id="s22"><span class="n">22</span><span>Telegram botga yuborilgan xabar serveringizga qanday yo'l bilan yetib boradi?<a href="bob/13.html#13-4">13.4</a></span></li>
+</ol>
+
+<div class="cards" id="cards" hidden></div>
+
+<nav class="pager">
+  <a href="lugat.html"><small>Oldingi</small>Atamalar lug'ati</a>
+  <a class="next" href="reja.html"><small>Davomi</small>4 haftalik o'quv rejasi</a>
+</nav>
+</main>
+
+<script src="js/site.js"></script>
+<script>
+(function(){
+const A=[
+'Elektronikada ikki holatni ("tok bor / yo\'q") ajratish oson va ishonchli. O\'n holatda kuchlanishdagi kichik shovqin 5 ni 6 ga aylantirib yuborardi.',
+'11001010 = 128+64+8+2 = 202. 77 = 64+8+4+1 → 1001101.',
+'1920 × 1080 × 3 bayt ≈ 6.2 MB. JPEG, PNG, WebP buni 10–20 barobar kamaytiradi.',
+'Ikkalasi ham signal bilan boshqariladigan kalit. Rele mexanik, sekundiga ~100 marta, yeyiladi; MOSFET harakatsiz, milliardlab marta, 3–5 nm.',
+'Kirishlar har xil bo\'lsagina 1: 00→0, 01→1, 10→1, 11→0. Bu aynan bir bitli yig\'indi biti (1+1=0, ko\'chirish 1), ko\'chirishni AND beradi.',
+'Ventil chiqishi yana kirishga ulanadi (teskari aloqa), sxema o\'z holatini ushlab turadi. D flip-flop takt chetida D ni "suratga oladi" va keyingi taktgacha saqlaydi.',
+'ALU, CU, xotira, kirish, chiqish qurilmalari. Dastur va ma\'lumot bitta shinadan o\'tgani uchun tez protsessor sekin xotirani kutib "bekor" turadi.',
+'Fetch: PC manzilidan buyruq olinadi. Decode: opkod va operandlar aniqlanadi. Execute: ALU bajaradi. Store: natija yoziladi. PC keyingi buyruq manzilini ushlaydi, sakrashda o\'zgaradi.',
+'Har bosqich boshqa buyruq ustida parallel ishlaydi, har taktda bitta buyruq tugaydi. Shartli sakrashda qaysi buyruqni olishni bilmaydi; xato bashoratda konveyer tozalanadi, 15–20 takt yo\'qoladi.',
+'Har ulanish-uzilishda issiqlik chiqadi, chastota oshsa issiqlik keskin ortadi ("quvvat devori"). Shundan keyin yadrolar soni oshirildi.',
+'Tez xotira kichik va qimmat, katta xotira sekin. Vaqt lokalligi: sikl hisoblagichi qayta ishlatiladi. Fazoviy: massiv qo\'shni elementlari, kesh 64 baytlik satr yuklaydi.',
+'DRAM: 1 tranzistor + kondensator, arzon va zich, har 64 ms yangilanadi. SRAM: 6 tranzistorli flip-flop, tez, yangilash kerak emas, qimmat. Kesh SRAM.',
+'Harakatlanuvchi qism yo\'q: NAND flesh chiplar + kontroller. Kechikish 0.02 ms vs 10 ms, NVMe 5–12 GB/s, HDD dan 30–80 barobar tez.',
+'2³² bayt = 4 GB. Shuning uchun 32 bitli Windows 4 GB dan ortiq RAM\'ni ko\'ra olmasdi.',
+'CPU: bir nechta kuchli, "aqlli" yadro (professorlar). GPU: minglab oddiy yadro bitta amalni turli ma\'lumotda parallel bajaradi (o\'quvchilar). Neyron tarmoq = milliardlab oddiy matritsa ko\'paytirish.',
+'PSU "Power Good" → UEFI/BIOS va POST → bootloader (GRUB, Windows Boot Manager) → kernel → birinchi jarayon (systemd) va xizmatlar → grafik interfeys.',
+'Ilovalar apparatga to\'g\'ridan-to\'g\'ri murojaat qila olmaydi, faqat syscall orqali yadrodan so\'raydi. Bu dasturlarni bir-biridan va tizimni xato yoki zararli dasturdan himoya qiladi.',
+'Izolyatsiya, RAM\'dan ko\'proq xotira (swap), qulaylik. Segfault: dastur o\'ziga ajratilmagan manzilga murojaat qilganda MMU uni to\'xtatadi.',
+'Kompilyator butun kodni oldindan mashina kodiga tarjima qiladi (C, Rust, Go). Interpretator satrma-satr o\'qib bajaradi (Python). JIT (V8) "issiq" funksiyalarni ish vaqtida kompilyatsiya qiladi.',
+'Stack: funksiya chaqiriqlari va lokal o\'zgaruvchilar (ramkalar). Heap: dinamik obyektlar ({}, []). Cheksiz rekursiya stekni to\'ldiradi — stack overflow.',
+'TCP to\'liq va tartibli yetkazishni kafolatlaydi (HTTPS, PostgreSQL 5432). UDP kafolatsiz lekin tez (video qo\'ng\'iroq, o\'yinlar).',
+'Foydalanuvchi → Telegram serverlari → webhook orqali HTTPS so\'rov → sizning server → baza → Telegram API → foydalanuvchi. Odatda 100–300 ms.'
+];
+const cards=document.getElementById('cards');
+[...document.querySelectorAll('#list li')].forEach((li,i)=>{const q=li.querySelector('span:last-child').childNodes[0].textContent.trim();
+  const b=document.createElement('button');b.type='button';b.className='fc';b.setAttribute('aria-label','Savol '+(i+1));
+  b.innerHTML=`<div class="in"><div class="f"><div class="q">SAVOL ${i+1}</div><p>${q}</p><div class="tap">Javob uchun bosing</div></div><div class="b"><div class="q">JAVOB</div><p>${A[i]}</p></div></div>`;
+  b.onclick=()=>b.classList.toggle('flip');cards.appendChild(b);});
+const list=document.getElementById('list'),tl=document.getElementById('tabList'),tc=document.getElementById('tabCards');
+tl.onclick=()=>{list.hidden=false;cards.hidden=true;tl.classList.add('on');tc.classList.remove('on');};
+tc.onclick=()=>{list.hidden=true;cards.hidden=false;tc.classList.add('on');tl.classList.remove('on');};
+})();
+</script>
+</body>
+</html>
