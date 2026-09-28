@@ -7,70 +7,8 @@
 <meta name="description" content="VPS, SSH, systemd va PM2, Docker, Nginx va HTTPS: Telegram botni noutbukdan doimiy ishlaydigan serverga ko'chirish yo'li.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/board.css">
 <style>
-/* 1-rasm: noutbukdan serverga */
-.deploy .tok{offset-path:path("M60 116 V 138 H 620 V 116");animation:travel 5s linear infinite}
-.deploy .stage>*{animation:seq 5s infinite;animation-delay:calc(var(--i) * 1s)}
-.deploy .zzz{animation:zzz 3s ease-in-out infinite}
-@keyframes zzz{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(-6px)}}
-.deploy .lapbox{animation:lapoff 5s infinite}
-@keyframes lapoff{0%,45%{opacity:1}55%,100%{opacity:.4}}
-/* 2-rasm: SSH tunnel */
-.ssh .tun{animation:tunon 6s infinite}
-@keyframes tunon{0%,30%{opacity:.15}45%,100%{opacity:1}}
-.ssh .keyl,.ssh .keyr{transform-box:fill-box;transform-origin:center;animation:keywig 6s infinite}
-@keyframes keywig{0%,10%{transform:rotate(0)}15%{transform:rotate(-18deg)}25%{transform:rotate(14deg)}35%,100%{transform:rotate(0)}}
-/* 3-rasm: jarayon hayoti */
-.life .term{animation:termoff 8s infinite}
-@keyframes termoff{0%,35%{opacity:1}42%,100%{opacity:.18}}
-.life .p1{animation:p1die 8s infinite}
-@keyframes p1die{0%,44%{fill:var(--accent-soft);stroke:var(--accent)}50%,100%{fill:var(--copper-soft);stroke:var(--copper)}}
-.life .p1dead{animation:show50 8s infinite}
-@keyframes show50{0%,49%{opacity:0}52%,100%{opacity:1}}
-.life .p1live{animation:hide50 8s infinite}
-@keyframes hide50{0%,49%{opacity:1}52%,100%{opacity:0}}
-.life .p2{animation:p2crash 8s infinite}
-@keyframes p2crash{0%,44%{fill:var(--accent-soft);stroke:var(--accent)}48%,62%{fill:var(--copper-soft);stroke:var(--copper)}68%,100%{fill:var(--accent-soft);stroke:var(--accent)}}
-.life .p2live{animation:p2livek 8s infinite}
-@keyframes p2livek{0%,45%{opacity:1}48%,64%{opacity:0}68%,100%{opacity:1}}
-.life .p2crashlbl{animation:p2crashk 8s infinite}
-@keyframes p2crashk{0%,47%{opacity:0}50%,63%{opacity:1}66%,100%{opacity:0}}
-.life .p2again{animation:p2againk 8s infinite}
-@keyframes p2againk{0%,66%{opacity:0}70%,100%{opacity:1}}
-.life .supflow{animation:supk 8s infinite}
-@keyframes supk{0%,60%{opacity:0}63%,80%{opacity:1}86%,100%{opacity:0}}
-.life .wire1{animation:w1k 8s infinite}
-@keyframes w1k{0%,40%{opacity:1}44%,100%{opacity:.15}}
-/* 4-rasm: Docker qatlamlari */
-.dock .layers>*{animation:rise .6s both;animation-delay:calc(var(--i) * .5s)}
-.dock .cont>*{animation:rise .6s both;animation-delay:calc(2.4s + var(--i) * .5s)}
-.dock .cflow{animation:cflowk 1s linear infinite,fadein .4s 2.4s both}
-@keyframes fadein{from{opacity:0}to{opacity:1}}
-@keyframes cflowk{to{stroke-dashoffset:-14}}
-/* 5-rasm: so'rov yo'li */
-.route .req{offset-path:path("M130 138 H 205 V 64 V 138 H 300 V 55 H 430 V 145 V 235");animation:reqk 9s linear infinite}
-.route .res{offset-path:path("M430 235 H 560 V 292 H 70 V 168");animation:resk 9s linear infinite}
-@keyframes reqk{0%{offset-distance:0%;opacity:1}55%{offset-distance:100%;opacity:1}58%,100%{offset-distance:100%;opacity:0}}
-@keyframes resk{0%,58%{offset-distance:0%;opacity:0}61%{opacity:1}92%{offset-distance:100%;opacity:1}94%,100%{offset-distance:100%;opacity:0}}
-.route .hop>*{animation:seq 9s infinite;animation-delay:calc(var(--i) * .9s)}
-/* 6-rasm: monitoring */
-.mon .bar{transform-box:fill-box;transform-origin:left center}
-.mon .cpu{animation:cpuk 12s ease-in-out infinite}
-@keyframes cpuk{0%{transform:scaleX(.2)}20%{transform:scaleX(.62)}40%{transform:scaleX(.3)}60%{transform:scaleX(.9)}75%{transform:scaleX(.35)}100%{transform:scaleX(.2)}}
-.mon .ram{animation:ramk 12s linear infinite}
-@keyframes ramk{0%{transform:scaleX(.35)}84%{transform:scaleX(.97)}86%{transform:scaleX(.35)}100%{transform:scaleX(.42)}}
-.mon .dsk{animation:dskk 12s linear infinite}
-@keyframes dskk{0%{transform:scaleX(.55)}70%{transform:scaleX(1)}100%{transform:scaleX(1)}}
-.mon .warn{animation:warnk 12s infinite}
-@keyframes warnk{0%,70%{opacity:0}74%,100%{opacity:1}}
-.mon .okbox{animation:okk 12s infinite}
-@keyframes okk{0%,70%{fill:var(--accent-soft);stroke:var(--accent)}74%,100%{fill:var(--copper-soft);stroke:var(--copper)}}
-.mon .oklbl{animation:oklk 12s infinite}
-@keyframes oklk{0%,70%{opacity:1}74%,100%{opacity:0}}
-.mon .ramnote{animation:ramnk 12s infinite}
-@keyframes ramnk{0%,60%{opacity:0}66%,84%{opacity:1}87%,100%{opacity:0}}
-.mon .ramreset{animation:ramrk 12s infinite}
-@keyframes ramrk{0%,85%{opacity:0}88%,100%{opacity:1}}
 .checklist{padding-left:22px;max-width:70ch}
 .checklist li{margin-bottom:6px}
 .checklist code{white-space:nowrap}
@@ -93,32 +31,59 @@
 
 <p>Oldingi boblarda kompyuter ichida nima bo'lishini o'rgandik. Endi amaliy savol: yozgan botingiz qayerda ishlashi kerak? Uni <code>node bot.js</code> bilan noutbukda ishga tushirish oson, lekin bu vaqtinchalik yechim. Bu bobda botni haqiqiy serverga joylash yo'lini boshidan oxirigacha ko'ramiz.</p>
 
-<figure class="fig">
-  <svg class="sv deploy" viewBox="0 0 680 250" role="img" aria-label="Kod git push orqali GitHub'ga, undan VPS serverga boradi, systemd yoki PM2 nazoratida bot 24/7 ishlaydi; pastda noutbuk va server taqqoslanadi">
-    <path class="wire" d="M60 116 V 138 H 620 V 116"/>
-    <path class="wire" d="M110 88 H 150 M250 88 H 290 M390 88 H 430 M530 88 H 570"/>
-    <path class="flow" d="M110 88 H 150 M250 88 H 290 M390 88 H 430 M530 88 H 570"/>
-    <g class="stage">
-      <g style="--i:0"><rect x="10" y="60" width="100" height="56" rx="10" class="box on"/><text x="60" y="82" text-anchor="middle" class="ttl">Kod</text><text x="60" y="102" text-anchor="middle">bot.js</text></g>
-      <g style="--i:1"><rect x="150" y="60" width="100" height="56" rx="10" class="box"/><text x="200" y="82" text-anchor="middle" class="ttl">git push</text><text x="200" y="102" text-anchor="middle">GitHub</text></g>
-      <g style="--i:2"><rect x="290" y="60" width="100" height="56" rx="10" class="box"/><text x="340" y="82" text-anchor="middle" class="ttl">Server (VPS)</text><text x="340" y="102" text-anchor="middle">185.199.108.153</text></g>
-      <g style="--i:3"><rect x="430" y="60" width="100" height="56" rx="10" class="box blue"/><text x="480" y="82" text-anchor="middle" class="ttl">systemd / PM2</text><text x="480" y="102" text-anchor="middle">nazoratchi</text></g>
-      <g style="--i:4"><rect x="570" y="60" width="100" height="56" rx="10" class="box copper"/><text x="620" y="82" text-anchor="middle" class="ttl">Bot 24/7</text><text x="620" y="102" text-anchor="middle">webhook · :443</text></g>
-    </g>
-    <circle class="dot tok" r="6"/>
-    <text x="340" y="30" text-anchor="middle" class="lbl">kod → git clone / git pull → ishga tushirish → doimiy nazorat</text>
-    <g class="lapbox">
-      <rect x="10" y="166" width="320" height="74" rx="10" class="box soft"/>
-      <text x="26" y="188" class="ttl">Noutbuk</text>
-      <text x="26" y="208">qopqoq yopildi → uxlaydi · IP o'zgaradi</text>
-      <text x="26" y="226">NAT ortida: tashqaridan ulanib bo'lmaydi</text>
-      <text x="300" y="192" class="zzz lbl" text-anchor="middle">zzz</text>
-    </g>
-    <rect x="350" y="166" width="320" height="74" rx="10" class="box on"/>
-    <text x="366" y="188" class="ttl">Server</text>
-    <text x="366" y="208">24 soat yoqiq · doimiy ochiq IP</text>
-    <text x="366" y="226">port 443 internetga to'g'ridan-to'g'ri ochiq</text>
+<figure class="fig" id="figDeploy" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 330" role="img" aria-label="Noutbukdan serverga: git push GitHub'ga, VPS da ssh va git pull, systemd bot.service ni ishga tushiradi, Nginx :443 va ufw; noutbuk uxlasa ham server ishlaydi">
+    <defs><pattern id="g15a" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="330" fill="url(#g15a)"/>
+    <path class="wire w-data" id="dw1" d="M220 80 H 260"/>
+    <path class="wire w-data" id="dw2" d="M420 80 H 470"/>
+    <path class="wire w-ctl" id="dw3" d="M120 180 V 190 H 440 V 80"/>
+    <text x="240" y="72" text-anchor="middle" class="mut xs">push</text>
+    <text x="445" y="72" text-anchor="middle" class="mut xs">pull</text>
+    <text x="280" y="200" text-anchor="middle" class="mut xs">ssh · port 22</text>
+    <!-- noutbuk -->
+    <rect x="20" y="30" width="200" height="150" rx="10" class="chip"/>
+    <text x="32" y="52" class="ttl">Noutbuk (siz)</text>
+    <rect x="30" y="60" width="180" height="50" rx="4" class="screen"/>
+    <text x="38" y="78" class="scr" style="font-size:11px" id="lp1">$ _</text>
+    <text x="38" y="96" class="scr dim" style="font-size:11px" id="lp2"></text>
+    <circle cx="42" cy="124" r="4.5" class="led on" id="lpL"/><text x="50" y="128" class="xs" id="lpT">qopqoq ochiq · ishlayapti</text>
+    <text x="32" y="146" class="mut xs">IP 84.54.71.9 — o'zgaruvchan</text>
+    <text x="32" y="160" class="mut xs">NAT ortida · tashqaridan yopiq</text>
+    <!-- GitHub -->
+    <rect x="260" y="30" width="160" height="150" rx="10" class="chip"/>
+    <text x="272" y="52" class="ttl">GitHub</text>
+    <rect x="270" y="60" width="140" height="40" rx="6" class="unit" id="ghRepo"/><circle cx="282" cy="74" r="4.5" class="led" id="ghL"/><text x="290" y="78" class="xs">repo: bot</text><text x="276" y="94" class="mut xs" id="ghC">main: 9f8e7d</text>
+    <text x="272" y="122" class="mut xs">kod saqlanadi, ishlamaydi</text>
+    <text x="272" y="136" class="mut xs">clone / pull manbai</text>
+    <!-- VPS -->
+    <rect x="460" y="30" width="420" height="270" rx="10" class="chip"/>
+    <text x="472" y="52" class="ttl">VPS · 185.199.108.153 · Ubuntu 24.04</text>
+    <rect x="470" y="62" width="120" height="44" rx="6" class="unit" id="uSsh"/><circle cx="482" cy="76" r="4.5" class="led" id="sshL"/><text x="490" y="80" class="xs">sshd · :22</text><text x="476" y="96" class="mut xs">muhammad@vps</text>
+    <rect x="600" y="62" width="270" height="44" rx="4" class="screen"/>
+    <text x="608" y="78" class="scr dim" style="font-size:11px" id="gp1">~/bot $ _</text>
+    <text x="608" y="96" class="scr dim" style="font-size:11px" id="gp2"></text>
+    <rect x="470" y="116" width="180" height="70" rx="6" class="unit" id="uSysd"/><circle cx="482" cy="130" r="4.5" class="led on" id="sdL"/><text x="490" y="134" class="xs">systemd · PID 1</text><text x="476" y="150" class="mut xs" id="sdT">bot.service: enabled</text><text x="476" y="164" class="mut xs">Restart=always · RestartSec=5</text><text x="476" y="178" class="mut xs">yuklanishda ham ko'taradi</text>
+    <rect x="670" y="116" width="200" height="70" rx="6" class="unit" id="uNode"/><circle cx="682" cy="130" r="4.5" class="led" id="ndL"/><text x="690" y="134" class="xs" id="ndT">node bot.js · PID —</text><text x="676" y="150" class="mut xs">tinglaydi: 127.0.0.1:3000</text><text x="676" y="164" class="mut xs" id="ndT2">webhook: —</text><text x="676" y="178" class="mut xs">.env → BOT_TOKEN</text>
+    <rect x="470" y="196" width="180" height="44" rx="6" class="unit" id="uNg"/><circle cx="482" cy="210" r="4.5" class="led on" id="ngL"/><text x="490" y="214" class="xs">Nginx · :443 · TLS</text><text x="476" y="230" class="mut xs">→ 127.0.0.1:3000</text>
+    <rect x="670" y="196" width="200" height="44" rx="6" class="unit" id="uFw"/><text x="676" y="214" class="xs">ufw</text><circle cx="720" cy="210" r="4.5" class="led on" id="fw22"/><text x="728" y="214" class="xs">22</text><circle cx="770" cy="210" r="4.5" class="led on" id="fw443"/><text x="778" y="214" class="xs">443</text><text x="676" y="230" class="mut xs">qolgani yopiq · 24/7 · doimiy IP</text>
+    <text x="472" y="262" class="mut xs" id="vpsT">uptime: 41 kun · yuk 0.02 · 2 vCPU · 2 GB</text>
+    <text x="472" y="280" class="mut xs">data-markaz: ikki tomonlama elektr, sovutish, 10 Gbit/s</text>
+    <!-- taqqoslash -->
+    <rect x="20" y="200" width="400" height="100" rx="10" class="chip"/>
+    <text x="32" y="222" class="ttl">Nega noutbuk emas?</text>
+    <circle cx="42" cy="240" r="4.5" class="led bad" id="cmp0"/><text x="52" y="244" class="xs">qopqoq yopildi → uxlaydi, jarayon to'xtaydi</text>
+    <circle cx="42" cy="258" r="4.5" class="led bad" id="cmp1"/><text x="52" y="262" class="xs">uy IP si vaqti-vaqti bilan o'zgaradi</text>
+    <circle cx="42" cy="276" r="4.5" class="led bad" id="cmp2"/><text x="52" y="280" class="xs">NAT ortida: tashqaridan ulanib bo'lmaydi</text>
+    <text x="410" y="244" text-anchor="end" class="xs label-on">server: 24/7 ✓</text>
+    <text x="410" y="262" text-anchor="end" class="xs label-on">doimiy IP ✓</text>
+    <text x="410" y="280" text-anchor="end" class="xs label-on">443 ochiq ✓</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>git push</span><span>git pull</span><span>systemd</span><span>Ishlayapti</span><span>Qopqoq yopildi</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: kod noutbukdan serverga boradi.</div>
   <figcaption><span><b>Noutbukdan serverga.</b> Kod git orqali serverga boradi, u yerda nazoratchi (systemd yoki PM2) botni to'xtovsiz ushlab turadi.</span></figcaption>
 </figure>
 
@@ -129,29 +94,41 @@
 <h2 id="15-2">15.2. SSH va Linux terminali</h2>
 <p>Serverga ekran va klaviatura ulanmagan. Unga tarmoq orqali <strong>SSH</strong> bilan kiriladi: <code>ssh muhammad@185.199.108.153</code>. SSH — shifrlangan terminal: siz yozgan har bir buyruq va uning natijasi 13.3-bo'limdagi kabi shifrlangan tunnel orqali o'tadi. Parol o'rniga <strong>kalit juftligi</strong> ishlatish xavfsizroq: <strong>yopiq kalit</strong> sizning kompyuteringizda qoladi, <strong>ochiq kalit</strong> esa serverdagi <code>~/.ssh/authorized_keys</code> fayliga yoziladi. Kirishda server tasodifiy son yuboradi, siz uni yopiq kalit bilan imzolaysiz, server imzoni ochiq kalit bilan tekshiradi — maxfiy narsa tarmoqdan umuman o'tmaydi.</p>
 
-<figure class="fig">
-  <div class="controls"><button class="primary" type="button" data-chain="sshChain">Ulan</button><span class="small muted">ssh muhammad@185.199.108.153 · port 22</span></div>
-  <svg class="sv ssh" viewBox="0 0 640 134" role="img" aria-label="Terminal, shifrlangan tunnel va server; chapda yopiq kalit, o'ngda ochiq kalit">
-    <rect x="10" y="30" width="140" height="60" rx="10" class="box on"/><text x="80" y="52" text-anchor="middle" class="ttl">Terminal</text><text x="80" y="72" text-anchor="middle">sizning noutbuk</text>
-    <rect x="490" y="30" width="140" height="60" rx="10" class="box copper"/><text x="560" y="52" text-anchor="middle" class="ttl">Server</text><text x="560" y="72" text-anchor="middle">sshd · port 22</text>
-    <rect x="160" y="40" width="320" height="40" rx="20" class="box soft"/>
-    <g class="tun"><path class="flow" d="M176 60 H 464"/></g>
-    <text x="320" y="30" text-anchor="middle" class="lbl">shifrlangan tunnel</text>
-    <text x="320" y="102" text-anchor="middle">buyruqlar u yoqqa, natija bu yoqqa — hammasi shifrlangan</text>
-    <g class="keyl"><circle cx="30" cy="124" r="6" class="dot"/><rect x="34" y="122" width="16" height="4" class="dot"/></g>
-    <text x="58" y="128" class="lbl">yopiq kalit (faqat sizda)</text>
-    <g class="keyr"><circle cx="466" cy="124" r="6" class="dot copper"/><rect x="470" y="122" width="16" height="4" class="dot copper"/></g>
-    <text x="630" y="128" text-anchor="end" class="lbl">ochiq kalit (serverda)</text>
+<figure class="fig" id="figSsh" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 300" role="img" aria-label="SSH orqali kirish: terminal va sshd :22, host kaliti, kalit almashinuvi, shifrlangan tunnel, tasodifiy son, yopiq kalit imzosi, authorized_keys tekshiruvi, shell">
+    <defs><pattern id="g15b" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="300" fill="url(#g15b)"/>
+    <path class="wire w-ctl" id="sc1" d="M300 90 H 600"/>
+    <path class="wire w-data bus" id="sc2" d="M300 200 H 600"/>
+    <text x="450" y="80" text-anchor="middle" class="mut xs">TCP :22 · qo'l berish</text>
+    <text x="450" y="190" text-anchor="middle" class="mut xs">shifrlangan tunnel (chacha20-poly1305)</text>
+    <text x="450" y="150" text-anchor="middle" class="val" id="scT">—</text>
+    <!-- terminal -->
+    <rect x="20" y="30" width="280" height="240" rx="10" class="chip"/>
+    <text x="32" y="52" class="ttl">Terminal (noutbuk)</text>
+    <rect x="30" y="60" width="260" height="96" rx="4" class="screen"/>
+    <text x="38" y="78" class="scr" style="font-size:11px" id="t1">$ _</text>
+    <text x="38" y="96" class="scr dim" style="font-size:11px" id="t2"></text>
+    <text x="38" y="114" class="scr dim" style="font-size:11px" id="t3"></text>
+    <text x="38" y="132" class="scr dim" style="font-size:11px" id="t4"></text>
+    <rect x="30" y="166" width="260" height="44" rx="6" class="unit" id="uPk"/><circle cx="42" cy="180" r="4.5" class="led bad" id="pkL"/><text x="50" y="184" class="xs">~/.ssh/id_ed25519 — yopiq kalit</text><text x="36" y="200" class="mut xs">faqat shu kompyuterda · ruxsat 600</text>
+    <rect x="30" y="218" width="260" height="44" rx="6" class="unit" id="uKh"/><circle cx="42" cy="232" r="4.5" class="led" id="khL"/><text x="50" y="236" class="xs">~/.ssh/known_hosts</text><text x="36" y="252" class="mut xs" id="khT">server kaliti: hali noma'lum</text>
+    <!-- server -->
+    <rect x="600" y="30" width="280" height="240" rx="10" class="chip"/>
+    <text x="612" y="52" class="ttl">Server · 185.199.108.153</text>
+    <rect x="610" y="60" width="260" height="40" rx="6" class="unit" id="uSshd"/><circle cx="622" cy="74" r="4.5" class="led" id="sdL2"/><text x="630" y="78" class="xs">sshd · :22 · PID 812</text><text x="616" y="94" class="mut xs" id="sdT2">ulanish kutmoqda</text>
+    <rect x="610" y="108" width="260" height="40" rx="6" class="unit" id="uHk"/><circle cx="622" cy="122" r="4.5" class="led" id="hkL"/><text x="630" y="126" class="xs">host kaliti · ssh_host_ed25519_key</text><text x="616" y="142" class="mut xs">SHA256:Ab3k…9Qz — serverning pasporti</text>
+    <rect x="610" y="156" width="260" height="44" rx="6" class="unit" id="uAk"/><circle cx="622" cy="170" r="4.5" class="led" id="akL"/><text x="630" y="174" class="xs">~/.ssh/authorized_keys</text><text x="616" y="190" class="mut xs">ssh-ed25519 AAAAC3… muhammad@laptop</text>
+    <rect x="610" y="208" width="260" height="54" rx="4" class="screen"/>
+    <text x="618" y="226" class="scr dim" style="font-size:11px" id="sj1">/var/log/auth.log:</text>
+    <text x="618" y="244" class="scr dim" style="font-size:11px" id="sj2"></text>
+    <g class="tokens"></g>
   </svg>
-  <div class="chain" id="sshChain">
-    <div><span>Ulanish so'rovi<small>ssh muhammad@185.199.108.153 → TCP, port 22</small></span></div>
-    <div><span>Server o'zini tanishtiradi<small>server kaliti · birinchi marta "fingerprint" so'raladi</small></span></div>
-    <div><span>Umumiy maxfiy kalit kelishiladi<small>13.3 dagi kabi — shu yerdan boshlab hammasi shifrlangan</small></span></div>
-    <div><span>Server tasodifiy son yuboradi<small>"mana buni imzola"</small></span></div>
-    <div><span>Yopiq kalit imzolaydi<small>kalitning o'zi tarmoqqa chiqmaydi</small></span></div>
-    <div><span>Server imzoni ochiq kalit bilan tekshiradi<small>~/.ssh/authorized_keys · mos keldi ✓</small></span></div>
-    <div><span>Terminal ochildi<small>muhammad@server:~$</small></span></div>
   </div>
+  <div class="board-ctl"><button class="primary" type="button" id="sshBtn">Ulan</button><span class="small muted">ssh muhammad@185.199.108.153 · port 22</span></div>
+  <div class="board-steps"><span>TCP</span><span>Host kaliti</span><span>Kalit</span><span>Chaqiriq</span><span>Imzo</span><span>Tekshiruv</span><span>Shell</span></div>
+  <div class="board-narr">Pastga suring yoki "Ulan" ni bosing.</div>
   <figcaption><span><b>SSH orqali kirish.</b> Ochiq va yopiq kalit juftligi: server sizni parolsiz, imzo orqali taniydi.</span></figcaption>
 </figure>
 
@@ -182,29 +159,43 @@ WantedBy=multi-user.target
 # sudo systemctl enable --now bot      # hozir ham, qayta yuklanganda ham
 # journalctl -u bot -f                 # loglarni jonli ko'rish</code></pre>
 
-<figure class="fig">
-  <svg class="sv life" viewBox="0 0 680 210" role="img" aria-label="Chapda: terminal yopilganda jarayon o'ladi. O'ngda: systemd yoki PM2 nazoratida jarayon qulasa, avtomatik qayta ishga tushadi">
-    <text x="165" y="22" text-anchor="middle" class="ttl">Terminaldan: node bot.js</text>
-    <text x="515" y="22" text-anchor="middle" class="ttl">Nazoratchi ostida: systemd / PM2</text>
-    <path class="wire" d="M340 8 V 200" stroke-dasharray="4 6"/>
-    <g class="term"><rect x="20" y="50" width="120" height="50" rx="8" class="box"/><text x="80" y="71" text-anchor="middle" class="ttl">Terminal</text><text x="80" y="89" text-anchor="middle">SSH sessiya</text></g>
-    <path class="wire wire1" d="M140 75 H 190"/>
-    <rect x="190" y="50" width="130" height="50" rx="8" class="box p1"/><text x="255" y="71" text-anchor="middle" class="ttl">bot.js jarayoni</text>
-    <text x="255" y="89" text-anchor="middle" class="p1live">ishlayapti</text>
-    <text x="255" y="89" text-anchor="middle" class="p1dead lbl">o'ldi (SIGHUP)</text>
-    <g class="p1live"><text x="165" y="130" text-anchor="middle">terminal ochiq → bot javob beradi</text></g>
-    <g class="p1dead"><text x="165" y="130" text-anchor="middle" class="lbl">terminal yopildi → jarayon ham tugadi</text><text x="165" y="150" text-anchor="middle">hech kim qayta ishga tushirmaydi</text></g>
-    <rect x="360" y="50" width="120" height="50" rx="8" class="box blue"/><text x="420" y="71" text-anchor="middle" class="ttl">systemd</text><text x="420" y="89" text-anchor="middle">PID 1 · kuzatadi</text>
-    <path class="wire" d="M480 75 H 530"/>
-    <path class="flow blue supflow" d="M480 75 H 530"/>
-    <rect x="530" y="50" width="130" height="50" rx="8" class="box p2"/><text x="595" y="71" text-anchor="middle" class="ttl">bot.js jarayoni</text>
-    <text x="595" y="89" text-anchor="middle" class="p2live">ishlayapti</text>
-    <text x="595" y="89" text-anchor="middle" class="p2crashlbl lbl">xato → quladi</text>
-    <g class="p2live"><text x="515" y="130" text-anchor="middle">qulasa yoki server qayta yuklansa ham</text><text x="515" y="150" text-anchor="middle">nazoratchi uni qayta ko'taradi</text></g>
-    <g class="p2crashlbl"><text x="515" y="130" text-anchor="middle" class="lbl">jarayon tugadi, exit code 1</text><text x="515" y="150" text-anchor="middle">Restart=always · RestartSec=5</text></g>
-    <g class="p2again"><text x="515" y="180" text-anchor="middle" class="lbl">5 soniyadan keyin qayta ishga tushdi ✓</text></g>
-    <text x="165" y="195" text-anchor="middle">terminalni yopish = jarayonni o'ldirish</text>
+<figure class="fig" id="figLife" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 300" role="img" aria-label="Chapda: terminal yopilganda bash SIGHUP yuboradi va node jarayoni o'ladi. O'ngda: systemd nazoratida jarayon qulasa, 5 soniyadan keyin yangi PID bilan qayta ishga tushadi">
+    <defs><pattern id="g15c" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="300" fill="url(#g15c)"/>
+    <path class="wire w-ctl" id="lw1" d="M210 136 H 240"/>
+    <path class="wire w-ctl" id="lw2" d="M560 104 V 114"/>
+    <path class="wire w-ctl" id="lw3" d="M120 104 V 114"/>
+    <!-- terminal tomoni -->
+    <rect x="20" y="30" width="420" height="250" rx="10" class="chip"/>
+    <text x="32" y="52" class="ttl">Terminaldan: node bot.js</text>
+    <rect x="30" y="60" width="180" height="44" rx="6" class="unit" id="uTerm"/><circle cx="42" cy="74" r="4.5" class="led on" id="termL"/><text x="50" y="78" class="xs">SSH sessiya · pts/0</text><text x="36" y="94" class="mut xs" id="termT">ochiq</text>
+    <rect x="30" y="114" width="180" height="44" rx="6" class="unit" id="uBash"/><circle cx="42" cy="128" r="4.5" class="led on" id="bashL"/><text x="50" y="132" class="xs">bash · PID 4100</text><text x="36" y="148" class="mut xs">sessiya rahbari (ota)</text>
+    <rect x="240" y="114" width="190" height="44" rx="6" class="unit" id="uP1"/><circle cx="252" cy="128" r="4.5" class="led on" id="p1L"/><text x="260" y="132" class="xs" id="p1T">node bot.js · PID 4123</text><text x="246" y="148" class="mut xs" id="p1T2">ishlayapti · javob beradi</text>
+    <rect x="30" y="170" width="400" height="90" rx="4" class="screen"/>
+    <text x="38" y="188" class="scr dim" style="font-size:11px" id="ll0"></text>
+    <text x="38" y="206" class="scr dim" style="font-size:11px" id="ll1"></text>
+    <text x="38" y="224" class="scr dim" style="font-size:11px" id="ll2"></text>
+    <text x="38" y="242" class="scr dim" style="font-size:11px" id="ll3"></text>
+    <text x="32" y="274" class="mut xs">terminalni yopish = jarayonni o'ldirish</text>
+    <!-- systemd tomoni -->
+    <rect x="460" y="30" width="420" height="250" rx="10" class="chip"/>
+    <text x="472" y="52" class="ttl">Nazoratchi ostida: systemd</text>
+    <rect x="470" y="60" width="180" height="44" rx="6" class="unit" id="uSysd"/><circle cx="482" cy="74" r="4.5" class="led on" id="sdL"/><text x="490" y="78" class="xs">systemd · PID 1</text><text x="476" y="94" class="mut xs">bot.service · Restart=always</text>
+    <rect x="670" y="60" width="200" height="44" rx="6" class="unit" id="uTimer"/><circle cx="682" cy="74" r="4.5" class="led warn" id="tmL"/><text x="690" y="78" class="xs">RestartSec=5 taymer</text><text x="676" y="94" class="mut xs" id="tmT">—</text>
+    <rect x="470" y="114" width="190" height="44" rx="6" class="unit" id="uP2"/><circle cx="482" cy="128" r="4.5" class="led on" id="p2L"/><text x="490" y="132" class="xs" id="p2T">node bot.js · PID 4180</text><text x="476" y="148" class="mut xs" id="p2T2">ishlayapti · javob beradi</text>
+    <rect x="470" y="170" width="400" height="90" rx="4" class="screen"/>
+    <text x="478" y="188" class="scr dim" style="font-size:11px" id="rl0"></text>
+    <text x="478" y="206" class="scr dim" style="font-size:11px" id="rl1"></text>
+    <text x="478" y="224" class="scr dim" style="font-size:11px" id="rl2"></text>
+    <text x="478" y="242" class="scr dim" style="font-size:11px" id="rl3"></text>
+    <text x="472" y="274" class="mut xs">qulasa ham, server qayta yuklansa ham — qayta ko'tariladi</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>Ishlayapti</span><span>SIGHUP</span><span>O'ldi</span><span>Qulash</span><span>Taymer</span><span>Qayta tirildi</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: ikki jarayonning taqdiri.</div>
   <figcaption><span><b>Jarayonning hayoti.</b> Terminalga bog'langan jarayon terminal bilan birga o'ladi; nazoratchi ostidagi jarayon qulasa ham qayta tiriladi.</span></figcaption>
 </figure>
 
@@ -225,45 +216,57 @@ COPY . .                         # sizning kod — eng yuqori qatlam
 ENV NODE_ENV=production
 CMD ["node", "bot.js"]</code></pre>
 
-<figure class="fig">
-  <svg class="sv dock" viewBox="0 0 680 400" role="img" aria-label="Image qatlamlari: Alpine Linux, Node.js, npm paketlar, sizning kod; bitta image'dan ikki konteyner; pastda virtual mashina va konteyner taqqoslanadi">
-    <text x="130" y="20" text-anchor="middle" class="ttl">Image (qolip): qatlamlar</text>
-    <g class="layers">
-      <g style="--i:0"><rect x="10" y="140" width="240" height="30" rx="6" class="box soft"/><text x="130" y="159" text-anchor="middle" class="lbl">Alpine Linux (OS), 5 MB</text></g>
-      <g style="--i:1"><rect x="10" y="106" width="240" height="30" rx="6" class="box"/><text x="130" y="125" text-anchor="middle" class="lbl">Node.js 22</text></g>
-      <g style="--i:2"><rect x="10" y="72" width="240" height="30" rx="6" class="box blue"/><text x="130" y="91" text-anchor="middle" class="lbl">npm paketlar (node_modules)</text></g>
-      <g style="--i:3"><rect x="10" y="38" width="240" height="30" rx="6" class="box on"/><text x="130" y="57" text-anchor="middle" class="lbl">Sizning kod: bot.js</text></g>
-    </g>
-    <text x="130" y="188" text-anchor="middle">pastdan yuqoriga · o'zgarmas</text>
-    <path class="wire" d="M250 104 H 275 V 60 H 300 M275 104 V 148 H 300"/>
-    <path class="flow cflow" d="M250 104 H 275 V 60 H 300 M275 104 V 148 H 300"/>
-    <g class="cont">
-      <g style="--i:0"><rect x="300" y="36" width="120" height="48" rx="8" class="box on"/><text x="360" y="56" text-anchor="middle" class="ttl">Konteyner 1</text><text x="360" y="74" text-anchor="middle">bot jarayoni · :3000</text></g>
-      <g style="--i:1"><rect x="300" y="124" width="120" height="48" rx="8" class="box on"/><text x="360" y="144" text-anchor="middle" class="ttl">Konteyner 2</text><text x="360" y="162" text-anchor="middle">alohida jarayon</text></g>
-    </g>
-    <text x="470" y="20" text-anchor="middle" class="ttl">docker run · bitta qolipdan istalgancha</text>
-    <text x="550" y="60" text-anchor="middle">image = fayllar (disk)</text>
-    <text x="550" y="80" text-anchor="middle">container = jarayon (RAM, CPU)</text>
-    <text x="550" y="120" text-anchor="middle">to'xtatdingiz → yo'q,</text>
-    <text x="550" y="138" text-anchor="middle">image o'z joyida qoladi</text>
-    <path class="wire thin" d="M10 208 H 670" stroke-dasharray="4 6"/>
-    <text x="165" y="232" text-anchor="middle" class="ttl">Virtual mashina: har birida o'z yadrosi</text>
-    <rect x="10" y="340" width="320" height="28" rx="6" class="box soft"/><text x="170" y="358" text-anchor="middle" class="lbl">Apparat: CPU, RAM, disk</text>
-    <rect x="10" y="308" width="320" height="28" rx="6" class="box"/><text x="170" y="326" text-anchor="middle" class="lbl">Hypervisor</text>
-    <rect x="10" y="276" width="155" height="28" rx="6" class="box copper"/><text x="87" y="294" text-anchor="middle" class="lbl">Mehmon OS + yadro</text>
-    <rect x="175" y="276" width="155" height="28" rx="6" class="box copper"/><text x="252" y="294" text-anchor="middle" class="lbl">Mehmon OS + yadro</text>
-    <rect x="10" y="244" width="155" height="28" rx="6" class="box"/><text x="87" y="262" text-anchor="middle">ilova A</text>
-    <rect x="175" y="244" width="155" height="28" rx="6" class="box"/><text x="252" y="262" text-anchor="middle">ilova B</text>
-    <text x="515" y="232" text-anchor="middle" class="ttl">Konteyner: yadro umumiy</text>
-    <rect x="350" y="340" width="320" height="28" rx="6" class="box soft"/><text x="510" y="358" text-anchor="middle" class="lbl">Apparat: CPU, RAM, disk</text>
-    <rect x="350" y="308" width="320" height="28" rx="6" class="box copper"/><text x="510" y="326" text-anchor="middle" class="lbl">Bitta Linux yadrosi (serverniki)</text>
-    <rect x="350" y="276" width="320" height="28" rx="6" class="box"/><text x="510" y="294" text-anchor="middle" class="lbl">Docker: izolyatsiya (namespace, cgroup)</text>
-    <rect x="350" y="244" width="100" height="28" rx="6" class="box on"/><text x="400" y="262" text-anchor="middle">bot</text>
-    <rect x="460" y="244" width="100" height="28" rx="6" class="box on"/><text x="510" y="262" text-anchor="middle">postgres</text>
-    <rect x="570" y="244" width="100" height="28" rx="6" class="box on"/><text x="620" y="262" text-anchor="middle">nginx</text>
-    <text x="170" y="390" text-anchor="middle">har VM — gigabaytlar, daqiqalarda yuklanadi</text>
-    <text x="510" y="390" text-anchor="middle">har konteyner — megabaytlar, soniyalarda</text>
+<figure class="fig" id="figDock" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 430" role="img" aria-label="Docker: image qatlamlari (Alpine, Node.js, npm paketlar, sizning kod) sha256 va hajmlar bilan; docker run bitta image'dan ikki konteyner; bitta Linux yadrosi, namespace va cgroup; pastda virtual mashina va konteyner taqqoslanadi">
+    <defs><pattern id="g15d" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="430" fill="url(#g15d)"/>
+    <path class="wire w-data" id="dkW" d="M310 110 H 330 V 80 H 350 M330 110 V 146 H 350"/>
+    <!-- image -->
+    <rect x="20" y="20" width="300" height="220" rx="10" class="chip"/>
+    <text x="32" y="42" class="ttl">Image bot:1.0 · docker build</text>
+    <g id="dkLayers"></g>
+    <text x="32" y="214" class="mut xs">faqat o'qish (read-only) · diskda · qatlam = diff</text>
+    <text x="32" y="228" class="mut xs">o'zgarmagan qatlam keshdan olinadi</text>
+    <!-- konteynerlar -->
+    <rect x="340" y="20" width="260" height="220" rx="10" class="chip"/>
+    <text x="352" y="42" class="ttl">docker run → konteynerlar</text>
+    <rect x="350" y="52" width="240" height="56" rx="6" class="unit" id="ct1"/><circle cx="362" cy="66" r="4.5" class="led" id="ct1L"/><text x="370" y="70" class="xs" id="ct1T">bot-1 · —</text><text x="356" y="86" class="mut xs">yozish qatlami (writable) · 2 MB</text><text x="356" y="100" class="mut xs">pid ns: o'zining "1"-jarayoni</text>
+    <rect x="350" y="118" width="240" height="56" rx="6" class="unit" id="ct2"/><circle cx="362" cy="132" r="4.5" class="led" id="ct2L"/><text x="370" y="136" class="xs" id="ct2T">bot-2 · —</text><text x="356" y="152" class="mut xs">o'z yozish qatlami · o'z tarmoq ns</text><text x="356" y="166" class="mut xs">bir xil image, alohida jarayon</text>
+    <text x="352" y="196" class="mut xs">image = fayllar (disk)</text>
+    <text x="352" y="210" class="mut xs">container = jarayon (RAM, CPU)</text>
+    <text x="352" y="226" class="xs" id="ctT"></text>
+    <!-- yadro -->
+    <rect x="620" y="20" width="260" height="220" rx="10" class="chip"/>
+    <text x="632" y="42" class="ttl">Bitta Linux yadrosi (serverniki)</text>
+    <rect x="630" y="52" width="240" height="40" rx="6" class="unit" id="kNs"/><circle cx="642" cy="66" r="4.5" class="led" id="kNsL"/><text x="650" y="70" class="xs">namespaces: pid · net · mnt · uts</text><text x="636" y="86" class="mut xs">har konteyner o'zini yolg'iz deb biladi</text>
+    <rect x="630" y="100" width="240" height="60" rx="6" class="unit" id="kCg"/><circle cx="642" cy="114" r="4.5" class="led" id="kCgL"/><text x="650" y="118" class="xs">cgroups: CPU 1.0 · RAM 512 MB</text>
+    <g class="bar"><rect x="636" y="128" width="228" height="8" rx="2"/><rect class="f" id="cgBar" x="636" y="128" width="0" height="8" rx="2"/></g>
+    <text x="636" y="152" class="mut xs" id="cgT">bot-1: CPU 0% · RAM 0 MB</text>
+    <rect x="630" y="168" width="240" height="40" rx="6" class="unit" id="kHw"/><text x="636" y="182" class="xs">Apparat: 2 vCPU · 2 GB · 40 GB SSD</text><text x="636" y="198" class="mut xs">yadro 6.8.0 · docker 27 · overlay2</text>
+    <!-- VM -->
+    <rect x="20" y="260" width="420" height="150" rx="10" class="chip"/>
+    <text x="32" y="282" class="ttl">Virtual mashina</text><text x="430" y="282" text-anchor="end" class="xs" id="vmT">yuklanish: — s</text>
+    <rect x="30" y="296" width="196" height="22" rx="4" class="unit" id="vm3a"/><text x="128" y="311" text-anchor="middle" class="xs">ilova A</text>
+    <rect x="234" y="296" width="196" height="22" rx="4" class="unit" id="vm3b"/><text x="332" y="311" text-anchor="middle" class="xs">ilova B</text>
+    <rect x="30" y="322" width="196" height="26" rx="4" class="unit" id="vm2a"/><text x="128" y="339" text-anchor="middle" class="xs">Mehmon OS + o'z yadrosi · 1.2 GB</text>
+    <rect x="234" y="322" width="196" height="26" rx="4" class="unit" id="vm2b"/><text x="332" y="339" text-anchor="middle" class="xs">Mehmon OS + o'z yadrosi · 1.2 GB</text>
+    <rect x="30" y="352" width="400" height="22" rx="4" class="unit" id="vm1"/><text x="230" y="367" text-anchor="middle" class="xs">Hypervisor (KVM) — apparatni taqlid qiladi</text>
+    <rect x="30" y="378" width="400" height="22" rx="4" class="unit" id="vm0"/><text x="230" y="393" text-anchor="middle" class="xs">Apparat: CPU, RAM, disk</text>
+    <!-- konteyner -->
+    <rect x="460" y="260" width="420" height="150" rx="10" class="chip"/>
+    <text x="472" y="282" class="ttl">Konteyner</text><text x="870" y="282" text-anchor="end" class="xs" id="cnT">yuklanish: — s</text>
+    <rect x="470" y="296" width="128" height="22" rx="4" class="unit" id="cn0"/><text x="534" y="311" text-anchor="middle" class="xs">bot · 12 MB</text>
+    <rect x="606" y="296" width="128" height="22" rx="4" class="unit" id="cn1"/><text x="670" y="311" text-anchor="middle" class="xs">postgres · 80 MB</text>
+    <rect x="742" y="296" width="128" height="22" rx="4" class="unit" id="cn2"/><text x="806" y="311" text-anchor="middle" class="xs">nginx · 8 MB</text>
+    <rect x="470" y="322" width="400" height="26" rx="4" class="unit" id="cn3"/><text x="670" y="339" text-anchor="middle" class="xs">Docker: izolyatsiya — namespace + cgroup</text>
+    <rect x="470" y="352" width="400" height="22" rx="4" class="unit" id="cn4"/><text x="670" y="367" text-anchor="middle" class="xs">Bitta Linux yadrosi (serverniki) — umumiy</text>
+    <rect x="470" y="378" width="400" height="22" rx="4" class="unit" id="cn5"/><text x="670" y="393" text-anchor="middle" class="xs">Apparat: CPU, RAM, disk</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>Build</span><span>Run</span><span>Stop</span><span>VM</span><span>Konteyner</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: image quriladi, konteynerlar ishga tushadi.</div>
   <figcaption><span><b>Image, konteyner va virtual mashina.</b> Image — o'zgarmas qatlamlar, konteyner — undan ishga tushgan jarayon; konteynerlar serverning yadrosini bo'lishadi, VM esa o'z yadrosini yuklaydi.</span></figcaption>
 </figure>
 
@@ -288,31 +291,51 @@ server {
 <pre><code>curl -F "url=https://bot.misol.uz/webhook" \
      https://api.telegram.org/bot&lt;TOKEN&gt;/setWebhook</code></pre>
 
-<figure class="fig">
-  <svg class="sv route" viewBox="0 0 680 310" role="img" aria-label="So'rov yo'li: Telegram serverlari DNS orqali IP ni topadi, 443-portdagi Nginx TLS ni yechib localhost:3000 dagi Node botga uzatadi, bot PostgreSQL ga murojaat qiladi va javob Telegram API orqali qaytadi">
-    <path class="wire" d="M130 138 H 300 V 55 H 360"/>
-    <path class="wire thin" d="M205 138 V 64" stroke-dasharray="4 4"/>
-    <path class="wire" d="M430 80 V 120 M430 170 V 210"/>
-    <path class="wire thin" d="M500 235 H 560 V 292 H 70 V 168" stroke-dasharray="4 4"/>
-    <rect x="330" y="10" width="340" height="270" rx="12" class="box soft"/>
-    <text x="345" y="28" class="ttl">Server 185.199.108.153</text>
-    <text x="655" y="272" text-anchor="end">ufw: faqat 22 va 443 ochiq</text>
-    <g class="hop">
-      <g style="--i:0"><rect x="10" y="110" width="120" height="56" rx="10" class="box"/><text x="70" y="132" text-anchor="middle" class="ttl">Telegram</text><text x="70" y="152" text-anchor="middle">serverlari</text></g>
-      <g style="--i:1"><rect x="140" y="20" width="130" height="44" rx="8" class="box blue"/><text x="205" y="38" text-anchor="middle" class="ttl">DNS · :53</text><text x="205" y="54" text-anchor="middle">bot.misol.uz → IP</text></g>
-      <g style="--i:2"><rect x="360" y="30" width="140" height="50" rx="8" class="box copper"/><text x="430" y="50" text-anchor="middle" class="ttl">Nginx · :443</text><text x="430" y="68" text-anchor="middle">TLS shu yerda yechiladi</text></g>
-      <g style="--i:3"><rect x="360" y="120" width="140" height="50" rx="8" class="box on"/><text x="430" y="140" text-anchor="middle" class="ttl">Node bot · :3000</text><text x="430" y="158" text-anchor="middle">faqat localhost</text></g>
-      <g style="--i:4"><rect x="360" y="210" width="140" height="50" rx="8" class="box blue"/><text x="430" y="230" text-anchor="middle" class="ttl">PostgreSQL · :5432</text><text x="430" y="248" text-anchor="middle">tashqaridan yopiq</text></g>
-      <g style="--i:5"><text x="615" y="150" text-anchor="middle" class="lbl">javob</text><text x="615" y="168" text-anchor="middle">sendMessage →</text><text x="615" y="184" text-anchor="middle">api.telegram.org</text></g>
-    </g>
-    <text x="215" y="95" text-anchor="middle">1. "bot.misol.uz qayerda?"</text>
-    <text x="215" y="125" text-anchor="middle">2. POST /webhook · HTTPS</text>
-    <text x="520" y="105" text-anchor="middle">3. http://127.0.0.1:3000</text>
-    <text x="520" y="195" text-anchor="middle">4. SELECT … · 5432</text>
-    <text x="315" y="305" text-anchor="middle">5. javob foydalanuvchiga — butun aylana 100–300 ms</text>
-    <circle class="dot req" r="6"/>
-    <circle class="dot copper res" r="6"/>
+<figure class="fig" id="figRoute" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 340" role="img" aria-label="So'rov yo'li: Telegram serverlari DNS orqali IP ni topadi, ufw 443-portni o'tkazadi, Nginx TLS ni yechib 127.0.0.1:3000 dagi Node botga uzatadi, bot PostgreSQL :5432 ga murojaat qiladi, javob api.telegram.org ga qaytadi">
+    <defs><pattern id="g15e" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="340" fill="url(#g15e)"/>
+    <path class="wire w-addr" id="rw0" d="M105 136 V 160"/>
+    <path class="wire w-data bus" id="rw1" d="M190 106 H 240"/>
+    <path class="wire w-data" id="rw4" d="M310 84 H 330"/>
+    <path class="wire w-data" id="rw2" d="M455 116 V 130"/>
+    <path class="wire w-data" id="rw3" d="M455 194 V 208"/>
+    <text x="215" y="98" text-anchor="middle" class="mut xs">HTTPS</text>
+    <!-- Telegram -->
+    <rect x="20" y="40" width="170" height="96" rx="10" class="chip"/>
+    <text x="32" y="62" class="ttl">Telegram serverlari</text>
+    <text x="32" y="78" class="mut xs">149.154.167.220</text>
+    <rect x="30" y="86" width="150" height="40" rx="6" class="unit" id="tgU"/><circle cx="42" cy="100" r="4.5" class="led" id="tgL"/><text x="50" y="104" class="xs">Bot API · webhook</text><text x="36" y="120" class="mut xs" id="tgT">bot.misol.uz → ?</text>
+    <!-- DNS -->
+    <rect x="20" y="160" width="170" height="80" rx="10" class="chip"/>
+    <text x="32" y="180" class="ttl">DNS · :53</text>
+    <rect x="30" y="188" width="150" height="44" rx="6" class="unit" id="dnsU"/><circle cx="42" cy="202" r="4.5" class="led blue" id="dnsL"/><text x="50" y="206" class="xs">A-yozuv (siz sozlagan)</text><text x="36" y="222" class="mut xs">→ 185.199.108.153</text>
+    <!-- VPS -->
+    <rect x="230" y="20" width="650" height="300" rx="10" class="chip"/>
+    <text x="242" y="42" class="ttl">VPS 185.199.108.153 · ufw: faqat 22 va 443</text>
+    <rect x="240" y="52" width="70" height="250" rx="6" class="unit" id="fwU"/>
+    <text x="275" y="68" text-anchor="middle" class="xs">ufw</text>
+    <circle cx="254" cy="92" r="4.5" class="led on" id="fw22"/><text x="262" y="96" class="xs">22 ssh</text>
+    <circle cx="254" cy="118" r="4.5" class="led bad on" id="fw80"/><text x="262" y="122" class="xs">80</text>
+    <circle cx="254" cy="144" r="4.5" class="led on" id="fw443"/><text x="262" y="148" class="xs">443</text>
+    <circle cx="254" cy="170" r="4.5" class="led bad on" id="fw3000"/><text x="262" y="174" class="xs">3000</text>
+    <circle cx="254" cy="196" r="4.5" class="led bad on" id="fw5432"/><text x="262" y="200" class="xs">5432</text>
+    <text x="246" y="240" class="mut xs">yashil: ochiq</text>
+    <text x="246" y="254" class="mut xs">qizil: yopiq</text>
+    <text x="246" y="280" class="mut xs">ichkari ✓</text>
+    <rect x="330" y="52" width="250" height="64" rx="6" class="unit" id="ngU"/><circle cx="342" cy="66" r="4.5" class="led" id="ngL"/><text x="350" y="70" class="xs">Nginx · :443 · TLS shu yerda yechiladi</text><text x="336" y="86" class="mut xs">sertifikat: bot.misol.uz (Let's Encrypt)</text><text x="336" y="100" class="mut xs">location /webhook → 127.0.0.1:3000</text>
+    <rect x="330" y="130" width="250" height="64" rx="6" class="unit" id="ndU"/><circle cx="342" cy="144" r="4.5" class="led" id="ndL"/><text x="350" y="148" class="xs">Node bot · 127.0.0.1:3000 · PID 4180</text><text x="336" y="164" class="mut xs">POST /webhook → JSON o'qiladi</text><text x="336" y="178" class="mut xs" id="ndT">kutmoqda</text>
+    <rect x="330" y="208" width="250" height="64" rx="6" class="unit" id="pgU"/><circle cx="342" cy="222" r="4.5" class="led" id="pgL"/><text x="350" y="226" class="xs">PostgreSQL · 127.0.0.1:5432</text><text x="336" y="242" class="mut xs">SELECT name FROM users WHERE tg_id=4471</text><text x="336" y="256" class="mut xs" id="pgT">—</text>
+    <rect x="600" y="52" width="270" height="170" rx="4" class="screen"/>
+    <g id="rlog"></g>
+    <rect x="600" y="234" width="270" height="38" rx="6" class="lcd"/><text x="610" y="258" class="lcdtxt" id="rtT">t = 0 ms</text>
+    <text x="602" y="296" class="mut xs">tashqaridan 3000 va 5432 ga hech kim kira olmaydi</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>DNS</span><span>HTTPS :443</span><span>Nginx</span><span>Node :3000</span><span>SQL :5432</span><span>Javob</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: bitta webhook so'rovining serverdagi yo'li.</div>
   <figcaption><span><b>Bitta xabarning serverdagi yo'li.</b> DNS nomni IP'ga aylantiradi, Nginx 443-portda TLS'ni yechadi, bot 3000-portda ishlaydi, baza esa faqat ichkaridan ochiq.</span></figcaption>
 </figure>
 
@@ -321,29 +344,35 @@ server {
 <h2 id="15-6">15.6. Kuzatuv va xatolarni topish</h2>
 <p>Server ishga tushdi — endi uni kuzatish kerak. Uchta resurs muhim. <strong>CPU</strong>: <code>htop</code>'da 100% uzoq tursa, qayerdadir cheksiz sikl bor; bitta oqimli Node.js'da bu butun botni to'xtatadi. <strong>RAM</strong>: botning xotirasi kundan-kunga o'sib borsa, bu <strong>xotira oqishi</strong> (12.3): obyektlarga havola qolgani uchun axlat yig'uvchi ularni bo'shata olmaydi; 1 GB to'lganda OS jarayonni o'ldiradi (OOM), nazoratchi uni qayta ko'taradi va sikl takrorlanadi. <strong>Disk</strong>: eng ko'p uchraydigan halokat — loglar diskni to'ldiradi va bot bazaga ham, logga ham yoza olmaydi (<code>ENOSPC</code> xatosi). <strong>Log aylantirish</strong> (logrotate, <code>pm2-logrotate</code>) eski fayllarni siqib, ma'lum hajmdan keyin o'chirib turadi.</p>
 
-<figure class="fig">
-  <svg class="sv mon" viewBox="0 0 640 230" role="img" aria-label="CPU, RAM va disk ko'rsatkichlari vaqt o'tishi bilan to'ladi; 80 foizlik chegara chizig'i; disk to'lganda bot yozolmaydi">
-    <text x="20" y="44" class="ttl">CPU</text>
-    <rect x="110" y="30" width="420" height="20" rx="6" class="box soft"/>
-    <rect x="110" y="30" width="420" height="20" rx="6" class="bar cpu" fill="var(--accent)"/>
-    <text x="545" y="44">htop</text>
-    <text x="20" y="94" class="ttl">RAM</text>
-    <rect x="110" y="80" width="420" height="20" rx="6" class="box soft"/>
-    <rect x="110" y="80" width="420" height="20" rx="6" class="bar ram" fill="var(--blue)"/>
-    <text x="545" y="94">free -m</text>
-    <text x="110" y="118" class="ramnote lbl">xotira oqishi: kundan-kunga o'sadi…</text>
-    <text x="110" y="118" class="ramreset lbl">OOM → nazoratchi qayta ishga tushirdi</text>
-    <text x="20" y="154" class="ttl">Disk</text>
-    <rect x="110" y="140" width="420" height="20" rx="6" class="box soft"/>
-    <rect x="110" y="140" width="420" height="20" rx="6" class="bar dsk" fill="var(--copper)"/>
-    <text x="545" y="154">df -h</text>
-    <path class="wire thin" d="M446 22 V 168" stroke-dasharray="4 4" stroke="var(--copper)"/>
-    <text x="446" y="16" text-anchor="middle" class="lbl">80% — ogohlantirish chegarasi</text>
-    <rect x="110" y="182" width="200" height="34" rx="8" class="box okbox"/>
-    <text x="210" y="204" text-anchor="middle" class="lbl oklbl">bot: ishlayapti ✓</text>
-    <text x="210" y="204" text-anchor="middle" class="lbl warn">bot: yozolmaydi — ENOSPC</text>
-    <g class="warn"><text x="330" y="197" class="lbl">disk to'ldi → loglar ham, baza ham yozilmaydi</text><text x="330" y="213">yechim: log aylantirish (logrotate)</text></g>
+<figure class="fig" id="figMon" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 300" role="img" aria-label="Kuzatuv: CPU, RAM va disk o'lchagichlari 30 kun davomida; 80 foizlik chegara; RAM oqishi va OOM, disk to'lganda ENOSPC xatosi va logrotate">
+    <defs><pattern id="g15f" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="300" fill="url(#g15f)"/>
+    <text x="20" y="52" class="ttl">CPU</text><text x="20" y="66" class="mut xs">htop</text>
+    <g class="bar"><rect x="100" y="36" width="520" height="22" rx="4"/><rect class="f" id="cpuF" x="100" y="36" width="0" height="22" rx="4"/></g>
+    <text x="632" y="52" class="val" id="cpuV">0 %</text>
+    <text x="20" y="112" class="ttl">RAM</text><text x="20" y="126" class="mut xs">free -m · 1 GB</text>
+    <g class="bar"><rect x="100" y="96" width="520" height="22" rx="4"/><rect class="f" id="ramF" x="100" y="96" width="0" height="22" rx="4"/></g>
+    <text x="632" y="112" class="val" id="ramV">0 %</text>
+    <text x="20" y="172" class="ttl">Disk</text><text x="20" y="186" class="mut xs">df -h · 20 GB</text>
+    <g class="bar"><rect x="100" y="156" width="520" height="22" rx="4"/><rect class="f" id="dskF" x="100" y="156" width="0" height="22" rx="4"/></g>
+    <text x="632" y="172" class="val" id="dskV">0 %</text>
+    <path class="wire w-ctl" d="M516 28 V 186"/>
+    <text x="516" y="22" text-anchor="middle" class="mut xs">80% — ogohlantirish chegarasi</text>
+    <rect x="700" y="30" width="180" height="40" rx="6" class="lcd"/><text x="710" y="55" class="lcdtxt" id="dayT">kun 1</text>
+    <rect x="700" y="82" width="180" height="56" rx="6" class="unit" id="botU"/><circle cx="712" cy="100" r="4.5" class="led on" id="botL"/><text x="720" y="104" class="xs">bot.service</text><text x="706" y="120" class="mut xs" id="botT">active (running)</text><text x="706" y="132" class="mut xs" id="botT2">PID 4180 · 96 MB</text>
+    <rect x="700" y="148" width="180" height="38" rx="6" class="unit" id="oomU"/><circle cx="712" cy="166" r="4.5" class="led warn" id="oomL"/><text x="720" y="170" class="xs" id="oomT">OOM killer: tinch</text>
+    <rect x="20" y="200" width="860" height="84" rx="4" class="screen"/>
+    <text x="28" y="218" class="scr dim" style="font-size:10.5px" id="ml0">journalctl -f</text>
+    <text x="28" y="236" class="scr dim" style="font-size:10.5px" id="ml1"></text>
+    <text x="28" y="254" class="scr dim" style="font-size:10.5px" id="ml2"></text>
+    <text x="28" y="272" class="scr dim" style="font-size:10.5px" id="ml3"></text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>Kuzatuv</span><span>RAM oqishi</span><span>OOM</span><span>Disk to'lmoqda</span><span>ENOSPC</span><span>logrotate</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: 30 kunlik kuzatuv 15 soniyada.</div>
   <figcaption><span><b>Uch ko'rsatkich.</b> CPU tebranadi, oqayotgan RAM to'lguncha o'sadi, disk esa loglardan asta-sekin to'ladi — va to'lgan kuni bot yozolmay qoladi.</span></figcaption>
 </figure>
 
@@ -371,15 +400,232 @@ server {
 </main>
 
 <script src="../js/site.js"></script>
-<script src="../js/quiz-data.js"></script>
-<script src="../js/quiz.js"></script>
+<script src="../js/board.js"></script>
 <script>
 (function(){
-  const $=KQI.$;
-  /* SSH rasmi: "↻ qayta" bosilganda zanjir ham qayta yonsin */
-  const fig=$('#sshChain')&&$('#sshChain').closest('.fig');
-  if(fig)fig.addEventListener('replay',()=>{const b=fig.querySelector('[data-chain]');if(b&&b.onclick)b.onclick();});
+  if(!window.KQIBoard) return;
+  var B=KQIBoard;
+  function undim(svg,id){ var e=svg.querySelector('#'+id); if(e) e.classList.remove('dim'); }
+  function dim(svg,id){ var e=svg.querySelector('#'+id); if(e) e.classList.add('dim'); }
+  function replayOn(btnId,fig){ var b=document.getElementById(btnId); if(b) b.onclick=function(){ fig.dispatchEvent(new CustomEvent('replay')); }; }
+
+  /* ---------- Noutbukdan serverga ---------- */
+  (function(){
+    var fig=document.getElementById('figDeploy'); if(!fig) return;
+    var svg=fig.querySelector('svg');
+    B.scene(fig,async function(c){
+      var T=800;
+      c.text('lp1','$ _'); c.text('lp2',''); dim(svg,'lp2'); c.text('gp1','~/bot $ _'); c.text('gp2',''); dim(svg,'gp1'); dim(svg,'gp2');
+      c.text('ghC','main: 9f8e7d'); c.text('sdT','bot.service: enabled'); c.text('ndT','node bot.js · PID —'); c.text('ndT2','webhook: —');
+      c.text('lpT','qopqoq ochiq · ishlayapti'); c.led('lpL',1,''); c.led('sdL',1); c.led('ngL',1); c.led('fw22',1); c.led('fw443',1);
+      svg.querySelector('#lp1').classList.remove('dim');
+      c.step(0,'<b>git push.</b> Noutbukda bot.js tayyor. git push kodni GitHub ga yuboradi — bu shunchaki saqlash joyi, u yerda kod ishlamaydi.');
+      c.text('lp1','$ git push origin main'); c.lit('dw1'); await c.token('commit a1b2c3d','data',[[120,80],[220,80],[340,80]],T);
+      c.led('ghL',1); c.unit('ghRepo','on'); c.text('ghC','main: a1b2c3d ✓ (yangi)'); c.unlit(); await c.delay(700); if(!c.alive()) return;
+      c.step(1,'<b>ssh + git pull.</b> Serverga SSH orqali kiramiz (port 22, kalit bilan) va git pull qilamiz: GitHub dagi yangi commit serverning diskiga tushadi.');
+      c.text('lp2','$ ssh muhammad@185.199…'); undim(svg,'lp2'); c.lit('dw3');
+      await c.token('ssh :22','ctl',[[120,180],[120,190],[440,190],[440,84],[530,84]],1100); c.led('sshL',1); c.unit('uSsh','on'); c.unlit();
+      c.text('gp1','~/bot $ git pull'); undim(svg,'gp1'); c.lit('dw2'); await c.token('a1b2c3d','data',[[340,80],[420,80],[470,80],[600,80],[700,80]],T);
+      c.text('gp2','Updating 9f8e7d..a1b2c3d ✓ bot.js'); undim(svg,'gp2'); c.unit('ghRepo',null); c.unlit(); await c.delay(700); if(!c.alive()) return;
+      c.step(2,'<b>systemd.</b> sudo systemctl restart bot: PID 1 bot.service unit faylini o\'qiydi, eski jarayonni to\'xtatib, /usr/bin/node bot.js ni muhammad foydalanuvchisi nomidan ishga tushiradi. .env dan BOT_TOKEN o\'qiladi.');
+      await c.token('systemctl restart bot','ctl',[[530,84],[530,110],[560,110],[560,130]],700); c.unit('uSsh',null);
+      c.unit('uSysd','on'); c.led('sdL',1,'blink'); c.text('sdT','bot.service: restarting…'); await c.delay(500);
+      await c.token('fork + exec','ctl',[[650,150],[670,150]],400); c.led('sdL',1,''); c.text('sdT','bot.service: active (running)');
+      c.unit('uNode','on'); c.led('ndL',1); c.text('ndT','node bot.js · PID 4180'); c.text('ndT2','webhook: kutmoqda'); c.unit('uSysd',null); await c.delay(800); if(!c.alive()) return;
+      c.step(3,'<b>Ishlayapti.</b> Telegram webhook so\'rovi 443-portga keladi: ufw o\'tkazadi, Nginx TLS ni yechib 127.0.0.1:3000 ga uzatadi, bot javob beradi. Server 24 soat yoqiq, IP doimiy.');
+      await c.token('POST /webhook :443','pkt',[[880,218],[830,218],[770,218]],500); c.led('fw443',1,'blink'); await c.delay(250); c.led('fw443',1,'');
+      await c.token('TLS → HTTP','data',[[770,218],[660,218],[660,246],[560,246],[560,218]],700); c.unit('uNg','on');
+      await c.token(':3000','data',[[560,196],[560,190],[660,190],[660,150],[700,150]],600); c.unit('uNg',null);
+      c.led('ndL',1,'blink'); c.text('ndT2','webhook: 200 OK · 84 ms'); await c.delay(500); c.led('ndL',1,''); if(!c.alive()) return;
+      c.step(4,'<b>Qopqoq yopildi.</b> Siz noutbukni yopdingiz: u uxlaydi, IP o\'zgaradi, NAT ortida. Serverga esa buning ahamiyati yo\'q — bot ishlashda davom etadi.',true);
+      c.led('lpL',1,'warn'); c.text('lpT','qopqoq yopildi → uxlaydi'); svg.querySelector('#lp1').classList.add('dim'); dim(svg,'lp2');
+      for(var i=0;i<3&&c.alive();i++){ c.led('cmp'+i,1,'bad'); await c.delay(300); }
+      await c.token('POST /webhook :443','pkt',[[880,218],[830,218],[770,218]],500); await c.token('→ :3000','data',[[770,218],[660,218],[660,150],[700,150]],600);
+      c.led('ndL',1,'blink'); c.text('ndT2','webhook: 200 OK · 79 ms'); c.text('vpsT','uptime: 41 kun 03:12 · yuk 0.03 · 2 vCPU · 2 GB'); await c.delay(500); c.led('ndL',1,''); c.unit('uNode',null);
+      if(!c.alive()) return;
+      c.step(5,'<b>Xulosa.</b> Kod: noutbuk → GitHub → server (git). Jarayon: systemd ostida, qulasa 5 s da qayta ko\'tariladi, server qayta yuklansa ham. Tarmoq: doimiy IP, 443 ochiq, qolgani ufw bilan yopiq. Noutbuk endi faqat kod yozish uchun.');
+    });
+  })();
+
+  /* ---------- SSH ---------- */
+  (function(){
+    var fig=document.getElementById('figSsh'); if(!fig) return;
+    var svg=fig.querySelector('svg'); var L=[300,90], R=[600,90], L2=[300,200], R2=[600,200];
+    B.scene(fig,async function(c){
+      var T=800;
+      svg.querySelector('#sc2').classList.remove('flow');
+      c.text('t1','$ ssh muhammad@185.199.108.153'); ['t2','t3','t4','sj2'].forEach(function(id){ c.text(id,''); dim(svg,id); }); c.text('sj1','/var/log/auth.log:'); dim(svg,'sj1');
+      c.text('khT','server kaliti: hali noma\'lum'); c.text('sdT2','ulanish kutmoqda'); c.text('scT','—'); c.led('pkL',1,'bad'); c.led('sdL2',1);
+      c.step(0,'<b>TCP.</b> ssh muhammad@185.199.108.153 — noutbuk serverning 22-portiga TCP ulanish ochadi. Firewall 22 ni ochiq qoldirgan, sshd (PID 812) javob beradi.');
+      c.lit('sc1'); await c.token('SYN → :22','ctl',[L,R],T); c.unit('uSshd','on'); c.text('sdT2','ulanish: 84.54.71.9:51844 · SSH-2.0'); await c.delay(600); if(!c.alive()) return;
+      c.step(1,'<b>Host kaliti.</b> Server avval o\'zini tanishtiradi: host kalitining ochiq qismini va imzo yuboradi. Birinchi marta terminal fingerprint ni so\'raydi; keyin u known_hosts da saqlanadi — server almashtirilsa, SSH ogohlantiradi.');
+      c.unit('uHk','on'); c.led('hkL',1); await c.token('host kaliti · SHA256:Ab3k…','ctl',[R,L],T); c.unit('uHk',null);
+      c.unit('uKh','on'); c.led('khL',1); c.text('khT','SHA256:Ab3k…9Qz ✓ known_hosts ga mos'); c.text('t2','Host key SHA256:Ab3k…9Qz ✓'); undim(svg,'t2'); await c.delay(700); c.unit('uKh',null); c.unit('uSshd',null); if(!c.alive()) return;
+      c.step(2,'<b>Kalit almashinuvi.</b> 13.3 dagi kabi: ikki tomon curve25519 bilan umumiy maxfiy kalit kelishadi. Shu daqiqadan boshlab hamma narsa — buyruqlar ham, natijalar ham — shifrlangan tunnel ichida.');
+      await Promise.all([c.token('pk_c','ctl',[L,R],T),c.token('pk_s','ctl',[R,L],T)]);
+      c.text('scT','umumiy kalit kelishildi ✓'); c.lit('sc2'); svg.querySelector('#sc2').classList.add('flow'); c.text('t3','kex curve25519 ✓ · shifr chacha20'); undim(svg,'t3'); await c.delay(900); if(!c.alive()) return;
+      c.step(3,'<b>Chaqiriq.</b> Endi "sen kimsan?" savoli. Server tasodifiy son yuboradi: "mana buni imzola". Parol so\'ralmaydi — parol tarmoqdan o\'tishi mumkin edi.');
+      c.unit('uSshd','on'); await c.token('n = 7f3e 91c0 … (tasodifiy)','data',[R2,L2],T); c.unit('uSshd',null); if(!c.alive()) return;
+      c.step(4,'<b>Imzo.</b> Noutbuk n ni yopiq kalit id_ed25519 bilan imzolaydi. Kalitning o\'zi diskdan chiqmaydi — faqat imzo (64 bayt) va ochiq kalitning nomi ketadi.');
+      c.unit('uPk','on'); c.led('pkL',1,'bad blink'); await c.delay(600); c.led('pkL',1,'bad');
+      await c.token('imzo(n) · ochiq kalit id','data',[L2,R2],T); c.unit('uPk',null); if(!c.alive()) return;
+      c.step(5,'<b>Tekshiruv.</b> sshd ~/.ssh/authorized_keys dagi ochiq kalit bilan imzoni tekshiradi: faqat mos yopiq kalit egasi shunday imzo qo\'ya oladi. Mos keldi ✓ — auth.log ga yoziladi.');
+      c.unit('uAk','on'); c.led('akL',1,'blink'); await c.delay(800); c.led('akL',1,'');
+      c.text('sj1','Accepted publickey for muhammad'); undim(svg,'sj1'); c.text('sj2','from 84.54.71.9 · ssh2: ED25519 ✓'); undim(svg,'sj2'); await c.delay(600); c.unit('uAk',null); if(!c.alive()) return;
+      c.step(6,'<b>Shell.</b> Server bash ochib beradi: muhammad@vps:~$. Har yozgan buyrug\'ingiz tunnel orqali serverga boradi va u yerda bajariladi — ekran va klaviatura shu yerda, kompyuter esa 3000 km narida.');
+      await c.token('shell tayyor','data',[R2,L2],T); c.text('t4','muhammad@vps:~$ _'); undim(svg,'t4'); c.unit('uSshd','on');
+    });
+    replayOn('sshBtn',fig);
+  })();
+
+  /* ---------- Jarayonning hayoti ---------- */
+  (function(){
+    var fig=document.getElementById('figLife'); if(!fig) return;
+    var svg=fig.querySelector('svg');
+    B.scene(fig,async function(c){
+      ['ll0','ll1','ll2','ll3','rl0','rl1','rl2','rl3'].forEach(function(id){ c.text(id,''); dim(svg,id); });
+      c.led('termL',1,''); c.led('bashL',1,''); c.led('p1L',1,''); c.led('sdL',1); c.led('p2L',1,''); c.led('tmL',0,'warn');
+      c.text('termT','ochiq'); c.text('p1T2','ishlayapti · javob beradi'); c.text('p2T','node bot.js · PID 4180'); c.text('p2T2','ishlayapti · javob beradi'); c.text('tmT','—');
+      c.step(0,'<b>Ishlayapti.</b> Chapda: SSH terminalda node bot.js yozildi — bash uni bola jarayon sifatida ochdi (PID 4123). O\'ngda: systemd bot.service ni ishga tushirdi (PID 4180). Hozircha ikkisi ham javob beradi.');
+      c.text('ll0','$ node bot.js'); undim(svg,'ll0'); c.text('ll1','bot: tinglayapman :3000'); undim(svg,'ll1');
+      c.text('rl0','systemd[1]: Started Telegram bot.'); undim(svg,'rl0'); c.unit('uP1','on'); c.unit('uP2','on'); await c.delay(1300); if(!c.alive()) return;
+      c.step(1,'<b>SIGHUP.</b> Siz terminal oynasini yopdingiz. SSH sessiya uzildi → bash ga "hang up" signali → bash uni o\'z bolalariga uzatadi: node jarayoniga <b>SIGHUP</b> keladi.',true);
+      c.led('termL',0); c.unit('uTerm','bad'); c.text('termT','yopildi (ulanish uzildi)'); await c.delay(400);
+      c.led('bashL',0); c.unit('uBash','bad'); c.lit('lw1'); await c.token('SIGHUP','warn',[[210,136],[240,136],[300,136]],600); c.unlit(); if(!c.alive()) return;
+      c.step(2,'<b>O\'ldi.</b> Node SIGHUP ni ushlamaydi — jarayon tugaydi. Bot javob bermay qoldi va hech kim uni qayta ishga tushirmaydi. Ertalab kelib ko\'rasiz: "bot ishlamayapti".',true);
+      c.led('p1L',1,'bad'); c.unit('uP1','bad'); c.text('p1T2','o\'ldi · SIGHUP (signal 1)');
+      c.text('ll2','Hangup'); undim(svg,'ll2'); c.text('ll3','[jarayon yo\'q — hech kim qayta ko\'tarmaydi]'); undim(svg,'ll3'); await c.delay(1300); if(!c.alive()) return;
+      c.step(3,'<b>Qulash.</b> O\'ngdagi bot ham baxtli emas: kodda xato — TypeError, ushlanmagan istisno. Node exit code 1 bilan tugaydi. Farq: uning otasi systemd, u bola o\'lganini SIGCHLD orqali darhol biladi.',true);
+      c.text('rl1','bot: TypeError: Cannot read properties of undefined'); undim(svg,'rl1');
+      c.led('p2L',1,'bad'); c.unit('uP2','bad'); c.text('p2T2','quladi · exit code 1'); c.lit('lw2');
+      await c.token('SIGCHLD · status=1','warn',[[560,114],[560,104],[560,90]],500); c.unlit(); if(!c.alive()) return;
+      c.step(4,'<b>Taymer.</b> bot.service: Restart=always, RestartSec=5. systemd jurnalga yozadi va 5 soniya sanaydi — tez-tez qulasa CPU ni yeb qo\'ymasligi uchun.');
+      c.text('rl2','systemd[1]: Main process exited, status=1/FAILURE'); undim(svg,'rl2');
+      c.unit('uTimer','warn'); c.led('tmL',1,'warn blink');
+      for(var s=5;s>=0&&c.alive();s--){ c.text('tmT','qayta ishga tushirishgacha: '+s+' s'); await c.delay(300); }
+      c.led('tmL',1,'warn'); c.unit('uTimer',null); if(!c.alive()) return;
+      c.step(5,'<b>Qayta tirildi.</b> systemd yana fork + exec qiladi: yangi jarayon, yangi PID 4211, o\'sha kod. Bot yana :3000 da tinglaydi. Server qayta yuklansa ham xuddi shu: enable qilingan unit yuklanishda ko\'tariladi.');
+      c.lit('lw2'); await c.token('fork + exec','ctl',[[560,90],[560,104],[560,120]],500); c.unlit();
+      c.led('p2L',1,''); c.unit('uP2','on'); c.text('p2T','node bot.js · PID 4211'); c.text('p2T2','qayta ishlayapti · javob beradi');
+      c.text('rl3','systemd[1]: restart job (1) · Started Telegram bot.'); undim(svg,'rl3'); await c.delay(1000); if(!c.alive()) return;
+      c.step(6,'<b>Xulosa.</b> Jarayon o\'zini ishga tushirganga bog\'liq: terminal yopildi — bola ham o\'ldi. Serverda ota PID 1 (systemd) yoki PM2 bo\'lsin: u o\'lmaydi, bolasini kuzatadi va qayta ko\'taradi. journalctl -u bot -f shu jurnalni ko\'rsatadi.');
+    });
+  })();
+
+  /* ---------- Docker ---------- */
+  (function(){
+    var fig=document.getElementById('figDock'); if(!fig) return;
+    var svg=fig.querySelector('svg'), root=svg.querySelector('#dkLayers');
+    var LY=[['FROM node:22-alpine → Alpine Linux 3.20','sha256:3f1a… · 7.8 MB'],['Node.js 22 (image ichida)','sha256:9c0e… · 50 MB'],['RUN npm ci → node_modules/','sha256:d41b… · 30 MB'],['COPY . . → bot.js (sizning kod)','sha256:7e22… · 12 kB']];
+    LY.forEach(function(l,i){ var y=164-i*36; root.appendChild(B.el('rect',{x:30,y:y,width:280,height:32,rx:4,'class':'cell',id:'ly'+i})); root.appendChild(B.el('text',{x:38,y:y+13,'class':'xs',id:'lyt'+i},l[0])); root.appendChild(B.el('text',{x:38,y:y+26,'class':'mut xs',id:'lyh'+i},l[1])); });
+    B.scene(fig,async function(c){
+      for(var i=0;i<4;i++){ c.text('lyh'+i,LY[i][1]); }
+      c.text('ct1T','bot-1 · —'); c.text('ct2T','bot-2 · —'); c.text('ctT',''); c.text('cgT','bot-1: CPU 0% · RAM 0 MB'); svg.querySelector('#cgBar').setAttribute('width',0);
+      c.text('vmT','yuklanish: — s'); c.text('cnT','yuklanish: — s'); c.led('ct1L',0,''); c.led('ct2L',0,'');
+      c.step(0,'<b>docker build.</b> Dockerfile satrma-satr bajariladi, har satr yangi <b>qatlam</b>: Alpine (7.8 MB), Node 22, npm ci (node_modules), sizning kod. Qatlam o\'zgarmasa keshdan olinadi — bot.js o\'zgarganda faqat eng yuqori 12 kB qayta quriladi.');
+      var CH=['keshdan (o\'zgarmadi)','keshdan (o\'zgarmadi)','kesh (package.json bir xil)','qayta qurildi ✓ 0.4 s'];
+      for(var i=0;i<4&&c.alive();i++){ await c.token(['FROM','node','npm ci','COPY'][i],'data',[[170,212-i*36],[170,180-i*36]],350); c.cell('ly'+i,'hi'); c.flash('ly'+i); c.text('lyh'+i,LY[i][1]+' · '+CH[i]); await c.delay(400); }
+      if(!c.alive()) return;
+      c.step(1,'<b>docker run.</b> Image dan konteyner — oddiy Linux jarayoni — ishga tushadi. Yadro unga o\'z namespace (o\'z PID lar, o\'z tarmoq) va cgroup (CPU 1.0, RAM 512 MB chegarasi) beradi. Bitta image dan ikkitasi: bot-1 va bot-2.');
+      c.lit('dkW'); await c.token('docker run bot:1.0','data',[[310,110],[330,110],[330,80],[350,80],[470,80]],700);
+      c.led('ct1L',1); c.unit('ct1','on'); c.text('ct1T','bot-1 · PID 5120 · :3000'); c.led('kNsL',1); c.unit('kNs','on'); c.led('kCgL',1); c.unit('kCg','on');
+      svg.querySelector('#cgBar').setAttribute('width',52); c.text('cgT','bot-1: CPU 12% · RAM 96 / 512 MB'); await c.delay(500);
+      await c.token('docker run bot:1.0','data',[[310,110],[330,110],[330,146],[350,146],[470,146]],700);
+      c.led('ct2L',1); c.unit('ct2','on'); c.text('ct2T','bot-2 · PID 5188 · :3001'); c.unlit(); await c.delay(900); c.unit('kNs',null); c.unit('kCg',null); if(!c.alive()) return;
+      c.step(2,'<b>docker stop.</b> bot-2 to\'xtatildi: jarayon yo\'q, uning yozish qatlami o\'chdi. Image esa o\'z joyida — undan istalgan vaqt yangi konteyner ochish mumkin. Ma\'lumot saqlanishi kerak bo\'lsa — volume.');
+      c.led('ct2L',1,'bad'); c.unit('ct2','bad'); c.text('ct2T','bot-2 · to\'xtadi (jarayon yo\'q)'); await c.delay(600); c.led('ct2L',0,''); c.unit('ct2',null);
+      c.text('ctT','image o\'z joyida qoladi ✓'); svg.querySelector('#ctT').classList.add('label-on'); for(var i=0;i<4;i++) c.flash('ly'+i); await c.delay(900); c.unit('ct1',null); if(!c.alive()) return;
+      c.step(3,'<b>Virtual mashina.</b> Taqqoslang: VM da hypervisor apparatni taqlid qiladi, har mehmon o\'z <b>yadrosini</b> yuklaydi — gigabaytlar, daqiqalar. Ikki VM = ikki to\'liq OS.');
+      var VM=['vm0','vm1','vm2a','vm2b','vm3a','vm3b'];
+      for(var i=0;i<VM.length&&c.alive();i++){ c.unit(VM[i],'on'); await c.delay(260); }
+      c.text('vmT','yuklanish: 45 s · 1.2 GB × 2'); svg.querySelector('#vmT').classList.add('label-warn'); await c.delay(700); if(!c.alive()) return;
+      c.step(4,'<b>Konteyner.</b> Yadro bitta — serverniki. Docker faqat fayllar, jarayonlar va tarmoqni namespace bilan ajratadi. bot, postgres, nginx — uchta konteyner, megabaytlar, soniyaning ulushi.');
+      var CN=['cn5','cn4','cn3','cn0','cn1','cn2'];
+      for(var i=0;i<CN.length&&c.alive();i++){ c.unit(CN[i],'on'); await c.delay(220); }
+      c.text('cnT','yuklanish: 0.3 s · 12 MB'); svg.querySelector('#cnT').classList.add('label-on'); await c.delay(800); if(!c.alive()) return;
+      c.step(5,'<b>Xulosa.</b> Image = qatlamli, o\'zgarmas fayllar (disk). Konteyner = shu fayllardan ishga tushgan izolyatsiyalangan jarayon (RAM, CPU). "Menda ishlaydi" muammosi yo\'qoladi: Node 22 ham, kutubxonalar ham image ichida, serverda nima borligi muhim emas.');
+    });
+    fig.addEventListener('replay',function(){ svg.querySelector('#vmT').classList.remove('label-warn'); svg.querySelector('#cnT').classList.remove('label-on'); svg.querySelector('#ctT').classList.remove('label-on'); });
+  })();
+
+  /* ---------- So'rov yo'li ---------- */
+  (function(){
+    var fig=document.getElementById('figRoute'); if(!fig) return;
+    var svg=fig.querySelector('svg'), lg=svg.querySelector('#rlog');
+    for(var i=0;i<8;i++) lg.appendChild(B.el('text',{x:608,y:70+i*18,'class':'scr dim',style:'font-size:10px',id:'rlg'+i},''));
+    var n=0;
+    function log(c,s){ if(n<8){ c.text('rlg'+n,s); undim(svg,'rlg'+n); n++; } }
+    function tm(c,ms){ c.text('rtT','t = '+ms+' ms'); }
+    B.scene(fig,async function(c){
+      var T=650; n=0; for(var i=0;i<8;i++){ c.text('rlg'+i,''); dim(svg,'rlg'+i); }
+      tm(c,0); c.text('tgT','bot.misol.uz → ?'); c.text('ndT','kutmoqda'); c.text('pgT','—');
+      c.led('fw22',1,''); c.led('fw80',1,'bad'); c.led('fw443',1,''); c.led('fw3000',1,'bad'); c.led('fw5432',1,'bad'); c.led('dnsL',0,'blue');
+      c.step(0,'<b>DNS.</b> setWebhook da siz https://bot.misol.uz/webhook dedingiz. Telegram avval DNS dan so\'raydi: bot.misol.uz qayerda? Siz sozlagan A-yozuv javob beradi: 185.199.108.153.');
+      c.unit('tgU','on'); c.led('tgL',1); c.lit('rw0'); await c.token('A? bot.misol.uz','addr',[[105,126],[105,160],[105,188]],T); c.led('dnsL',1,'blue'); c.unit('dnsU','on');
+      await c.token('185.199.108.153','addr',[[105,188],[105,160],[105,126]],T); c.text('tgT','IP: 185.199.108.153 ✓'); c.unit('dnsU',null); c.unlit(); tm(c,12); await c.delay(500); if(!c.alive()) return;
+      c.step(1,'<b>HTTPS :443.</b> Telegram TCP ulanish ochadi: 185.199.108.153:443. ufw qoidalari: 22 va 443 ochiq, qolgani DROP. 443 — o\'tadi. 3000 ga to\'g\'ridan-to\'g\'ri urinsa — javobsiz.');
+      c.lit('rw1'); await c.token('TCP :443 · TLS','pkt',[[105,106],[190,106],[240,106],[254,144]],T); c.led('fw443',1,'blink'); log(c,'ufw: ALLOW 149.154.167.220 → :443'); await c.delay(400); c.led('fw443',1,''); c.unit('tgU',null); tm(c,40); if(!c.alive()) return;
+      c.step(2,'<b>Nginx.</b> 443 da Nginx tinglaydi: TLS qo\'l berish (sertifikat bot.misol.uz, Let\'s Encrypt), so\'rov ochiladi: POST /webhook. location /webhook → proxy_pass http://127.0.0.1:3000. TLS tashqarida qoldi.');
+      c.lit('rw4'); await c.token('POST /webhook','pkt',[[254,144],[290,144],[290,84],[330,84],[455,84]],T); c.led('ngL',1); c.unit('ngU','on');
+      log(c,'nginx: TLS 1.3 ✓ POST /webhook → 127.0.0.1:3000'); tm(c,58); await c.delay(500); if(!c.alive()) return;
+      c.step(3,'<b>Node :3000.</b> Ichki ulanish, oddiy HTTP — shifrlash kerak emas, chunki server ichidan chiqmaydi. bot.js JSON ni o\'qiydi: chat 4471, text "Salom!".');
+      c.lit('rw2'); await c.token('HTTP (ichki)','data',[[455,116],[455,130],[455,160]],450); c.led('ndL',1); c.unit('ndU','on'); c.unit('ngU',null);
+      c.text('ndT','update: chat 4471 · "Salom!"'); log(c,'bot: POST /webhook chat=4471 text=Salom!'); tm(c,60); await c.delay(500); if(!c.alive()) return;
+      c.step(4,'<b>SQL :5432.</b> Bot PostgreSQL ga localhost orqali so\'rov yuboradi. 5432 tashqaridan yopiq — bazaga faqat shu serverdagi jarayonlar kira oladi. Javob keshdan: 1.8 ms.');
+      c.lit('rw3'); await c.token('SELECT … tg_id=4471','data',[[455,194],[455,208],[455,240]],450); c.led('pgL',1); c.unit('pgU','on');
+      await c.delay(300); c.text('pgT','1 qator: Anvar · 1.8 ms'); log(c,'postgres: SELECT … WHERE tg_id=4471 (1.8 ms)');
+      await c.token('Anvar','data',[[455,240],[455,208],[455,194]],450); c.unit('pgU',null); tm(c,63); if(!c.alive()) return;
+      c.step(5,'<b>Javob.</b> Bot chiquvchi HTTPS ulanish ochadi: POST api.telegram.org/bot…/sendMessage. ufw chiquvchi trafikni to\'smaydi. Nginx ga 200 OK qaytadi. Telegram xabarni foydalanuvchiga yetkazadi.');
+      log(c,'bot: sendMessage → api.telegram.org:443 ✓'); c.lit(['rw1']);
+      await c.token('sendMessage','data',[[455,160],[320,160],[320,106],[190,106],[105,106]],900); c.unit('ndU',null); c.led('tgL',1,'blink');
+      log(c,'nginx: 200 OK POST /webhook 84 ms'); tm(c,84); await c.delay(500); c.led('tgL',1,''); c.unlit(); if(!c.alive()) return;
+      c.step(6,'<b>Xulosa.</b> Uchta port, uchta rol: 443 — dunyoga ochiq eshik (Nginx, TLS), 3000 — faqat ichkarida (Node), 5432 — faqat ichkarida (baza). Nimadir ishlamasa: journalctl -u bot -f, nginx access.log, getWebhookInfo.');
+    });
+  })();
+
+  /* ---------- Kuzatuv ---------- */
+  (function(){
+    var fig=document.getElementById('figMon'); if(!fig) return;
+    var svg=fig.querySelector('svg');
+    function bar(c,id,vid,pct){ var f=svg.querySelector('#'+id); f.setAttribute('width',Math.round(520*pct/100)); f.classList.remove('warn','bad'); if(pct>=95) f.classList.add('bad'); else if(pct>=80) f.classList.add('warn'); c.text(vid,pct+' %',pct>=95?'label-bad':pct>=80?'label-warn':''); }
+    var logs=[];
+    function log(c,s){ logs.push(s); if(logs.length>3) logs.shift(); for(var i=0;i<3;i++){ c.text('ml'+(i+1),logs[i]||''); if(logs[i]) undim(svg,'ml'+(i+1)); else dim(svg,'ml'+(i+1)); } }
+    B.scene(fig,async function(c){
+      logs=[]; log(c,'systemd[1]: Started Telegram bot (PID 4180)');
+      c.led('botL',1,''); c.text('botT','active (running)'); c.text('botT2','PID 4180 · 96 MB'); c.led('oomL',0,'warn'); c.text('oomT','OOM killer: tinch'); c.unit('botU',null);
+      var ram=35, dsk=55, pid=4180, day;
+      c.step(0,'<b>Kuzatuv.</b> Uch ko\'rsatkich: CPU (htop), RAM (free -m), disk (df -h). 80% — ogohlantirish chizig\'i. Kunlar o\'tadi…');
+      for(day=1;day<=30&&c.alive();day++){
+        c.text('dayT','kun '+day+' · '+(day<10?'0':'')+day+'.10');
+        var cpu=12+Math.round(Math.random()*40); bar(c,'cpuF','cpuV',cpu); bar(c,'ramF','ramV',Math.min(100,Math.round(ram))); bar(c,'dskF','dskV',Math.min(100,Math.round(dsk)));
+        if(day===5) c.step(1,'<b>RAM oqishi.</b> Botning xotirasi kundan-kunga o\'sadi: obyektlarga havola qolgani uchun axlat yig\'uvchi ularni bo\'shata olmaydi (12.3). 1 GB VPS da bu 10–12 kunda to\'ladi.');
+        if(day===20) c.step(3,'<b>Disk to\'lmoqda.</b> Loglar hech kim o\'chirmasa faqat o\'sadi: bot.log 1.9 GB. df -h 80% dan oshdi — bu hali xato emas, lekin ogohlantirish.');
+        if(ram>=96){
+          c.text('botT2','PID '+pid+' · 980 MB'); c.led('botL',1,'bad'); c.unit('botU','bad'); c.text('botT','SIGKILL (OOM)'); c.led('oomL',1,'bad'); c.text('oomT','OOM killer: jarayonni o\'ldirdi');
+          log(c,'kernel: Out of memory: Killed process '+pid+' (node) total-vm:1.9G anon-rss:980M');
+          c.step(2,'<b>OOM.</b> RAM tugadi: yadroning OOM killer i eng ko\'p xotira yegan jarayonni — node ni — SIGKILL bilan o\'ldiradi. systemd 5 s dan keyin qayta ko\'taradi, xotira 96 MB ga tushadi… va oqish qaytadan boshlanadi. Yechim — oqishni topish (heap snapshot), qayta ishga tushirish emas.',true);
+          await c.delay(1400); if(!c.alive()) return;
+          pid+=31; ram=35; c.led('botL',1,''); c.unit('botU',null); c.text('botT','active (running)'); c.text('botT2','PID '+pid+' · 96 MB'); c.led('oomL',0,'warn'); c.text('oomT','OOM killer: tinch');
+          log(c,'systemd[1]: bot.service: Scheduled restart job · Started Telegram bot (PID '+pid+')'); bar(c,'ramF','ramV',35);
+        } else ram+=(pid===4180?5.6:3.2);
+        if(dsk>=100){
+          c.led('botL',1,'bad'); c.unit('botU','bad'); c.text('botT','xato: ENOSPC');
+          log(c,'bot: Error: ENOSPC: no space left on device, write \'/var/log/bot.log\'');
+          c.step(4,'<b>ENOSPC.</b> Disk 100%: bot logga ham, baza faylga ham yoza olmaydi — har yozish "no space left on device" bilan qaytadi. PostgreSQL ham yozishni to\'xtatadi. Eng ko\'p uchraydigan halokat, va eng osoni oldini olish.',true);
+          await c.delay(1600); if(!c.alive()) return;
+          c.step(5,'<b>logrotate.</b> Eski loglar siqiladi va o\'chiriladi: bot.log → bot.log.1.gz (1.9 GB → 160 MB). Disk 42% ga tushadi, bot yana yozadi. Bu ishni logrotate yoki pm2-logrotate har kuni o\'zi qilishi kerak edi.');
+          log(c,'logrotate: /var/log/bot.log → bot.log.1.gz (1.9 GB → 160 MB) · o\'chirildi: bot.log.5.gz');
+          dsk=42; bar(c,'dskF','dskV',42); c.led('botL',1,''); c.unit('botU',null); c.text('botT','active (running)'); await c.delay(900); if(!c.alive()) return;
+        } else dsk+=1.62;
+        await c.delay(340);
+      }
+      if(!c.alive()) return;
+      c.step(6,'<b>Xulosa.</b> CPU 100% uzoq tursa — cheksiz sikl; RAM o\'sib borsa — oqish (OOM → qayta ishga tushish sikli); disk to\'lsa — ENOSPC, hamma narsa to\'xtaydi. Uchtasini ham har kuni 10 soniyada ko\'rish mumkin: htop, free -m, df -h. Va healthcheck + zaxira nusxa.');
+    });
+  })();
 })();
 </script>
+<script src="../js/quiz-data.js"></script>
+<script src="../js/quiz.js"></script>
 </body>
 </html>

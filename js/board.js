@@ -62,10 +62,10 @@
 
   function scene(fig,fn,opts){
     opts=opts||{}; var svg=fig.querySelector('svg.board'); if(!svg) return null;
-    var run={id:0,alive:function(){ return true; }}, current=0, started=false, ctx=null;
+    var current=0, started=false, ctx=null;
     function start(){
       current++; var my=current;
-      run.alive=function(){ return my===current; };
+      var run={id:my,alive:function(){ return my===current; }}; /* har yurish o'z run obyekti: eski sahna replay dan keyin to'xtaydi */
       ctx=makeCtx(fig,svg,run);
       ctx.reset();
       Promise.resolve(fn(ctx)).then(function(){ if(opts.loop&&my===current&&!reduce) setTimeout(function(){ if(my===current) start(); },opts.loopDelay||1800); }).catch(function(e){ if(window.console) console.error(e); });

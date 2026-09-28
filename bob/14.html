@@ -7,28 +7,12 @@
 <meta name="description" content="Klaviaturada 'A' harfini bosishdan ekranda harf paydo bo'lishigacha: tranzistordan ilovagacha barcha qatlamlar bitta misolda.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/board.css">
 <style>
-/* 32-rasm: tugma → ekran sahnasi */
-.scene .keycap{transition:transform .2s}
-.scene .keycap.down{transform:translateY(6px)}
-.scene .flow.off{opacity:0}
-.scene .letter{opacity:0;transition:opacity .5s;font-family:var(--display);font-size:44px;font-weight:700;fill:var(--accent)}
-.scene .letter.show{opacity:1}
-.scene .caret{fill:var(--muted)}
-.scene .stage{transition:all .3s}
-.chain div b{font-weight:600}
 /* 8 qadam ro'yxati */
 .steps{padding-left:22px;max-width:70ch}
 .steps li{margin-bottom:8px}
 .steps li::marker{font-family:var(--mono);color:var(--accent);font-weight:600}
-/* 14.1: abstraksiya narvoni */
-.ladder{display:flex;flex-direction:column-reverse;gap:4px;font-family:var(--mono);font-size:13px;max-width:520px}
-.ladder div{border:1px solid var(--line);border-radius:6px;padding:6px 12px;background:var(--surface);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;animation:climb 5.4s infinite;animation-delay:calc(var(--i) * .55s)}
-.ladder b{font-weight:600;color:var(--ink)}
-.ladder span{color:var(--muted)}
-@keyframes climb{0%,12%{background:var(--accent-soft);border-color:var(--accent)}20%,100%{background:var(--surface);border-color:var(--line)}}
-.ladder-wrap{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:stretch}
-.ladder-wrap .axis{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;border-right:2px solid var(--line);padding:0 6px}
 </style>
 </head>
 <body>
@@ -47,34 +31,86 @@
 
 <p>Endi o'rgangan barcha bilimlarni birlashtirib, oddiy bir harakat — klaviaturada 'A' harfini bosish — paytida kompyuter ichida nima sodir bo'lishini boshidan oxirigacha kuzatamiz. Bu jarayonda tranzistordan tortib operatsion tizim va ilovagacha deyarli barcha qatlamlar ishtirok etadi.</p>
 
-<figure class="fig" id="keyFig">
-  <div class="controls"><button class="primary" type="button" id="keyBtn" data-chain="key">Tugmani bos</button><span class="small muted" id="keyTxt">8 bosqich, taxminan 10–30 ms</span></div>
-  <svg class="sv scene" viewBox="0 0 640 130" role="img" aria-label="Tugma bosilishi: klaviatura, USB, CPU, drayver va kernel, ilova, GPU, monitor">
-    <path class="wire" d="M100 70 H 150 M230 70 H 280 M360 70 H 410 M490 70 H 520"/>
-    <path class="flow off" id="kf1" d="M100 70 H 150"/>
-    <path class="flow off" id="kf2" d="M230 70 H 280"/>
-    <path class="flow off" id="kf3" d="M360 70 H 410"/>
-    <path class="flow off" id="kf4" d="M490 70 H 520"/>
-    <g class="keycap" id="keycap"><rect x="30" y="40" width="70" height="60" rx="10" class="box stage" id="ks0"/><text x="65" y="78" text-anchor="middle" class="ttl" style="font-size:26px">A</text></g>
-    <text x="65" y="118" text-anchor="middle">klaviatura</text>
-    <rect x="150" y="45" width="80" height="50" rx="8" class="box stage" id="ks1"/><text x="190" y="66" text-anchor="middle" class="ttl">USB</text><text x="190" y="84" text-anchor="middle">0x1E</text>
-    <rect x="280" y="45" width="80" height="50" rx="8" class="box stage" id="ks2"/><text x="320" y="66" text-anchor="middle" class="ttl">CPU</text><text x="320" y="84" text-anchor="middle">IRQ · kernel</text>
-    <rect x="410" y="45" width="80" height="50" rx="8" class="box stage" id="ks3"/><text x="450" y="66" text-anchor="middle" class="ttl">GPU</text><text x="450" y="84" text-anchor="middle">kadr buferi</text>
-    <rect x="520" y="10" width="110" height="110" rx="8" class="box soft stage" id="ks4"/><rect x="530" y="20" width="90" height="80" rx="4" class="box"/>
-    <text x="575" y="80" text-anchor="middle" class="letter" id="scrA">A</text>
-    <rect x="597" y="52" width="2" height="30" class="caret blink" id="caret"/>
-    <text x="575" y="114" text-anchor="middle">monitor</text>
+<figure class="fig" id="keyFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 520" role="img" aria-label="Butun tizim platasi: klaviatura MCU, USB xHCI kontroller, CPU (IRQ, APIC), RAM (kernel va Telegram buferi), GPU, VRAM kadr buferi, monitor; bitta tugma bosilishi 8 qadamda ekranga yetadi">
+    <defs><pattern id="g32" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="520" fill="url(#g32)"/>
+    <path class="wire w-data" id="kw1" d="M270 138 H 300"/>
+    <path class="wire w-ctl" id="irqW" d="M430 80 H 450"/>
+    <path class="wire w-addr bus" id="bAddr" d="M640 100 H 660"/>
+    <path class="wire w-data bus" id="bData" d="M640 120 H 660"/>
+    <path class="wire w-data bus" id="pcie" d="M545 200 V 215 H 410 V 230"/>
+    <text x="556" y="216" class="mut xs">PCIe x16</text>
+    <path class="wire w-data bus" id="gvW" d="M520 330 H 540"/>
+    <path class="wire w-data bus" id="hdmiW" d="M700 330 H 720"/>
+    <text x="710" y="322" text-anchor="middle" class="mut xs">HDMI</text>
+    <text x="285" y="130" text-anchor="middle" class="mut xs">USB</text>
+    <text x="440" y="72" text-anchor="middle" class="mut xs">IRQ</text>
+    <!-- klaviatura -->
+    <rect x="20" y="20" width="250" height="180" rx="10" class="chip"/>
+    <text x="32" y="42" class="ttl">Klaviatura</text>
+    <rect x="36" y="52" width="56" height="56" rx="8" class="unit" id="keycap"/><text x="64" y="88" text-anchor="middle" class="big">A</text>
+    <text x="36" y="124" class="mut xs">matritsa</text>
+    <text x="36" y="137" class="mut xs">q2 · u1</text>
+    <circle cx="42" cy="152" r="4.5" class="led" id="kmL"/><text x="50" y="156" class="xs">kontakt</text>
+    <text x="36" y="172" class="mut xs">skan 1 kHz</text>
+    <rect x="110" y="52" width="150" height="56" rx="6" class="unit" id="uMcu"/><circle cx="122" cy="66" r="4.5" class="led" id="mcuL"/><text x="130" y="70" class="xs">MCU · HID kontroller</text><text x="116" y="86" class="mut xs">skan-kod: 0x04 ('A')</text><text x="116" y="100" class="mut xs">hisobot 8 B: 00 00 04 00 …</text>
+    <rect x="110" y="118" width="150" height="40" rx="6" class="unit" id="uUsb"/><circle cx="122" cy="132" r="4.5" class="led" id="usbL"/><text x="130" y="136" class="xs">USB · 1.5 Mbit/s</text><text x="116" y="150" class="mut xs">so'rov (poll) har 1 ms</text>
+    <!-- xHCI -->
+    <rect x="300" y="20" width="130" height="180" rx="10" class="chip"/>
+    <text x="312" y="42" class="ttl">USB xHCI</text>
+    <rect x="310" y="52" width="110" height="50" rx="6" class="unit" id="uXhci"/><circle cx="322" cy="66" r="4.5" class="led" id="xhL"/><text x="330" y="70" class="xs">port 3 · HID</text><text x="316" y="86" class="mut xs">paket qabul qilindi</text>
+    <rect x="310" y="110" width="110" height="40" rx="4" class="screen"/><text x="318" y="134" class="scr dim" style="font-size:11px" id="usbScr">—</text>
+    <text x="312" y="172" class="mut xs">IRQ → CPU (MSI)</text>
+    <!-- CPU -->
+    <rect x="450" y="20" width="190" height="180" rx="16" class="die"/>
+    <text x="462" y="42" class="ttl">CPU</text>
+    <rect x="460" y="52" width="80" height="50" rx="6" class="unit" id="uC0"/><text x="466" y="66" class="xs">Yadro 0</text><circle cx="472" cy="82" r="4.5" class="led" id="c0L"/><text x="480" y="86" class="xs" id="c0T">Telegram</text>
+    <rect x="550" y="52" width="80" height="50" rx="6" class="unit" id="uC1"/><text x="556" y="66" class="xs">Yadro 1</text><circle cx="562" cy="82" r="4.5" class="led" id="c1L"/><text x="570" y="86" class="mut xs">bo'sh</text>
+    <rect x="460" y="110" width="170" height="40" rx="6" class="unit" id="uApic"/><circle cx="472" cy="124" r="4.5" class="led warn" id="apicL"/><text x="480" y="128" class="xs">APIC · IRQ 0x21 → IDT</text><text x="466" y="144" class="mut xs">holat saqlanadi → ishlovchi</text>
+    <text x="462" y="172" class="xs" id="cpuT">rejim: foydalanuvchi (halqa 3)</text>
+    <text x="462" y="188" class="mut xs" id="cpuT2">3.2 GHz · 1 ms = 3.2 mln takt</text>
+    <!-- RAM -->
+    <rect x="660" y="20" width="220" height="180" rx="10" class="chip"/>
+    <text x="672" y="42" class="ttl">RAM (DDR5 DIMM)</text>
+    <rect x="670" y="50" width="200" height="66" rx="6" class="unit" id="uKern"/><text x="676" y="64" class="xs">Kernel (halqa 0)</text>
+    <circle cx="680" cy="78" r="4" class="led" id="k0"/><text x="688" y="82" class="mut xs">usbhid: 0x04 → KEY_A</text>
+    <circle cx="680" cy="92" r="4" class="led" id="k1"/><text x="688" y="96" class="mut xs">input · tartib: 'A' U+0041</text>
+    <circle cx="680" cy="106" r="4" class="led" id="k2"/><text x="688" y="110" class="mut xs">faol oyna: Telegram → hodisa</text>
+    <rect x="670" y="122" width="200" height="70" rx="6" class="unit" id="uApp"/><text x="676" y="136" class="xs">Telegram (halqa 3) · matn buferi</text>
+    <g id="tbuf"></g>
+    <!-- jurnal -->
+    <rect x="20" y="230" width="260" height="190" rx="10" class="chip"/>
+    <text x="32" y="252" class="ttl">Hodisalar jurnali (vaqt)</text>
+    <rect x="30" y="262" width="240" height="148" rx="4" class="screen"/>
+    <g id="klog"></g>
+    <!-- GPU -->
+    <rect x="300" y="230" width="220" height="190" rx="16" class="die"/>
+    <text x="312" y="252" class="ttl">GPU</text>
+    <rect x="310" y="262" width="200" height="34" rx="6" class="unit" id="uGq"/><circle cx="322" cy="279" r="4.5" class="led" id="gqL"/><text x="330" y="283" class="xs">draw call: matn "SalomA"</text>
+    <rect x="310" y="304" width="200" height="34" rx="6" class="unit" id="uGr"/><circle cx="322" cy="321" r="4.5" class="led" id="grL"/><text x="330" y="325" class="xs">shrift → 'A' glifi 7×9 piksel</text>
+    <rect x="310" y="346" width="200" height="64" rx="6" class="unit" id="uGs"/><text x="316" y="360" class="xs">shader yadrolari × 2048</text>
+    <g id="gsGrid"></g>
+    <!-- VRAM -->
+    <rect x="540" y="230" width="160" height="190" rx="10" class="chip"/>
+    <text x="552" y="252" class="ttl">VRAM · kadr buferi</text>
+    <g id="fb"></g>
+    <text x="552" y="415" class="mut xs">0xB0000000 + (y·1920+x)·4</text>
+    <!-- monitor -->
+    <rect x="720" y="230" width="160" height="190" rx="10" class="chip"/>
+    <text x="732" y="252" class="ttl">Monitor · 60 Hz</text>
+    <rect x="730" y="262" width="140" height="110" rx="4" class="screen"/>
+    <text x="742" y="322" class="scr" style="font-size:20px" id="monT">Salom_</text>
+    <text x="732" y="390" class="mut xs" id="vsT">vsync kutilmoqda · 16.7 ms</text>
+    <circle cx="738" cy="406" r="4.5" class="led" id="monL"/><text x="748" y="410" class="xs">HDMI · 1920×1080</text>
+    <text x="32" y="440" class="mut xs">Bitta tugma: klaviatura → USB → CPU uzilishi → kernel → ilova → GPU → kadr buferi → monitor. Hammasi 10–30 ms ichida.</text>
+    <g class="tokens"></g>
   </svg>
-  <div class="chain" id="key">
-    <div><span><b>Tugma bosildi</b><small>kontakt ulanadi</small></span></div>
-    <div><span><b>Klaviatura kontrolleri</b><small>skan-kod: 0x1E</small></span></div>
-    <div><span><b>USB kontroller</b><small>paket yuboradi</small></span></div>
-    <div><span><b>CPU uzilish (IRQ)</b><small>joriy ishni to'xtatadi</small></span></div>
-    <div><span><b>Drayver + Kernel</b><small>kod → 'A' hodisasi</small></span></div>
-    <div><span><b>Telegram ilovasi</b><small>matnga qo'shadi</small></span></div>
-    <div><span><b>GPU</b><small>yangi kadr chizadi</small></span></div>
-    <div><span><b>Monitor</b><small>'A' ko'rinadi</small></span></div>
   </div>
+  <div class="board-ctl"><button class="primary" type="button" id="keyBtn">Tugmani bos</button><span class="small muted" id="keyTxt">8 bosqich, taxminan 10–30 ms</span></div>
+  <div class="board-steps"><span>Tugma</span><span>MCU</span><span>USB</span><span>IRQ</span><span>Kernel</span><span>Ilova</span><span>GPU</span><span>Monitor</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring yoki "Tugmani bos": 'A' harfining ekranga yo'li.</div>
   <figcaption><span><b>32-rasm.</b> Tugma bosilishidan ekranda harf paydo bo'lishigacha</span></figcaption>
 </figure>
 
@@ -94,21 +130,25 @@
 <h2 id="14-1">14.1. Yakuniy xulosa</h2>
 <p>Kompyuterni tushunishning kaliti — <strong>abstraksiya</strong>. Pastki darajada faqat elektronlar va kremniy bor. Ulardan tranzistor — boshqariladigan kalit yasaladi. Tranzistorlardan mantiqiy ventillar, ventillardan yig'uvchilar va xotira elementlari quriladi. Ulardan protsessor va xotira hosil bo'ladi. Protsessor faqat oddiy buyruqlarni bajaradi, lekin juda tez. Operatsion tizim apparatni boshqaradi va dasturlarga qulay interfeys beradi. Dasturlash tillari esa odamga o'z fikrini mashinaga tushunarli qilib ifodalash imkonini beradi. Har bir qatlam o'zidan pastdagisini yashiradi — shuning uchun siz tranzistorlar haqida o'ylamasdan, Telegram bot yoza olasiz.</p>
 
-<figure class="fig">
-  <div class="ladder-wrap">
-    <div class="axis">pastdan yuqoriga: har qatlam pastdagisini yashiradi</div>
-    <div class="ladder" aria-label="Abstraksiya qatlamlari: fizikadan ilovagacha">
-      <div style="--i:0"><b>Fizika</b><span>elektronlar, kremniy</span></div>
-      <div style="--i:1"><b>Tranzistor</b><span>boshqariladigan kalit</span></div>
-      <div style="--i:2"><b>Ventillar</b><span>AND, OR, NOT</span></div>
-      <div style="--i:3"><b>Sxemalar</b><span>yig'uvchi, xotira elementi</span></div>
-      <div style="--i:4"><b>Mikroarxitektura</b><span>konveyer, kesh</span></div>
-      <div style="--i:5"><b>ISA</b><span>oddiy buyruqlar, juda tez</span></div>
-      <div style="--i:6"><b>OS</b><span>apparatni boshqaradi</span></div>
-      <div style="--i:7"><b>Til</b><span>JS, Python</span></div>
-      <div style="--i:8"><b>Ilova</b><span>Telegram bot</span></div>
-    </div>
+<figure class="fig" id="figLadder" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 376" role="img" aria-label="Abstraksiya qatlamlari: fizikadan ilovagacha to'qqiz pog'ona; har qatlam pastdagisini yashiradi; har pog'onada ko'rinadigan narsa">
+    <defs><pattern id="glad" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="376" fill="url(#glad)"/>
+    <text x="190" y="30" text-anchor="end" class="mut xs">kitobda</text>
+    <text x="200" y="30" class="ttl">Qatlam</text>
+    <text x="740" y="30" class="ttl">Ko'rinadigan narsa</text>
+    <path class="wire w-data" id="ladW" d="M720 358 V 40"/>
+    <text x="20" y="200" class="mut xs">pastdan yuqoriga ↑</text>
+    <text x="20" y="214" class="mut xs">har qatlam</text>
+    <text x="20" y="228" class="mut xs">pastdagisini yashiradi</text>
+    <rect x="740" y="40" width="140" height="318" rx="4" class="screen"/>
+    <g id="ladRows"></g>
+    <g class="tokens"></g>
+  </svg>
   </div>
+  <div class="board-steps"><span>Fizika</span><span>Tranzistor</span><span>Ventillar</span><span>Sxemalar</span><span>Mikroarx.</span><span>ISA</span><span>OS</span><span>Til</span><span>Ilova</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: pog'onalar pastdan yuqoriga yonadi.</div>
   <figcaption><span><b>Abstraksiya qatlamlari.</b> Elektronlardan Telegram botgacha: har bir qatlam faqat o'zidan bir pog'ona pastdagisiga tayanadi.</span></figcaption>
 </figure>
 
@@ -125,31 +165,105 @@
 </main>
 
 <script src="../js/site.js"></script>
-<script src="../js/quiz-data.js"></script>
-<script src="../js/quiz.js"></script>
+<script src="../js/board.js"></script>
 <script>
 (function(){
-  const $=KQI.$;
-  /* 32-rasm: sahna zanjir bilan birga ishlaydi (zanjirni site.js yoqadi) */
-  const stages=['ks0','ks1','ks2','ks3','ks4'];
-  const map=[[0,null],[0,null],[1,'kf1'],[2,'kf2'],[2,null],[2,null],[3,'kf3'],[4,'kf4']];
-  let timers=[];
-  function play(){
-    timers.forEach(clearTimeout);timers=[];
-    stages.forEach(id=>$('#'+id).classList.remove('on'));
-    ['kf1','kf2','kf3','kf4'].forEach(id=>$('#'+id).classList.add('off'));
-    $('#scrA').classList.remove('show');$('#keycap').classList.add('down');
-    map.forEach((m,i)=>timers.push(setTimeout(()=>{
-      $('#'+stages[m[0]]).classList.add('on');
-      if(m[1])$('#'+m[1]).classList.remove('off');
-      if(i===1)$('#keycap').classList.remove('down');
-      if(i===7){$('#scrA').classList.add('show');$('#keyTxt').textContent='Ekranda \'A\' paydo bo\'ldi: 8 bosqich, ~10–30 ms.';}
-      else $('#keyTxt').textContent=(i+1)+'/8 · '+$('#key').children[i].querySelector('b').textContent;
-    },KQI.reduce?0:i*550)));
-  }
-  $('#keyBtn').addEventListener('click',play);
-  $('#keyFig').addEventListener('replay',()=>{const b=$('#keyBtn');if(b.onclick)b.onclick();play();});
+  if(!window.KQIBoard) return;
+  var B=KQIBoard;
+  function undim(svg,id){ var e=svg.querySelector('#'+id); if(e) e.classList.remove('dim'); }
+  function dim(svg,id){ var e=svg.querySelector('#'+id); if(e) e.classList.add('dim'); }
+
+  /* ---------- 32-rasm: tugma → ekran, butun tizim ---------- */
+  (function(){
+    var fig=document.getElementById('keyFig'); if(!fig) return;
+    var svg=fig.querySelector('svg');
+    B.cells(svg.querySelector('#tbuf'),{n:6,x:676,y:142,w:28,h:36,gap:4,prefix:'tb',labels:['83','97','108','111','109','?'],vals:['S','a','l','o','m','']});
+    var gs=svg.querySelector('#gsGrid'); for(var i=0;i<36;i++) gs.appendChild(B.el('circle',{cx:322+(i%12)*16,cy:374+Math.floor(i/12)*14,r:3.5,'class':'led',id:'gs'+i}));
+    var fb=svg.querySelector('#fb'); for(var r=0;r<9;r++) for(var q=0;q<7;q++) fb.appendChild(B.el('rect',{x:566+q*16,y:262+r*16,width:14,height:14,rx:2,'class':'cell',id:'px'+r+'_'+q}));
+    var GLYPH=['0011100','0100010','1000001','1000001','1111111','1000001','1000001','1000001','0000000'];
+    var lg=svg.querySelector('#klog'); for(var i=0;i<8;i++) lg.appendChild(B.el('text',{x:38,y:280+i*17,'class':'scr dim',style:'font-size:9.5px',id:'lg'+i},''));
+    var LOG=['  0.00 ms  matritsa: qator 2, ustun 1','  1.20 ms  MCU: skan-kod 0x04','  2.00 ms  USB: HID hisobot 8 B','  2.03 ms  xHCI → IRQ 0x21 → CPU','  2.05 ms  kernel: KEY_A → \'A\' (65)','  2.30 ms  Telegram: bufer[5] = 65','  6.10 ms  GPU: kadr chizildi','16.70 ms  monitor: \'A\' ko\'rindi'];
+    var keyTxt=document.getElementById('keyTxt');
+    function log(c,i){ c.text('lg'+i,LOG[i]); undim(svg,'lg'+i); keyTxt.textContent=(i+1)+'/8 · '+LOG[i].trim(); }
+    B.scene(fig,async function(c){
+      var T=600;
+      for(var i=0;i<8;i++){ c.text('lg'+i,''); dim(svg,'lg'+i); }
+      svg.querySelector('#tbv5').textContent=''; fb.querySelectorAll('.cell').forEach(function(e){ e.classList.remove('hi'); });
+      var lab=svg.querySelector('#tbuf g[data-i="5"] text'); if(lab) lab.textContent='?';
+      c.text('monT','Salom_'); c.text('usbScr','—'); dim(svg,'usbScr'); c.text('c0T','Telegram'); c.text('cpuT','rejim: foydalanuvchi (halqa 3)'); c.text('vsT','vsync kutilmoqda · 16.7 ms');
+      c.led('c0L',1); c.led('monL',1); keyTxt.textContent='8 bosqich, taxminan 10–30 ms';
+      c.step(0,'<b>1. Tugma.</b> Klaviatura matritsasida 2-qator va 1-ustun o\'tkazgichlari tutashdi — elektr zanjiri yopildi (3-bob). Klaviatura MCU si matritsani sekundiga 1000 marta skanerlaydi va buni sezadi.');
+      c.unit('keycap','on'); c.led('kmL',1); log(c,0); await c.delay(1000); if(!c.alive()) return;
+      c.step(1,'<b>2. MCU.</b> Klaviatura ichidagi mikrokontroller (kichik CPU) tugma joyini USB HID skan-kodiga aylantiradi: \'A\' = <b>0x04</b>. 8 baytli hisobot tayyor: 00 00 04 00 00 00 00 00.');
+      await c.token('q2·u1','ctl',[[92,80],[112,80]],300); c.unit('keycap',null); c.unit('uMcu','on'); c.led('mcuL',1); log(c,1); await c.delay(900); if(!c.alive()) return;
+      c.step(2,'<b>3. USB.</b> Kompyuterning USB xHCI kontrolleri har 1 ms da klaviaturadan "yangilik bormi?" deb so\'raydi (poll). Hisobot kabel orqali 1.5 Mbit/s tezlikda keladi va DMA bilan RAM ga yoziladi.');
+      c.unit('uMcu',null); c.unit('uUsb','on'); c.led('usbL',1,'blink'); c.lit('kw1');
+      await c.token('00 00 04 00 …','data',[[185,108],[185,138],[260,138],[300,138],[365,138]],900); c.led('usbL',1,'');
+      c.unit('uXhci','on'); c.led('xhL',1); c.text('usbScr','00 00 04 00 …'); undim(svg,'usbScr'); log(c,2); c.unlit(); await c.delay(700); if(!c.alive()) return;
+      c.step(3,'<b>4. IRQ.</b> xHCI protsessorga <b>uzilish</b> yuboradi (7.4). Yadro 0 Telegram kodini bajarayotgan edi — holatini saqlab, halqa 0 ga o\'tadi va IDT dagi 0x21 ishlovchisiga sakraydi. Bu ~1 µs.');
+      c.lit('irqW'); await c.token('IRQ 0x21','ctl',[[420,80],[450,80],[500,80]],T); c.unit('uXhci',null);
+      c.led('apicL',1,'warn'); c.unit('uApic','on'); c.text('c0T','ishlovchi'); c.text('cpuT','rejim: kernel (halqa 0)'); svg.querySelector('#cpuT').classList.add('label-warn'); log(c,3); c.unlit(); await c.delay(900); if(!c.alive()) return;
+      c.step(4,'<b>5. Kernel.</b> Drayverlar zanjiri: usbhid 0x04 ni KEY_A ga, input tizimi klaviatura tartibiga qarab \'A\' (U+0041) ga aylantiradi va hodisani faol oyna egasiga — Telegram jarayoniga — navbatga qo\'yadi.');
+      c.lit(['bAddr','bData']); await c.token('0x04','data',[[640,100],[660,100],[700,90]],T); c.unit('uApic',null);
+      c.unit('uKern','on'); for(var k=0;k<3&&c.alive();k++){ c.led('k'+k,1); await c.delay(350); } log(c,4); c.unlit(); await c.delay(400); if(!c.alive()) return;
+      c.step(5,'<b>6. Ilova.</b> CPU halqa 3 ga qaytadi, Telegram hodisani oladi va xabar matni saqlanadigan xotira sohasiga <b>65</b> (01000001) baytini qo\'shadi: "Salom" + "A". Bu — 12-bobdagi oddiy massivga yozish.');
+      c.unit('uKern',null); c.text('c0T','Telegram'); c.text('cpuT','rejim: foydalanuvchi (halqa 3)'); svg.querySelector('#cpuT').classList.remove('label-warn');
+      c.lit('bData'); await c.token('65','data',[[640,120],[660,120],[700,140],[850,140]],T); c.unlit();
+      c.unit('uApp','on'); if(lab) lab.textContent='65'; c.text('tbv5','A'); c.cell('tb5','hi'); c.flash('tb5'); log(c,5); await c.delay(900); if(!c.alive()) return;
+      c.step(6,'<b>7. GPU.</b> Ilova "interfeysni qayta chiz" deydi. Grafik tizim shriftdan \'A\' glifini oladi; GPU ning minglab shader yadrolari uni piksellarga aylantirib (10-bob), VRAM dagi <b>kadr buferiga</b> yozadi — har piksel 4 bayt.');
+      c.unit('uApp',null); c.lit('pcie'); await c.token('draw call','data',[[545,200],[545,215],[410,215],[410,262]],900); c.unlit();
+      c.unit('uGq','on'); c.led('gqL',1); await c.delay(300); c.unit('uGr','on'); c.led('grL',1); await c.delay(300); c.unit('uGs','on');
+      for(var f=0;f<5&&c.alive();f++){ for(var i=0;i<36;i++) c.led('gs'+i,Math.random()<.5); await c.delay(90); } for(var i=0;i<36;i++) c.led('gs'+i,1);
+      c.lit('gvW'); await c.token('piksellar','data',[[520,330],[540,330],[560,330]],400);
+      for(var r=0;r<9&&c.alive();r++){ for(var q=0;q<7;q++) if(GLYPH[r].charAt(q)==='1') c.cell('px'+r+'_'+q,'hi'); await c.delay(90); }
+      log(c,6); c.unlit(); c.unit('uGq',null); c.unit('uGr',null); c.unit('uGs',null); await c.delay(500); if(!c.alive()) return;
+      c.step(7,'<b>8. Monitor.</b> Monitor 60 Hz da yangilanadi: keyingi vsync da (o\'rtacha 8, eng ko\'pi 16.7 ms kutish) HDMI orqali kadr buferining yangi tasviri chiqadi — ekranda \'A\'.');
+      c.text('vsT','vsync! kadr HDMI ga chiqdi'); svg.querySelector('#vsT').classList.add('label-on'); c.lit('hdmiW');
+      await c.token('kadr 1920×1080','data',[[700,330],[720,330],[800,330]],T); c.text('monT','SalomA_'); c.led('monL',1,'blink'); log(c,7); c.unlit();
+      await c.delay(800); c.led('monL',1,''); svg.querySelector('#vsT').classList.remove('label-on'); if(!c.alive()) return;
+      keyTxt.textContent='Ekranda \'A\' paydo bo\'ldi: 8 bosqich, ~17 ms.';
+      c.step(8,'<b>Xulosa.</b> ~17 ms ichida 3 ta protsessor (klaviatura MCU, CPU, GPU), 2 ta shina (USB, PCIe), 2 ta rejim (halqa 0 va 3) va 3 ta xotira (RAM, VRAM, kesh) ishtirok etdi. CPU shu vaqtda ~50 mln buyruq bajardi. Va hammasi kuchlanish bor yoki yo\'q degan oddiy g\'oyaga asoslangan.');
+    });
+    document.getElementById('keyBtn').onclick=function(){ fig.dispatchEvent(new CustomEvent('replay')); };
+  })();
+
+  /* ---------- Abstraksiya qatlamlari ---------- */
+  (function(){
+    var fig=document.getElementById('figLadder'); if(!fig) return;
+    var svg=fig.querySelector('svg'), root=svg.querySelector('#ladRows');
+    var L=[['Fizika','elektronlar, kremniy','3-bob','elektronlar oqimi'],['Tranzistor','boshqariladigan kalit','3-bob','0 V / 1 V — kalit'],['Ventillar','AND, OR, NOT','4-bob','AND(1, 1) = 1'],['Sxemalar','yig\'uvchi, xotira elementi','4-bob','0101 + 0011 = 1000'],['Mikroarxitektura','konveyer, kesh','6–7-bob','F → D → E · L1 kesh'],['ISA','oddiy buyruqlar, juda tez','7-bob','ADD R1, R2, 5'],['OS','apparatni boshqaradi','11-bob','write(1, "A", 1)'],['Til','JS, Python','12-bob','a = b + 5'],['Ilova','Telegram bot','13–15-bob','bot.sendMessage()']];
+    L.forEach(function(r,i){
+      var y=40+(8-i)*36;
+      root.appendChild(B.el('rect',{x:200,y:y,width:500,height:30,rx:6,'class':'unit',id:'lad'+i}));
+      root.appendChild(B.el('circle',{cx:214,cy:y+15,r:4.5,'class':'led',id:'ladL'+i}));
+      root.appendChild(B.el('text',{x:226,y:y+19,'class':'ttl'},r[0]));
+      root.appendChild(B.el('text',{x:690,y:y+19,'text-anchor':'end','class':'mut'},r[1]));
+      root.appendChild(B.el('text',{x:190,y:y+19,'text-anchor':'end','class':'mut xs'},r[2]));
+      root.appendChild(B.el('text',{x:748,y:y+19,'class':'scr dim',style:'font-size:11px',id:'ladS'+i},r[3]));
+    });
+    var MSG=['<b>Fizika.</b> Eng pastda faqat elektronlar va kremniy: tok bor yoki yo\'q. Bu qatlamda "ma\'lumot" degan tushuncha yo\'q.',
+      '<b>Tranzistor.</b> Kremniyga aralashma qo\'shilsa — boshqariladigan kalit: darvozadagi 1 V kanalni ochadi. Fizika endi "0" va "1" ga aylandi.',
+      '<b>Ventillar.</b> Ikki-uch tranzistordan AND, OR, NOT. Endi tok emas, mantiq haqida gapiramiz.',
+      '<b>Sxemalar.</b> Ventillardan yig\'uvchi va flip-flop: sonlarni qo\'shish va eslab qolish mumkin.',
+      '<b>Mikroarxitektura.</b> Sxemalardan konveyer, kesh, registrlar — buyruqni tez bajaradigan mashina.',
+      '<b>ISA.</b> Dasturchi ko\'radigan chegara: ADD, MOV, JMP. Ichida qanday sxema borligi muhim emas.',
+      '<b>OS.</b> Yadro apparatni boshqaradi va dasturga syscall beradi: write(1, "A", 1) — qaysi disk, qaysi port — bilish shart emas.',
+      '<b>Til.</b> a = b + 5 — kompilyator/interpretator buni ISA ga tarjima qiladi (12-bob).',
+      '<b>Ilova.</b> bot.sendMessage() — bitta satr ostida to\'qqiz qatlam ishlaydi, siz esa faqat xabar matni haqida o\'ylaysiz.'];
+    B.scene(fig,async function(c){
+      for(var i=0;i<9;i++){ dim(svg,'ladS'+i); }
+      for(var i=0;i<9&&c.alive();i++){
+        var y=40+(8-i)*36+15;
+        if(i>0){ c.lit('ladW'); await c.dot('data',[[720,y+36],[720,y]],350); }
+        c.unit('lad'+i,'on'); c.led('ladL'+i,1); undim(svg,'ladS'+i); c.step(i,MSG[i]);
+        await c.delay(950); if(!c.alive()) return; c.unit('lad'+i,null);
+      }
+      c.step(9,'<b>Xulosa.</b> Har qatlam o\'zidan pastdagisini yashiradi va yuqoridagisiga sodda interfeys beradi. Shuning uchun siz tranzistorlar haqida o\'ylamasdan Telegram bot yoza olasiz — lekin biror qatlam sekinlashsa (kesh, xotira, tarmoq), qaysi pog\'onada ekanini bilish sizga yordam beradi.');
+    });
+  })();
 })();
 </script>
+<script src="../js/quiz-data.js"></script>
+<script src="../js/quiz.js"></script>
 </body>
 </html>
