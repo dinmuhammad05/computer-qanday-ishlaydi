@@ -1,0 +1,85 @@
+/* "Jonli plata" uslubi: qorong'i PCB fon, chiplar, LEDlar, shinalar, harakatlanuvchi ma'lumot.
+   Har ikki mavzuda ham bir xil ko'rinadi (qurilma ekrani kabi). */
+.board-wrap{overflow-x:auto;border-radius:14px;background:#0B1119;border:1px solid #1E2A38;padding:6px;margin:0}
+.board-wrap.tight{padding:4px}
+.board{min-width:640px;width:100%;height:auto;display:block;font-family:var(--mono);
+  --b-ink:#DDE6F0;--b-mut:#8A9BB0;--b-line:#2B3B4E;--b-box:#121C28;--b-box2:#0F1721;--b-die:#0E1620;
+  --b-addr:#6EA0F5;--b-data:#3AD08F;--b-ctl:#F28B4B;--b-warn:#F0554F;--b-led:#1C2733;--b-hi:#183A2E;--b-grid:#162232}
+.board.sm{min-width:520px}
+.board text{fill:var(--b-ink);font-size:11px}
+.board .mut{fill:var(--b-mut)}
+.board .xs{font-size:9px}
+.board .ttl{font-family:var(--display);font-size:12px;font-weight:600;fill:var(--b-ink);letter-spacing:.04em}
+.board .big{font-size:20px;font-weight:600}
+.board .val{font-size:13px;font-weight:600}
+.board .grid{stroke:var(--b-grid);stroke-width:.5}
+.board .die{fill:var(--b-die);stroke:var(--b-line);stroke-width:1.5}
+.board .chip{fill:var(--b-box);stroke:var(--b-line);stroke-width:1.2}
+.board .unit{fill:var(--b-box2);stroke:var(--b-line);stroke-width:1;transition:stroke .2s}
+.board .unit.on{stroke:var(--b-data);stroke-width:1.6}
+.board .unit.warn{stroke:var(--b-ctl);stroke-width:1.6}
+.board .unit.bad{stroke:var(--b-warn);stroke-width:1.6}
+.board .pin{fill:var(--b-line)}
+.board .wire{stroke:var(--b-line);stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:opacity .2s}
+.board .w-addr{stroke:var(--b-addr)}.board .w-data{stroke:var(--b-data)}.board .w-ctl{stroke:var(--b-ctl);stroke-dasharray:4 4}.board .w-pwr{stroke:var(--b-warn)}
+.board .wire.dim{opacity:.35}
+.board .wire.lit{opacity:1;stroke-width:2.6;filter:drop-shadow(0 0 3px currentColor)}
+.board .bus{stroke-width:4;opacity:.45}
+.board .bus.lit{opacity:1}
+.board .flow{stroke-dasharray:6 8;animation:dash 1s linear infinite}
+.board .led{fill:var(--b-led);stroke:#26333F;stroke-width:1;transition:fill .15s}
+.board .led.on{fill:var(--b-data);stroke:var(--b-data);filter:drop-shadow(0 0 3px var(--b-data))}
+.board .led.warn.on{fill:var(--b-ctl);stroke:var(--b-ctl);filter:drop-shadow(0 0 3px var(--b-ctl))}
+.board .led.bad.on{fill:var(--b-warn);stroke:var(--b-warn);filter:drop-shadow(0 0 3px var(--b-warn))}
+.board .led.blue.on{fill:var(--b-addr);stroke:var(--b-addr);filter:drop-shadow(0 0 3px var(--b-addr))}
+.board .led.blink{animation:ledblink .5s steps(2) infinite}
+@keyframes ledblink{to{fill:var(--b-led);filter:none}}
+.board .cell{fill:var(--b-box2);stroke:var(--b-line);stroke-width:1;transition:fill .2s,stroke .2s}
+.board .cell.hi{fill:var(--b-hi);stroke:var(--b-data)}
+.board .cell.warn{fill:#3A2416;stroke:var(--b-ctl)}
+.board .cell.flash{animation:cellflash .7s}
+@keyframes cellflash{0%{fill:var(--b-data)}100%{fill:var(--b-box2)}}
+.board .rowhi{fill:var(--b-hi);stroke:var(--b-data);stroke-width:1;opacity:0;transition:opacity .2s}
+.board .rowhi.on{opacity:1}
+.board .screen{fill:#04120B;stroke:#1E3A2C;stroke-width:1.5}
+.board .scr{fill:#5CF0A6;font-size:14px;font-weight:600}
+.board .scr.dim{fill:#2B6A4B}
+.board .lcd{fill:#0A1A2E;stroke:#1E3A5C}
+.board .lcdtxt{fill:#8EC5FF;font-size:13px;font-weight:600}
+.board .tok rect{rx:4;stroke-width:1}
+.board .tok text{font-size:11px;font-weight:600;fill:#08110B}
+.board .tok.addr rect{fill:var(--b-addr);stroke:var(--b-addr)}
+.board .tok.data rect{fill:var(--b-data);stroke:var(--b-data)}
+.board .tok.ctl rect{fill:var(--b-ctl);stroke:var(--b-ctl)}
+.board .tok.warn rect{fill:var(--b-warn);stroke:var(--b-warn)}
+.board .tok.warn text{fill:#fff}
+.board .tok.pkt rect{fill:#2E4A6B;stroke:var(--b-addr)}
+.board .tok.pkt text{fill:var(--b-ink)}
+.board .tok.dot rect{display:none}
+.board .tok.dot circle{fill:var(--b-data);filter:drop-shadow(0 0 4px var(--b-data))}
+.board .tok.dot.addr circle{fill:var(--b-addr);filter:drop-shadow(0 0 4px var(--b-addr))}
+.board .tok.dot.ctl circle{fill:var(--b-ctl);filter:drop-shadow(0 0 4px var(--b-ctl))}
+.board .tok.dot.warn circle{fill:var(--b-warn);filter:drop-shadow(0 0 4px var(--b-warn))}
+.board .heat{fill:var(--b-warn);opacity:.7}
+.board .gauge{fill:none;stroke:var(--b-line);stroke-width:8}
+.board .gauge.v{stroke:var(--b-data);transition:stroke-dashoffset .6s}
+.board .gauge.v.warn{stroke:var(--b-ctl)}
+.board .gauge.v.bad{stroke:var(--b-warn)}
+.board .bar{fill:var(--b-led)}
+.board .bar .f{fill:var(--b-data);transition:width .5s,height .5s}
+.board .bar .f.warn{fill:var(--b-ctl)}.board .bar .f.bad{fill:var(--b-warn)}
+.board .wave{fill:none;stroke:var(--b-data);stroke-width:2}
+.board .wave.addr{stroke:var(--b-addr)}.board .wave.ctl{stroke:var(--b-ctl)}
+.board .label-on{fill:var(--b-data)}
+.board .label-warn{fill:var(--b-ctl)}
+.board .label-bad{fill:var(--b-warn)}
+/* HTML boshqaruv va izoh paneli (plata ostida) */
+.board-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.board-narr{font-family:var(--mono);font-size:13px;margin-top:8px;padding:8px 12px;background:var(--code);border-radius:8px;min-height:2.6em;line-height:1.5;white-space:pre-wrap}
+.board-narr b{color:var(--accent)}
+.board-narr.warn b{color:var(--copper)}
+.board-steps{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.board-steps span{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.board-steps span.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.board-steps span.done{border-color:var(--accent);color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.board .tok{display:none}.board .led.blink{animation:none}}

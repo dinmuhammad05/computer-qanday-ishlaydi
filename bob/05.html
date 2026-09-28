@@ -7,6 +7,7 @@
 <meta name="description" content="Fon Neyman arxitekturasi, uning tor bo'g'izi va kompyuterning abstraksiya qatlamlari.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/board.css">
 <style>
 /* 11-rasm: fon Neyman arxitekturasi — 10 soniyalik sikl: ish, so'ng tor bo'g'iz */
 .vn .pk{offset-rotate:0deg;opacity:0}
@@ -56,67 +57,75 @@
 
 <p>1945-yilda matematik Jon fon Neyman kompyuter qurilishining umumiy sxemasini taklif qildi. Bu sxema <strong>fon Neyman arxitekturasi</strong> deb ataladi va bugungi deyarli barcha kompyuterlar unga asoslanadi. Uning asosiy g'oyasi: dastur ham, ma'lumot ham bitta xotirada saqlanadi. Bungacha kompyuterni qayta dasturlash uchun simlarni qo'lda qayta ulash kerak edi (ENIAC'ni qayta dasturlash bir necha kun olardi). Endi esa yangi dasturni xotiraga yuklash kifoya.</p>
 
-<figure class="fig">
-  <svg class="sv vn" viewBox="0 0 660 340" role="img" aria-label="Fon Neyman arxitekturasi: CPU (CU, ALU, registrlar), xotira, kirish va chiqish bitta shina orqali bog'langan">
-    <!-- shina -->
-    <line class="bus" x1="40" y1="250" x2="620" y2="250"/>
-    <text x="330" y="238" text-anchor="middle" class="lbl">shina</text>
-    <line x1="175" y1="196" x2="175" y2="250" class="wire"/>
-    <line x1="520" y1="146" x2="520" y2="250" class="wire"/>
-    <line x1="105" y1="250" x2="105" y2="272" class="wire"/>
-    <line x1="555" y1="250" x2="555" y2="272" class="wire"/>
-    <!-- CPU -->
-    <rect x="20" y="16" width="310" height="180" rx="12" class="box cpu"/>
-    <text x="175" y="40" text-anchor="middle" class="ttl">Markaziy protsessor (CPU)</text>
-    <rect x="36" y="54" width="86" height="64" rx="8" class="box blue"/>
-    <text x="79" y="80" text-anchor="middle" class="ttl">CU</text>
-    <text x="79" y="100" text-anchor="middle">boshqaruv</text>
-    <rect x="132" y="54" width="86" height="64" rx="8" class="box on"/>
-    <text x="175" y="80" text-anchor="middle" class="ttl">ALU</text>
-    <text x="175" y="100" text-anchor="middle">hisob</text>
-    <rect x="228" y="54" width="90" height="64" rx="8" class="box copper"/>
-    <text x="273" y="80" text-anchor="middle" class="ttl">Registrlar</text>
-    <text x="273" y="100" text-anchor="middle">PC, IR, ACC ...</text>
-    <path class="flow blue" style="stroke-width:2" d="M79 118 V138 H273 V118"/>
-    <text x="175" y="172" text-anchor="middle" class="lbl busy">ishlamoqda</text>
-    <text x="175" y="172" text-anchor="middle" class="lbl wait">kutmoqda... (tor bo'g'iz)</text>
-    <!-- RAM -->
-    <rect x="400" y="16" width="240" height="130" rx="12" class="box"/>
-    <text x="520" y="40" text-anchor="middle" class="ttl">Xotira (RAM)</text>
-    <text x="520" y="58" text-anchor="middle">dastur + ma'lumot birga</text>
-    <rect x="418" y="72" width="36" height="18" rx="4" class="box on"/>
-    <rect x="460" y="72" width="36" height="18" rx="4" class="box on"/>
-    <rect x="502" y="72" width="36" height="18" rx="4" class="box copper"/>
-    <rect x="544" y="72" width="36" height="18" rx="4" class="box on"/>
-    <rect x="586" y="72" width="36" height="18" rx="4" class="box copper"/>
-    <rect x="418" y="96" width="36" height="18" rx="4" class="box copper"/>
-    <rect x="460" y="96" width="36" height="18" rx="4" class="box on"/>
-    <rect x="502" y="96" width="36" height="18" rx="4" class="box on"/>
-    <rect x="544" y="96" width="36" height="18" rx="4" class="box copper"/>
-    <rect x="586" y="96" width="36" height="18" rx="4" class="box copper"/>
-    <rect x="440" y="124" width="10" height="10" rx="2" class="box on"/>
-    <text x="456" y="133">buyruq</text>
-    <rect x="520" y="124" width="10" height="10" rx="2" class="box copper"/>
-    <text x="536" y="133">ma'lumot</text>
-    <!-- navbat (tor bo'g'iz paytida) -->
-    <circle class="q" cx="520" cy="160" r="5"/>
-    <circle class="q" cx="520" cy="176" r="5" style="animation-delay:.3s"/>
-    <circle class="q" cx="520" cy="192" r="5" style="animation-delay:.6s"/>
+<figure class="fig" id="fig11" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 420" role="img" aria-label="Fon Neyman arxitekturasi: CPU (CU, ALU, registrlar), kirish, chiqish va bitta umumiy xotira, bitta shina orqali bog'langan">
+    <defs><pattern id="g11" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="420" fill="url(#g11)"/>
+    <!-- CPU die -->
+    <rect x="20" y="20" width="520" height="390" rx="16" class="die"/>
+    <text x="36" y="42" class="ttl">Markaziy protsessor (CPU)</text>
+    <!-- wires -->
+    <g id="w11">
+      <path class="wire w-data bus" id="ibus" d="M290 60 V 385"/>
+      <text x="296" y="380" class="mut xs">ichki shina</text>
+      <path class="wire w-data" id="wCU" d="M270 100 H 290"/>
+      <path class="wire w-data" id="wPC" d="M270 205 H 290"/>
+      <path class="wire w-data" id="wIR" d="M270 235 H 290"/>
+      <path class="wire w-data" id="wACC" d="M270 265 H 290"/>
+      <path class="wire w-data" id="wIO" d="M270 345 H 290"/>
+      <path class="wire w-data" id="wAluA" d="M290 80 H 335"/>
+      <path class="wire w-data" id="wAluB" d="M290 80 H 465"/>
+      <path class="wire w-data" id="wAluOut" d="M400 140 V 160 H 290"/>
+      <path class="wire w-ctl" id="wCtl" d="M270 120 H 280 V 215 H 600"/>
+      <!-- umumiy shina -->
+      <path class="wire w-addr bus" id="busAddr" d="M290 195 H 600"/>
+      <path class="wire w-data bus" id="busData" d="M290 205 H 600"/>
+      <text x="445" y="185" text-anchor="middle" class="ttl">bitta umumiy shina</text>
+      <text x="445" y="232" text-anchor="middle" class="mut xs">manzil · ma'lumot · boshqaruv (o'qi / yoz)</text>
+    </g>
+    <!-- CU -->
+    <rect x="40" y="56" width="230" height="90" rx="8" class="unit" id="uCU"/>
+    <text x="52" y="74" class="ttl">Boshqaruv (CU)</text>
+    <circle cx="60" cy="94" r="5" class="led" id="l0"/><text x="70" y="98" class="xs">FETCH</text>
+    <circle cx="112" cy="94" r="5" class="led" id="l1"/><text x="122" y="98" class="xs">DECODE</text>
+    <circle cx="172" cy="94" r="5" class="led" id="l2"/><text x="182" y="98" class="xs">EXEC</text>
+    <circle cx="218" cy="94" r="5" class="led" id="l3"/><text x="228" y="98" class="xs">STORE</text>
+    <circle cx="60" cy="118" r="5" class="led warn" id="lWait"/><text x="70" y="122" class="xs" id="waitTxt">xotira kutilmoqda: 0 marta</text>
+    <text x="52" y="139" class="mut xs" id="cuTxt">buyruq kutilmoqda</text>
+    <!-- ALU -->
+    <text x="400" y="52" text-anchor="middle" class="ttl">ALU</text>
+    <polygon points="305,60 495,60 460,140 340,140" class="unit" id="uALU"/>
+    <text x="335" y="76" text-anchor="middle" class="mut xs">A</text><text x="465" y="76" text-anchor="middle" class="mut xs">B</text>
+    <text x="345" y="98" text-anchor="middle" class="val" id="aluA"></text>
+    <text x="455" y="98" text-anchor="middle" class="val" id="aluB"></text>
+    <text x="400" y="104" text-anchor="middle" class="big" id="aluOp"></text>
+    <text x="400" y="130" text-anchor="middle" class="val" id="aluRes"></text>
+    <!-- Registrlar -->
+    <rect x="40" y="165" width="230" height="120" rx="8" class="unit"/>
+    <text x="52" y="183" class="ttl">Registrlar</text>
+    <rect x="46" y="192" width="218" height="26" rx="5" class="unit" id="uPC"/><text x="56" y="209" class="mut">PC</text><text x="100" y="209" class="val" id="vPC">0</text><text x="258" y="209" text-anchor="end" class="mut xs">keyingi buyruq manzili</text>
+    <rect x="46" y="222" width="218" height="26" rx="5" class="unit" id="uIR"/><text x="56" y="239" class="mut">IR</text><text x="100" y="239" class="val" id="vIR">—</text>
+    <rect x="46" y="252" width="218" height="26" rx="5" class="unit" id="uACC"/><text x="56" y="269" class="mut">ACC</text><text x="100" y="269" class="val" id="vACC">—</text><text x="258" y="269" text-anchor="end" class="mut xs">akkumulyator</text>
     <!-- Kirish / Chiqish -->
-    <rect x="30" y="272" width="150" height="54" rx="10" class="box soft"/>
-    <text x="105" y="296" text-anchor="middle" class="ttl">Kirish</text>
-    <text x="105" y="314" text-anchor="middle">klaviatura, mouse</text>
-    <rect x="480" y="272" width="150" height="54" rx="10" class="box soft"/>
-    <text x="555" y="296" text-anchor="middle" class="ttl">Chiqish</text>
-    <text x="555" y="314" text-anchor="middle">monitor, printer</text>
-    <!-- paketlar -->
-    <circle class="pk pk1 dot" r="7"/>
-    <circle class="pk pk2 dot copper" r="7"/>
-    <circle class="pk pk3 dot blue" r="7"/>
-    <circle class="pk pk4 dot" r="7"/>
-    <circle class="pk pk5 dot copper" r="7"/>
+    <rect x="40" y="300" width="110" height="90" rx="8" class="unit" id="uIN"/>
+    <text x="52" y="318" class="ttl">Kirish</text><text x="52" y="336" class="mut xs">klaviatura, mouse</text>
+    <circle cx="60" cy="360" r="5" class="led blue" id="lIn"/><text x="70" y="364" class="xs">signal</text>
+    <rect x="160" y="300" width="110" height="90" rx="8" class="unit" id="uOUT"/>
+    <text x="172" y="318" class="ttl">Chiqish</text><text x="172" y="336" class="mut xs">monitor, printer</text>
+    <rect x="170" y="346" width="92" height="30" rx="4" class="screen"/><text x="178" y="366" class="scr dim" id="outTxt">_</text>
+    <!-- Xotira -->
+    <rect x="600" y="40" width="280" height="350" rx="10" class="chip"/>
+    <text x="612" y="62" class="ttl">Xotira (RAM)</text>
+    <text x="868" y="62" text-anchor="end" class="mut xs">dastur + ma'lumot birga</text>
+    <g id="memRows"></g>
+    <g class="tokens"></g>
   </svg>
-  <figcaption><span><b>11-rasm.</b> Fon Neyman arxitekturasi. Buyruq (yashil) va ma'lumot (mis rang) bitta shinadan o'tadi; siklning ikkinchi yarmida protsessor xotirani kutib turadi — tor bo'g'iz.</span></figcaption>
+  </div>
+  <div class="board-ctl"><button type="button" class="primary" id="f11run">Boshla</button><span class="small muted">5 ta buyruq: a + b ni hisoblab, xotiraga yozadi va chiqaradi. Har xotiraga murojaatda CPU kutib turadi.</span></div>
+  <div class="board-steps"><span>Fetch</span><span>Decode</span><span>Execute</span><span>Store</span><span>Xulosa</span></div>
+  <div class="board-narr">"Boshla" tugmasini bosing yoki pastga suring: sahna o'zi boshlanadi.</div>
+  <figcaption><span><b>11-rasm.</b> Fon Neyman arxitekturasi. Dastur ham, ma'lumot ham bitta xotirada; buyruq ham, ma'lumot ham bitta shinadan o'tadi. Shuning uchun har murojaatda protsessor xotirani kutadi — tor bo'g'iz.</span></figcaption>
 </figure>
 
 <p>Arxitekturaning beshta asosiy qismi bor: (1) <strong>arifmetik-mantiqiy qurilma (ALU)</strong> — hisob-kitob va taqqoslashni bajaradi; (2) <strong>boshqaruv qurilmasi (CU)</strong> — buyruqlarni o'qib, qolgan qismlarga nima qilish kerakligini aytadi; (3) <strong>xotira</strong> — dastur va ma'lumotlarni saqlaydi; (4) <strong>kirish qurilmalari</strong>; (5) <strong>chiqish qurilmalari</strong>. ALU, CU va registrlar birgalikda markaziy protsessor — <strong>CPU</strong>'ni tashkil qiladi.</p>
@@ -154,6 +163,96 @@
 </main>
 
 <script src="../js/site.js"></script>
+<script src="../js/board.js"></script>
+<script>
+(function(){
+  var fig=document.getElementById('fig11'); if(!fig||!window.KQIBoard) return;
+  var B=KQIBoard, svg=fig.querySelector('svg');
+  var PROG=[['MOV ACC, [5]','buyruq'],['ADD ACC, [6]','buyruq'],['MOV [7], ACC','buyruq'],['OUT ACC','buyruq'],['HALT','buyruq'],['5','ma\'lumot (a)'],['7','ma\'lumot (b)'],['—','ma\'lumot (c)']];
+  var rows=svg.querySelector('#memRows');
+  PROG.forEach(function(r,i){
+    var y=72+i*38, g=B.el('g',{});
+    g.appendChild(B.el('rect',{x:612,y:y,width:256,height:32,rx:5,'class':'cell',id:'m'+i}));
+    g.appendChild(B.el('text',{x:622,y:y+20,'class':'mut'},String(i)));
+    g.appendChild(B.el('text',{x:648,y:y+20,'class':'val',id:'mv'+i},r[0]));
+    g.appendChild(B.el('text',{x:860,y:y+20,'text-anchor':'end','class':'xs '+(r[1]==='buyruq'?'label-on':'label-warn')},r[1]));
+    rows.appendChild(g);
+  });
+  var PCp=[[270,205],[290,205],[290,195],[600,195]];
+  var toIR=[[600,205],[290,205],[290,235],[270,235]];
+  var toACC=[[600,205],[290,205],[290,265],[270,265]];
+  var accToA=[[270,265],[290,265],[290,80],[335,80]];
+  var memToB=[[600,205],[290,205],[290,80],[465,80]];
+  var aluToACC=[[400,140],[400,160],[290,160],[290,265],[270,265]];
+  var accToMem=[[270,265],[290,265],[290,205],[600,205]];
+  var accToOut=[[270,265],[290,265],[290,345],[270,345]];
+  function addrP(){ return [[270,235],[290,235],[290,195],[600,195]]; }
+  B.scene(fig,async function(c){
+    var T=650, wait=0, acc=null;
+    c.text('vPC','0'); c.text('vIR','—'); c.text('vACC','—'); c.text('mv7','—'); c.text('outTxt','_'); svg.querySelector('#outTxt').classList.add('dim');
+    c.text('aluA',''); c.text('aluB',''); c.text('aluOp',''); c.text('aluRes',''); c.text('waitTxt','xotira kutilmoqda: 0 marta'); c.text('cuTxt','buyruq kutilmoqda');
+    async function memAccess(label,cls,path,cellIdx){
+      c.led('lWait',1,'warn blink'); wait++; c.text('waitTxt','xotira kutilmoqda: '+wait+' marta');
+      c.lit(['busAddr','wCtl']); await c.token(label,cls,path,T);
+      c.cell('m'+cellIdx,'hi'); await c.delay(220);
+    }
+    async function memReply(label,path,unitId){
+      c.lit(['busData']); await c.token(label,'data',path,T);
+      c.led('lWait',0,'warn'); c.unit(unitId,'on');
+    }
+    for(var pc=0;pc<5&&c.alive();pc++){
+      var ins=PROG[pc][0];
+      c.unlit(); svg.querySelectorAll('.cell.hi').forEach(function(e){e.classList.remove('hi');});
+      c.led('l0',1);c.led('l1',0);c.led('l2',0);c.led('l3',0);
+      c.text('vPC',String(pc)); c.unit('uPC','on'); c.text('cuTxt','FETCH: PC → manzil shinasi → xotira');
+      c.step(0,'<b>Fetch.</b> PC = '+pc+' manzil shinasiga chiqdi. Xotira javob berguncha CPU bekor turadi (sariq LED).');
+      c.lit(['wPC']); await memAccess('PC='+pc,'addr',PCp,pc);
+      c.lit(['wIR']); await memReply(ins,toIR,'uIR'); c.text('vIR',ins); c.unit('uPC',null);
+      if(!c.alive()) return;
+      c.led('l0',0);c.led('l1',1); c.unlit(); c.text('cuTxt','DECODE: '+ins);
+      c.step(1,'<b>Decode.</b> CU IR dagi buyruqni o\'qidi: <b>'+ins+'</b>. '+(pc<3?'Bu buyruq yana xotiraga murojaat qiladi.':pc===3?'Natijani chiqish qurilmasiga yuborish.':'To\'xtash.'));
+      await c.delay(700); if(!c.alive()) return;
+      c.led('l1',0);c.led('l2',1); c.unit('uIR',null);
+      if(pc===0){
+        c.text('cuTxt','EXEC: [5] dan o\'qish'); c.step(2,'<b>Execute.</b> Manzil [5] shinaga chiqdi, CPU yana kutadi. Xotira 5 ni qaytaradi.');
+        c.lit(['wIR']); await memAccess('[5]','addr',addrP(),5);
+        c.lit(['wACC']); await memReply('5',toACC,'uACC'); acc=5; c.text('vACC','5');
+        c.led('l2',0);c.led('l3',1); c.step(3,'<b>Store.</b> ACC ← 5. PC ← 1.'); await c.delay(500);
+      } else if(pc===1){
+        c.text('cuTxt','EXEC: [6] dan o\'qish, ALU +'); c.step(2,'<b>Execute.</b> Manzil [6] shinaga, xotira 7 ni ALU ning B kirishiga yuboradi; ACC dagi 5 A kirishiga boradi.');
+        c.lit(['wIR']); await memAccess('[6]','addr',addrP(),6);
+        c.lit(['busData','wAluA','wAluB','wACC']);
+        await Promise.all([c.token('7','data',memToB,T),c.token('5','data',accToA,T)]);
+        c.led('lWait',0,'warn'); c.unit('uALU','on'); c.text('aluA','5'); c.text('aluB','7'); c.text('aluOp','+'); await c.delay(350); c.text('aluRes','= 12');
+        c.led('l2',0);c.led('l3',1); c.step(3,'<b>Store.</b> ALU natijasi 12 ichki shina orqali ACC ga yoziladi. PC ← 2.');
+        c.lit(['wAluOut','ibus','wACC']); await c.token('12','data',aluToACC,T); acc=12; c.text('vACC','12'); c.flash('uACC'); c.unit('uALU',null);
+        c.text('aluA','');c.text('aluB','');c.text('aluOp','');c.text('aluRes','');
+      } else if(pc===2){
+        c.text('cuTxt','EXEC: [7] ga yozish'); c.step(2,'<b>Execute.</b> Manzil [7] va ACC dagi 12 shinaga chiqdi, CU "yoz" signalini beradi. Yana xotira kutiladi.');
+        c.lit(['wIR','wACC','busData']);
+        c.led('lWait',1,'warn blink'); wait++; c.text('waitTxt','xotira kutilmoqda: '+wait+' marta'); c.lit(['busAddr','wCtl']);
+        await Promise.all([c.token('[7]','addr',addrP(),T),c.token('12','data',accToMem,T)]);
+        c.cell('m7','hi'); c.text('mv7','12'); c.flash('m7'); c.led('lWait',0,'warn');
+        c.led('l2',0);c.led('l3',1); c.step(3,'<b>Store.</b> Xotira [7] ← 12. Endi natija xotirada, keyin kerak bo\'lsa yana o\'qiladi. PC ← 3.'); await c.delay(500);
+      } else if(pc===3){
+        c.text('cuTxt','EXEC: ACC → chiqish'); c.step(2,'<b>Execute.</b> ACC dagi 12 ichki shina orqali chiqish qurilmasiga yuboriladi. Xotira kerak emas, CPU kutmaydi.');
+        c.lit(['wACC','ibus','wIO']); await c.token('12','data',accToOut,T);
+        c.text('outTxt','▸ 12'); svg.querySelector('#outTxt').classList.remove('dim'); c.unit('uOUT','on');
+        c.led('l2',0);c.led('l3',1); c.step(3,'<b>Store.</b> Ekranda 12. PC ← 4.'); await c.delay(500);
+      } else {
+        c.text('cuTxt','HALT'); c.step(2,'<b>Execute.</b> HALT: CU siklni to\'xtatadi.'); await c.delay(500);
+        c.led('l2',0);c.led('l3',1); c.step(3,'<b>Store.</b> Hech narsa yozilmaydi. Dastur tugadi.'); await c.delay(400);
+      }
+      if(!c.alive()) return;
+      c.led('l3',0); c.unit('uACC',null); c.unit('uOUT',null);
+    }
+    c.text('vPC','5'); c.text('cuTxt','to\'xtadi');
+    c.step(4,'<b>Tor bo\'g\'iz.</b> 5 ta buyruq uchun xotiraga <b>'+wait+' marta</b> murojaat qilindi va har safar CPU kutdi. Buyruq ham, ma\'lumot ham bitta shinadan o\'tgani uchun ularni bir vaqtda olib bo\'lmaydi. 8-bobda: agar registr 1 soniya bo\'lsa, RAM 4 daqiqa. Zamonaviy CPU buni kesh, konveyer va parallel ishlov bilan yumshatadi.');
+    c.led('lWait',1,'warn');
+  });
+  document.getElementById('f11run').onclick=function(){ fig.dispatchEvent(new CustomEvent('replay')); };
+})();
+</script>
 <script src="../js/quiz-data.js"></script>
 <script src="../js/quiz.js"></script>
 </body>
