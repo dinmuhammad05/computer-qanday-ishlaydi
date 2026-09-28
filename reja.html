@@ -470,12 +470,12 @@ if (c &gt; 10) c = 10;</pre>
         <div class="demo-title">24-rasm · Yuklanish zanjiri <span>Quvvat tugmasidan ish stoligacha</span></div>
         <div class="row"><button class="primary" data-chain="boot">Yoqish</button></div>
         <div class="chain" id="boot">
-          <div>Quvvat bloki barqaror kuchlanish beradi<small>PSU → "Power Good" signali</small></div>
-          <div>UEFI/BIOS ishga tushadi, POST o'tkazadi<small>RAM, videokarta, disklar tekshiriladi</small></div>
-          <div>Bootloader RAM'ga yuklanadi<small>GRUB yoki Windows Boot Manager</small></div>
-          <div>Kernel (yadro) yuklanadi<small>drayverlar, MMU, jarayonlar</small></div>
-          <div>Birinchi jarayon xizmatlarni ishga tushiradi<small>Linux'da systemd</small></div>
-          <div>Grafik interfeys va login<small>~5–30 soniya o'tdi</small></div>
+          <div><span>Quvvat bloki barqaror kuchlanish beradi<small>PSU → "Power Good" signali</small></span></div>
+          <div><span>UEFI/BIOS ishga tushadi, POST o'tkazadi<small>RAM, videokarta, disklar tekshiriladi</small></span></div>
+          <div><span>Bootloader RAM'ga yuklanadi<small>GRUB yoki Windows Boot Manager</small></span></div>
+          <div><span>Kernel (yadro) yuklanadi<small>drayverlar, MMU, jarayonlar</small></span></div>
+          <div><span>Birinchi jarayon xizmatlarni ishga tushiradi<small>Linux'da systemd</small></span></div>
+          <div><span>Grafik interfeys va login<small>~5–30 soniya o'tdi</small></span></div>
         </div>
       </div>
       <div class="hook"><b>Ilgak:</b> <code>fs.readFile()</code> oxir-oqibat Linux'ning <code>open()</code> va <code>read()</code> syscall'lariga aylanadi. <code>await fetch()</code> vaqtida jarayon "kutish" holatiga o'tadi, shu uchun bitta oqimli Node minglab foydalanuvchiga xizmat qiladi. Segmentation fault = MMU ruxsatsiz manzilni to'xtatdi.</div>
@@ -530,14 +530,14 @@ if (c &gt; 10) c = 10;</pre>
         <div class="demo-title">32-rasm · 'A' tugmasi bosildi <span>Tranzistordan ekrangacha</span></div>
         <div class="row"><button class="primary" data-chain="key">Tugmani bos</button></div>
         <div class="chain" id="key">
-          <div>Klaviatura matritsasida ikki o'tkazgich tutashadi<small>3-bob: kalit</small></div>
-          <div>Mikrokontroller skan-kod hosil qiladi: 0x04<small>10-bob: matritsa skanerlash</small></div>
-          <div>USB kontroller CPU'ga uzilish yuboradi<small>7.4: IRQ</small></div>
-          <div>CPU holatini saqlab, kernel ishlovchisiga o'tadi<small>11.2: kernel mode</small></div>
-          <div>Drayver skan-kodni 'A' (U+0041) ga o'giradi<small>2.3: Unicode</small></div>
-          <div>Telegram ilovasi xotiraga 65 (01000001) yozadi<small>12.3: heap</small></div>
-          <div>GPU shriftdan piksellar chizib, kadr buferiga yozadi<small>10.3: GPU</small></div>
-          <div>Monitor keyingi yangilanishda kadrni ko'rsatadi<small>10.2: 1/60 soniya</small></div>
+          <div><span>Klaviatura matritsasida ikki o'tkazgich tutashadi<small>3-bob: kalit</small></span></div>
+          <div><span>Mikrokontroller skan-kod hosil qiladi: 0x04<small>10-bob: matritsa skanerlash</small></span></div>
+          <div><span>USB kontroller CPU'ga uzilish yuboradi<small>7.4: IRQ</small></span></div>
+          <div><span>CPU holatini saqlab, kernel ishlovchisiga o'tadi<small>11.2: kernel mode</small></span></div>
+          <div><span>Drayver skan-kodni 'A' (U+0041) ga o'giradi<small>2.3: Unicode</small></span></div>
+          <div><span>Telegram ilovasi xotiraga 65 (01000001) yozadi<small>12.3: heap</small></span></div>
+          <div><span>GPU shriftdan piksellar chizib, kadr buferiga yozadi<small>10.3: GPU</small></span></div>
+          <div><span>Monitor keyingi yangilanishda kadrni ko'rsatadi<small>10.2: 1/60 soniya</small></span></div>
         </div>
       </div>
       <div class="hook"><b>Ilgak:</b> Ushbu 8 qadamni yoddan ayta olsangiz, kitobni tushungansiz. Ayta olmagan qadamning bob raqami yonida yozilgan: o'sha bobga qayting.</div>

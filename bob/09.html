@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>9-bob. Ona plata, shinalar va quvvat · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Ona plata, uch turdagi shina, PCIe, chipset va BIOS, quvvat bloki va sovutish.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 19-rasm: ona plata — qismlar navbat bilan yonadi */
+.mb .board{fill:var(--code);stroke:var(--line);stroke-width:1.5}
+.mb .hw{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.mb .part .hw{animation:mbOn 13s infinite both;animation-delay:calc(var(--i) * .85s)}
+.mb .part text{animation:mbLbl 13s infinite both;animation-delay:calc(var(--i) * .85s)}
+@keyframes mbOn{0%{fill:var(--surface);stroke:var(--line)}5%,90%{fill:var(--accent-soft);stroke:var(--accent)}100%{fill:var(--surface);stroke:var(--line)}}
+@keyframes mbLbl{0%{opacity:.3}5%,90%{opacity:1}100%{opacity:.3}}
+.mb .flow{stroke-width:2;opacity:.75}
+.mb .hole{fill:var(--bg);stroke:var(--wire);stroke-width:1}
+/* 20-rasm: uch shina — o'qish sikli */
+.bus .tok rect{fill:var(--surface);stroke-width:1.5}
+.bus .tok.addr{animation:addrGo 7s infinite both}
+.bus .tok.addr rect{stroke:var(--accent)}
+.bus .tok.data{animation:dataBack 7s infinite both}
+.bus .tok.data rect{stroke:var(--blue)}
+@keyframes addrGo{0%{transform:translateX(0);opacity:0}4%{opacity:1}30%{transform:translateX(340px);opacity:1}36%,100%{transform:translateX(340px);opacity:0}}
+@keyframes dataBack{0%,48%{transform:translateX(0);opacity:0}52%{opacity:1}80%{transform:translateX(-340px);opacity:1}86%,100%{transform:translateX(-340px);opacity:0}}
+.bus .ctl{animation:ctlOn 7s infinite both}
+@keyframes ctlOn{0%,30%{opacity:.25}34%,60%{opacity:1}64%,100%{opacity:.25}}
+.bus .ctlline{animation:ctlLine 7s infinite both}
+@keyframes ctlLine{0%,30%{stroke:var(--wire)}34%,60%{stroke:var(--copper)}64%,100%{stroke:var(--wire)}}
+.bus .ramhit{animation:hit 7s infinite both}
+@keyframes hit{0%,30%{fill:var(--surface);stroke:var(--line)}34%,52%{fill:var(--accent-soft);stroke:var(--accent)}56%,100%{fill:var(--surface);stroke:var(--line)}}
+.bus .cpuhit{animation:hit2 7s infinite both}
+@keyframes hit2{0%,80%{fill:var(--surface);stroke:var(--line)}84%,94%{fill:var(--blue-soft);stroke:var(--blue)}98%,100%{fill:var(--surface);stroke:var(--line)}}
+
+.bus .st1{animation:st1 7s infinite both}.bus .st2{animation:st2 7s infinite both}.bus .st3{animation:st3 7s infinite both}
+@keyframes st1{0%{opacity:0}4%,30%{opacity:1}34%,100%{opacity:0}}
+@keyframes st2{0%,30%{opacity:0}34%,58%{opacity:1}62%,100%{opacity:0}}
+@keyframes st3{0%,50%{opacity:0}54%,90%{opacity:1}94%,100%{opacity:0}}
+/* 21-rasm: quvvat bloki — to'lqin har bosqichda silliqlanadi */
+.psu .win{fill:var(--code);stroke:var(--line);stroke-width:1}
+.psu .wave{fill:none;stroke-width:2.5;stroke-linecap:round}
+.psu .ac{stroke:var(--copper)}
+.psu .dc{stroke:var(--accent)}
+.psu .scroll{animation:scroll 2s linear infinite}
+@keyframes scroll{to{transform:translateX(-60px)}}
+.psu .bumpy{animation:bumpy 5s ease-in-out infinite}
+.psu .flat{animation:flat 5s ease-in-out infinite}
+@keyframes bumpy{0%,35%{opacity:1}55%,100%{opacity:0}}
+@keyframes flat{0%,35%{opacity:0}55%,100%{opacity:1}}
+.psu .stage .box{animation:stageOn 5s infinite both;animation-delay:calc(var(--i) * .9s)}
+@keyframes stageOn{0%{fill:var(--surface);stroke:var(--line)}6%,26%{fill:var(--accent-soft);stroke:var(--accent)}32%,100%{fill:var(--surface);stroke:var(--line)}}
+.psu .outs>g{animation:rise .7s both;animation-delay:calc(1.8s + var(--i) * .35s)}
+/* sovutish */
+.cool .fin{fill:var(--surface);stroke:var(--wire);stroke-width:1.2}
+.cool .pipe{fill:none;stroke:var(--copper);stroke-width:5;stroke-linecap:round;opacity:.8}
+.cool .heat{fill:var(--copper)}
+.cool .heat.travel{animation-duration:4s}
+.cool .blade{fill:var(--blue-soft);stroke:var(--blue);stroke-width:1.2}
+.cool .air{stroke:var(--blue)}
+.cool .cpu{animation:cpuHeat 2.4s ease-in-out infinite}
+@keyframes cpuHeat{0%,100%{fill:var(--copper-soft)}50%{fill:var(--copper)}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">9-bob</div>
+  <h1>Ona plata, shinalar va quvvat</h1>
+  <p class="lede">Protsessor, xotira, disk va videokarta bir-birini qanday topadi, ular qaysi yo'llar bilan gaplashadi va rozetkadagi 220 V qanday qilib 1 voltga aylanadi.</p>
+</div>
+
+<p>Barcha qismlar <strong>ona plata</strong> (motherboard) orqali bir-biriga ulanadi. Bu ko'p qatlamli (odatda 6-12 qavat) bosma plata bo'lib, uning ichida minglab mis yo'lakchalar signallarni bir qismdan boshqasiga olib boradi. Ona platada protsessor soketi, RAM slotlari, kengaytirish slotlari, disk ulagichlari, BIOS chipi, chipset va tashqi portlar joylashgan.</p>
+
+<figure class="fig">
+  <svg class="sv mb" viewBox="0 0 560 600" role="img" aria-label="Ona plataning soddalashtirilgan sxemasi: CPU soket, RAM slotlari, PCIe slotlar, M.2 SSD, chipset, BIOS chip, batareya, 24pin quvvat ulagichi, SATA, USB, audio va orqa portlar">
+    <text x="280" y="22" text-anchor="middle" class="ttl">Ona plata (ATX)</text>
+    <rect x="16" y="36" width="528" height="548" rx="10" class="board"/>
+    <circle cx="30" cy="50" r="4" class="hole"/><circle cx="530" cy="50" r="4" class="hole"/><circle cx="30" cy="570" r="4" class="hole"/><circle cx="530" cy="570" r="4" class="hole"/>
+    <!-- mis yo'lakchalar (signal oqimi) -->
+    <path class="flow" d="M280 135 H 330"/>
+    <path class="flow" d="M215 200 V 330"/>
+    <path class="flow" d="M250 200 V 380"/>
+    <path class="flow copper" d="M340 425 H 400"/>
+    <path class="flow copper" d="M295 470 V 500"/>
+    <path class="flow copper" d="M215 441 H 250"/>
+    <path class="flow copper" d="M250 410 H 130"/>
+    <path class="flow copper" d="M340 455 H 400 V 500"/>
+    <path class="flow blue" d="M56 135 H 150"/>
+    <path class="flow blue" d="M498 120 H 410"/>
+    <!-- qismlar (yonish tartibi --i) -->
+    <g class="part" style="--i:0">
+      <rect x="150" y="70" width="130" height="130" rx="8" class="hw"/>
+      <rect x="170" y="90" width="90" height="90" rx="4" fill="none" stroke="var(--wire)" stroke-dasharray="3 3"/>
+      <text x="215" y="130" text-anchor="middle" class="ttl">CPU</text>
+      <text x="215" y="148" text-anchor="middle" class="lbl">soket</text>
+    </g>
+    <g class="part" style="--i:1">
+      <rect x="330" y="60" width="14" height="230" rx="2" class="hw"/>
+      <rect x="352" y="60" width="14" height="230" rx="2" class="hw"/>
+      <rect x="374" y="60" width="14" height="230" rx="2" class="hw"/>
+      <rect x="396" y="60" width="14" height="230" rx="2" class="hw"/>
+      <text x="370" y="308" text-anchor="middle" class="lbl">RAM slotlari</text>
+    </g>
+    <g class="part" style="--i:2">
+      <rect x="60" y="330" width="300" height="16" rx="3" class="hw"/>
+      <text x="60" y="322" class="lbl">PCIe x16 — videokarta (GPU)</text>
+    </g>
+    <g class="part" style="--i:3">
+      <rect x="60" y="364" width="70" height="13" rx="3" class="hw"/>
+      <rect x="60" y="390" width="70" height="13" rx="3" class="hw"/>
+      <text x="140" y="387" class="lbl">PCIe x1</text>
+    </g>
+    <g class="part" style="--i:4">
+      <rect x="60" y="430" width="150" height="22" rx="4" class="hw"/>
+      <circle cx="200" cy="441" r="3" fill="var(--wire)"/>
+      <text x="130" y="445" text-anchor="middle" class="lbl">M.2 SSD</text>
+    </g>
+    <g class="part" style="--i:5">
+      <rect x="250" y="380" width="90" height="90" rx="8" class="hw"/>
+      <text x="295" y="420" text-anchor="middle" class="ttl">Chipset</text>
+      <text x="295" y="438" text-anchor="middle">I/O boshqaruvi</text>
+    </g>
+    <g class="part" style="--i:6">
+      <rect x="400" y="395" width="40" height="30" rx="3" class="hw"/>
+      <text x="420" y="446" text-anchor="middle" class="lbl">BIOS chip</text>
+    </g>
+    <g class="part" style="--i:7">
+      <circle cx="485" cy="410" r="22" class="hw"/>
+      <text x="485" y="415" text-anchor="middle" class="lbl">+</text>
+      <text x="485" y="446" text-anchor="middle" class="lbl">batareya</text>
+    </g>
+    <g class="part" style="--i:8">
+      <rect x="498" y="70" width="28" height="150" rx="4" class="hw"/>
+      <g fill="var(--wire)">
+        <circle cx="506" cy="80" r="2"/><circle cx="518" cy="80" r="2"/><circle cx="506" cy="92" r="2"/><circle cx="518" cy="92" r="2"/><circle cx="506" cy="104" r="2"/><circle cx="518" cy="104" r="2"/><circle cx="506" cy="116" r="2"/><circle cx="518" cy="116" r="2"/><circle cx="506" cy="128" r="2"/><circle cx="518" cy="128" r="2"/><circle cx="506" cy="140" r="2"/><circle cx="518" cy="140" r="2"/><circle cx="506" cy="152" r="2"/><circle cx="518" cy="152" r="2"/><circle cx="506" cy="164" r="2"/><circle cx="518" cy="164" r="2"/><circle cx="506" cy="176" r="2"/><circle cx="518" cy="176" r="2"/><circle cx="506" cy="188" r="2"/><circle cx="518" cy="188" r="2"/><circle cx="506" cy="200" r="2"/><circle cx="518" cy="200" r="2"/><circle cx="506" cy="212" r="2"/><circle cx="518" cy="212" r="2"/>
+      </g>
+      <text x="512" y="238" text-anchor="middle" class="lbl">24pin</text>
+    </g>
+    <g class="part" style="--i:9">
+      <rect x="250" y="500" width="40" height="14" rx="3" class="hw"/>
+      <rect x="300" y="500" width="40" height="14" rx="3" class="hw"/>
+      <rect x="380" y="500" width="26" height="12" rx="2" class="hw"/>
+      <rect x="412" y="500" width="26" height="12" rx="2" class="hw"/>
+      <rect x="444" y="500" width="26" height="12" rx="2" class="hw"/>
+      <rect x="480" y="496" width="40" height="20" rx="3" class="hw"/>
+      <text x="385" y="545" text-anchor="middle" class="lbl">SATA, USB, audio</text>
+    </g>
+    <g class="part" style="--i:10">
+      <rect x="24" y="60" width="32" height="200" rx="4" class="hw"/>
+      <rect x="30" y="70" width="20" height="14" rx="2" fill="var(--code)" stroke="var(--wire)"/>
+      <rect x="30" y="92" width="20" height="14" rx="2" fill="var(--code)" stroke="var(--wire)"/>
+      <rect x="30" y="114" width="20" height="26" rx="2" fill="var(--code)" stroke="var(--wire)"/>
+      <rect x="30" y="150" width="20" height="26" rx="2" fill="var(--code)" stroke="var(--wire)"/>
+      <circle cx="40" cy="196" r="5" fill="var(--code)" stroke="var(--wire)"/>
+      <circle cx="40" cy="214" r="5" fill="var(--code)" stroke="var(--wire)"/>
+      <circle cx="40" cy="232" r="5" fill="var(--code)" stroke="var(--wire)"/>
+      <text x="40" y="280" text-anchor="middle" class="lbl">Orqa</text>
+      <text x="40" y="294" text-anchor="middle" class="lbl">portlar</text>
+    </g>
+  </svg>
+  <figcaption><span><b>19-rasm.</b> Ona plataning soddalashtirilgan sxemasi</span></figcaption>
+</figure>
+
+<h2 id="9-1">9.1. Shinalar</h2>
+<p><strong>Shina</strong> (bus) — qurilmalar o'rtasida ma'lumot uzatiladigan umumiy yo'l. Klassik tizimda protsessor va xotira o'rtasida uch turdagi shina bor: <strong>manzil shinasi</strong> — qaysi xotira yacheykasiga murojaat qilinayotganini bildiradi; <strong>ma'lumot shinasi</strong> — ma'lumotning o'zini tashiydi; <strong>boshqaruv shinasi</strong> — o'qish yoki yozish kerakligini, takt va boshqa xizmat signallarini uzatadi. Manzil shinasi kengligi adreslash mumkin bo'lgan xotira hajmini belgilaydi: 32 bitli manzil 2<sup>32</sup> = 4 GB xotirani adreslay oladi. Shuning uchun eski 32 bitli Windows 4 GB'dan ortiq RAM'ni ko'ra olmas edi.</p>
+
+<figure class="fig">
+  <svg class="sv bus" viewBox="0 0 640 270" role="img" aria-label="Protsessor va xotira o'rtasidagi uch shina: manzil, ma'lumot va boshqaruv; xotiradan o'qish sikli animatsiyasi">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--wire)"/></marker>
+    </defs>
+    <rect x="20" y="40" width="120" height="170" rx="10" class="box cpuhit"/>
+    <text x="80" y="118" text-anchor="middle" class="ttl">CPU</text>
+    <text x="80" y="136" text-anchor="middle">protsessor</text>
+    <rect x="500" y="40" width="120" height="170" rx="10" class="box ramhit"/>
+    <text x="560" y="118" text-anchor="middle" class="ttl">RAM</text>
+    <text x="560" y="136" text-anchor="middle">xotira</text>
+    <!-- manzil shinasi -->
+    <text x="320" y="62" text-anchor="middle" class="lbl">Manzil shinasi — qayerga?</text>
+    <line x1="140" y1="78" x2="498" y2="78" class="wire" marker-end="url(#ah)"/>
+    <!-- ma'lumot shinasi -->
+    <text x="320" y="122" text-anchor="middle" class="lbl">Ma'lumot shinasi — nima?</text>
+    <line x1="142" y1="138" x2="498" y2="138" class="wire" marker-start="url(#ah)" marker-end="url(#ah)"/>
+    <!-- boshqaruv shinasi -->
+    <text x="320" y="182" text-anchor="middle" class="lbl">Boshqaruv shinasi — o'qi / yoz</text>
+    <line x1="140" y1="198" x2="498" y2="198" class="wire ctlline" marker-end="url(#ah)"/>
+    <g class="ctl"><rect x="280" y="188" width="80" height="20" rx="5" fill="var(--copper-soft)" stroke="var(--copper)"/><text x="320" y="202" text-anchor="middle" class="lbl">O'QI</text></g>
+    <!-- tokenlar -->
+    <g class="tok addr"><rect x="146" y="66" width="70" height="22" rx="5"/><text x="181" y="81" text-anchor="middle" class="lbl">0x1F40</text></g>
+    <g class="tok data"><rect x="424" y="126" width="70" height="22" rx="5"/><text x="459" y="141" text-anchor="middle" class="lbl">42</text></g>
+    <!-- holat matni -->
+    <text x="320" y="245" text-anchor="middle" class="st1">1. CPU manzilni yuboradi: "0x1F40 yacheykasi kerak"</text>
+    <text x="320" y="245" text-anchor="middle" class="st2">2. Boshqaruv shinasi: "O'QI" — RAM yacheykani topadi</text>
+    <text x="320" y="245" text-anchor="middle" class="st3">3. Ma'lumot shinasi qiymatni (42) CPU'ga qaytaradi</text>
+  </svg>
+  <figcaption><span><b>20-rasm.</b> Protsessor va xotira o'rtasidagi uch turdagi shina</span></figcaption>
+</figure>
+
+<p>Zamonaviy kompyuterlarda eski umumiy shina o'rniga tezkor nuqtadan-nuqtaga ulanishlar ishlatiladi. Ularning eng muhimi — <strong>PCI Express (PCIe)</strong>. U ketma-ket "yo'laklar"dan (lane) iborat: x1, x4, x16. Videokarta odatda x16 slotga, NVMe SSD esa x4 ga ulanadi. PCIe 4.0 ning bitta yo'lagi sekundiga ~2 GB uzatadi, demak x16 — ~32 GB/s. Har bir yangi avlod tezlikni ikki barobar oshiradi.</p>
+
+<h2 id="9-2">9.2. Chipset va BIOS</h2>
+<p><strong>Chipset</strong> — ona platadagi yordamchi mikrosxema. U protsessor bevosita boshqarmaydigan qurilmalarni — USB portlar, SATA disklar, audio, tarmoq kartasi — boshqaradi. <strong>BIOS/UEFI</strong> — ona platadagi flesh chipda saqlanadigan kichik dastur. U kompyuter yoqilganda birinchi bo'lib ishga tushadi, qurilmalarni tekshiradi va operatsion tizimni yuklaydi. Ona platadagi kichik tabletka batareya (CR2032) BIOS sozlamalari va soatni kompyuter o'chiq paytda ham saqlab turadi.</p>
+
+<h2 id="9-3">9.3. Quvvat bloki (PSU)</h2>
+<p>Kompyuter qismlari o'zgarmas past kuchlanish bilan ishlaydi, rozetkada esa 220 V o'zgaruvchan tok. <strong>Quvvat bloki</strong> uni kerakli kuchlanishlarga aylantiradi: 12 V (protsessor va videokarta uchun), 5 V (USB, ba'zi disklar), 3.3 V (xotira va mikrosxemalar). Zamonaviy PSU'lar impulsli (switching) tipda: ular tokni avval to'g'rilaydi, keyin yuqori chastotada (~100 kHz) kalitlab, kichik transformator orqali pasaytiradi va filtrlaydi. Yuqori chastota tufayli transformator kichik va yengil bo'ladi. Protsessor yonidagi <strong>VRM</strong> (kuchlanish regulyatori) esa 12 V ni yanada aniq ~1.0-1.4 V ga tushiradi.</p>
+
+<figure class="fig">
+  <svg class="sv psu" viewBox="0 0 800 290" role="img" aria-label="Quvvat blokining ishlash sxemasi: 220 V o'zgaruvchan tok to'g'rilanadi, transformator pasaytiradi, filtr silliqlaydi, chiqishda 12, 5 va 3.3 volt o'zgarmas tok">
+    <defs>
+      <clipPath id="w1"><rect x="20" y="30" width="120" height="70"/></clipPath>
+      <clipPath id="w2"><rect x="180" y="30" width="120" height="70"/></clipPath>
+      <clipPath id="w3"><rect x="340" y="30" width="120" height="70"/></clipPath>
+      <clipPath id="w4"><rect x="500" y="30" width="120" height="70"/></clipPath>
+    </defs>
+    <!-- to'lqin oynalari -->
+    <rect x="20" y="30" width="120" height="70" rx="6" class="win"/>
+    <g clip-path="url(#w1)"><g transform="translate(20,35)"><path class="wave ac scroll" d="M0 30 Q15 -10 30 30 Q45 70 60 30 Q75 -10 90 30 Q105 70 120 30 Q135 -10 150 30 Q165 70 180 30 Q195 -10 210 30 Q225 70 240 30"/></g></g>
+    <text x="80" y="115" text-anchor="middle">o'zgaruvchan</text>
+
+    <rect x="180" y="30" width="120" height="70" rx="6" class="win"/>
+    <g clip-path="url(#w2)"><g transform="translate(180,35)"><path class="wave ac scroll" d="M0 50 Q15 -10 30 50 Q45 -10 60 50 Q75 -10 90 50 Q105 -10 120 50 Q135 -10 150 50 Q165 -10 180 50 Q195 -10 210 50 Q225 -10 240 50"/></g></g>
+    <text x="240" y="115" text-anchor="middle">bir yo'nalishli</text>
+
+    <rect x="340" y="30" width="120" height="70" rx="6" class="win"/>
+    <g clip-path="url(#w3)"><g transform="translate(340,35)"><path class="wave dc scroll" d="M0 50 Q15 22 30 50 Q45 22 60 50 Q75 22 90 50 Q105 22 120 50 Q135 22 150 50 Q165 22 180 50 Q195 22 210 50 Q225 22 240 50"/></g></g>
+    <text x="400" y="115" text-anchor="middle">kichik amplituda</text>
+
+    <rect x="500" y="30" width="120" height="70" rx="6" class="win"/>
+    <g clip-path="url(#w4)"><g transform="translate(500,35)">
+      <path class="wave dc scroll bumpy" d="M0 50 Q15 22 30 50 Q45 22 60 50 Q75 22 90 50 Q105 22 120 50 Q135 22 150 50 Q165 22 180 50 Q195 22 210 50 Q225 22 240 50"/>
+      <path class="wave dc scroll flat" d="M0 38 Q15 34 30 38 Q45 34 60 38 Q75 34 90 38 Q105 34 120 38 Q135 34 150 38 Q165 34 180 38 Q195 34 210 38 Q225 34 240 38"/>
+    </g></g>
+    <text x="560" y="115" text-anchor="middle">o'zgarmas</text>
+
+    <!-- bosqich qutilari -->
+    <g class="stage" style="--i:0"><rect x="20" y="140" width="120" height="60" rx="10" class="box"/><text x="80" y="165" text-anchor="middle" class="ttl">Rozetka</text><text x="80" y="185" text-anchor="middle">220V AC</text></g>
+    <g class="stage" style="--i:1"><rect x="180" y="140" width="120" height="60" rx="10" class="box"/><text x="240" y="165" text-anchor="middle" class="ttl">To'g'rilash</text><text x="240" y="185" text-anchor="middle">AC → DC</text></g>
+    <g class="stage" style="--i:2"><rect x="340" y="140" width="120" height="60" rx="10" class="box"/><text x="400" y="165" text-anchor="middle" class="ttl">Transformator</text><text x="400" y="185" text-anchor="middle">pasaytirish</text></g>
+    <g class="stage" style="--i:3"><rect x="500" y="140" width="120" height="60" rx="10" class="box"/><text x="560" y="165" text-anchor="middle" class="ttl">Filtr</text><text x="560" y="185" text-anchor="middle">silliqlash</text></g>
+    <path class="flow copper" d="M140 170 H 180"/>
+    <path class="flow copper" d="M300 170 H 340"/>
+    <path class="flow" d="M460 170 H 500"/>
+    <path class="flow" d="M620 170 H 650 V 150 H 665"/>
+    <path class="flow" d="M650 170 H 665"/>
+    <path class="flow" d="M650 170 V 190 H 665"/>
+    <!-- chiqishlar -->
+    <g class="outs">
+      <g style="--i:0"><text x="670" y="154" class="lbl">12V → CPU, GPU</text></g>
+      <g style="--i:1"><text x="670" y="174" class="lbl">5V → USB</text></g>
+      <g style="--i:2"><text x="670" y="194" class="lbl">3.3V → RAM, chip</text></g>
+    </g>
+    <text x="80" y="235" text-anchor="middle" class="lbl">220 V</text>
+    <text x="80" y="250" text-anchor="middle">50 Hz sinusoida</text>
+    <text x="240" y="235" text-anchor="middle" class="lbl">diodli ko'prik</text>
+    <text x="240" y="250" text-anchor="middle">yarmi ag'dariladi</text>
+    <text x="400" y="235" text-anchor="middle" class="lbl">~100 kHz kalitlash</text>
+    <text x="400" y="250" text-anchor="middle">kichik, yengil</text>
+    <text x="560" y="235" text-anchor="middle" class="lbl">kondensator</text>
+    <text x="560" y="250" text-anchor="middle">pulsatsiya yo'q</text>
+  </svg>
+  <figcaption><span><b>21-rasm.</b> Quvvat blokining ishlash sxemasi</span></figcaption>
+</figure>
+
+<p>PSU samaradorligi <strong>"80 Plus"</strong> sertifikati bilan belgilanadi (Bronze, Gold, Platinum). Gold sertifikatli blok rozetkadan olingan energiyaning kamida 87-90% ini qismlarga yetkazadi, qolgani issiqlikka aylanadi.</p>
+
+<h2 id="9-4">9.4. Sovutish</h2>
+<p>Protsessor sarflagan deyarli barcha energiya issiqlikka aylanadi. Kuchli protsessor 100-250 vatt, videokarta esa 300-450 vatt issiqlik chiqarishi mumkin — bu kichik elektr isitgich bilan barobar. Issiqlik protsessordan <strong>termopasta</strong> orqali mis yoki alyuminiy <strong>radiatorga</strong> o'tadi, issiqlik quvurlari uni qovurg'alarga tarqatadi, ventilyator esa havoga chiqaradi. Suyuqlik bilan sovutishda esa issiqlik suv yordamida uzoqroqdagi radiatorga olib boriladi. Harorat 95-100 °C dan oshsa, protsessor o'zini himoya qilish uchun chastotasini pasaytiradi (<strong>throttling</strong>).</p>
+
+<figure class="fig">
+  <svg class="sv cool" viewBox="0 0 640 250" role="img" aria-label="Havo bilan sovutish: issiqlik protsessordan termopasta orqali radiatorga, issiqlik quvurlari orqali qovurg'alarga o'tadi, ventilyator havoga chiqaradi">
+    <!-- qovurg'alar -->
+    <g>
+      <rect x="120" y="40" width="8" height="110" class="fin"/><rect x="138" y="40" width="8" height="110" class="fin"/><rect x="156" y="40" width="8" height="110" class="fin"/><rect x="174" y="40" width="8" height="110" class="fin"/><rect x="192" y="40" width="8" height="110" class="fin"/><rect x="210" y="40" width="8" height="110" class="fin"/><rect x="228" y="40" width="8" height="110" class="fin"/><rect x="246" y="40" width="8" height="110" class="fin"/><rect x="264" y="40" width="8" height="110" class="fin"/><rect x="282" y="40" width="8" height="110" class="fin"/><rect x="300" y="40" width="8" height="110" class="fin"/><rect x="318" y="40" width="8" height="110" class="fin"/>
+    </g>
+    <!-- issiqlik quvurlari -->
+    <path class="pipe" d="M190 172 V 60 M260 172 V 60"/>
+    <!-- radiator asosi, termopasta, CPU -->
+    <rect x="110" y="150" width="230" height="22" rx="3" fill="var(--code)" stroke="var(--wire)"/>
+    <rect x="160" y="172" width="130" height="5" fill="var(--copper)" opacity=".7"/>
+    <rect x="160" y="177" width="130" height="26" rx="4" class="cpu" stroke="var(--copper)"/>
+    <text x="225" y="195" text-anchor="middle" class="ttl">CPU</text>
+    <rect x="80" y="203" width="290" height="10" rx="2" fill="var(--code)" stroke="var(--line)"/>
+    <text x="225" y="232" text-anchor="middle">ona plata · 100-250 W issiqlik</text>
+    <!-- yozuvlar -->
+    <text x="40" y="60" class="lbl">qovurg'alar</text>
+    <path d="M100 56 H 118" stroke="var(--wire)" stroke-width="1.5"/>
+    <text x="30" y="166" class="lbl">radiator</text>
+    <text x="30" y="180">mis / alyuminiy</text>
+    <path d="M90 162 H 110" stroke="var(--wire)" stroke-width="1.5"/>
+    <text x="355" y="180" class="lbl">termopasta</text>
+    <path d="M352 176 H 292" stroke="var(--wire)" stroke-width="1.5"/>
+    <text x="225" y="28" text-anchor="middle" class="lbl">issiqlik quvurlari</text>
+    <path d="M190 32 V 44 M260 32 V 44" stroke="var(--wire)" stroke-width="1.5"/>
+    <!-- ventilyator -->
+    <g class="spin"><g transform="translate(470,95)">
+      <path class="blade" d="M0 0 C 10 -30, 30 -40, 40 -20 C 30 -10, 12 -6, 0 0 z"/>
+      <path class="blade" d="M0 0 C 10 -30, 30 -40, 40 -20 C 30 -10, 12 -6, 0 0 z" transform="rotate(90)"/>
+      <path class="blade" d="M0 0 C 10 -30, 30 -40, 40 -20 C 30 -10, 12 -6, 0 0 z" transform="rotate(180)"/>
+      <path class="blade" d="M0 0 C 10 -30, 30 -40, 40 -20 C 30 -10, 12 -6, 0 0 z" transform="rotate(270)"/>
+      <circle r="8" fill="var(--surface)" stroke="var(--blue)"/>
+    </g></g>
+    <circle cx="470" cy="95" r="52" fill="none" stroke="var(--line)" stroke-width="2"/>
+    <text x="470" y="170" text-anchor="middle" class="lbl">ventilyator</text>
+    <!-- havo oqimi -->
+    <path class="flow blue" d="M340 70 H 405"/>
+    <path class="flow blue" d="M340 95 H 405"/>
+    <path class="flow blue" d="M340 120 H 405"/>
+    <path class="flow blue" d="M530 80 H 600"/>
+    <path class="flow blue" d="M530 110 H 600"/>
+    <text x="565" y="60" text-anchor="middle">issiq havo →</text>
+    <!-- issiqlik zarralari: CPU → radiator → qovurg'alar → havo -->
+    <circle r="4" class="heat travel" style="offset-path:path('M225 190 V 160 H 190 V 60 H 330 V 90 H 400');animation-delay:0s"/>
+    <circle r="4" class="heat travel" style="offset-path:path('M225 190 V 160 H 260 V 80 H 330 V 110 H 400');animation-delay:-1.3s"/>
+    <circle r="4" class="heat travel" style="offset-path:path('M225 190 V 160 H 190 V 100 H 330 V 70 H 400');animation-delay:-2.6s"/>
+    <text x="565" y="215" text-anchor="middle">95-100 °C dan oshsa —</text>
+    <text x="565" y="230" text-anchor="middle" class="lbl">throttling</text>
+  </svg>
+  <figcaption><span><b>Havo bilan sovutish.</b> Issiqlik yo'li: CPU → termopasta → radiator → issiqlik quvurlari → qovurg'alar → ventilyator havoga chiqaradi.</span></figcaption>
+</figure>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="9">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s14">14-savol</a></span></div>
+
+<nav class="pager">
+  <a href="08.html"><small>Oldingi</small>8-bob. Xotira</a>
+  <a class="next" href="10.html"><small>Keyingi</small>10-bob. Kirish-chiqish qurilmalari va GPU</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+/* "↻ qayta": figuradagi CSS animatsiyalarini boshidan boshlash */
+document.querySelectorAll('.fig').forEach(f=>f.addEventListener('replay',()=>{const all=f.querySelectorAll('*');all.forEach(e=>{e.style.animationName='none';});void f.offsetWidth;all.forEach(e=>{e.style.animationName='';});}));
+</script>
+</body>
+</html>

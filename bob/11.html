@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>11-bob. Operatsion tizim · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Kompyuterning yuklanishi, yadro va himoya rejimlari, jarayonlar va rejalashtirish, virtual xotira, fayl tizimi.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 24-rasm: yuklanish bosqichlari */
+.bootsv .st rect{animation:bootOn .5s both;animation-delay:calc(var(--i) * .55s)}
+.bootsv .st text{animation:bootTxt .5s both;animation-delay:calc(var(--i) * .55s)}
+@keyframes bootOn{from{fill:var(--surface);stroke:var(--line)}to{fill:var(--accent-soft);stroke:var(--accent)}}
+@keyframes bootTxt{from{opacity:.35}to{opacity:1}}
+.bootsv .arr{animation:bootTxt .4s both,dash 1s linear infinite;animation-delay:calc(var(--i) * .55s + .3s),0s}
+/* 25-rasm: qatlamlar va syscall */
+.lay .tok{animation-duration:4s}
+.lay .border{stroke:var(--wire);stroke-width:2;stroke-dasharray:6 5;animation:borderHit 4s linear infinite}
+@keyframes borderHit{0%,14%{stroke:var(--wire);stroke-width:2}18%,23%{stroke:var(--copper);stroke-width:4}27%,78%{stroke:var(--wire);stroke-width:2}82%,87%{stroke:var(--copper);stroke-width:4}91%,100%{stroke:var(--wire);stroke-width:2}}
+.lay .brk{fill:none;stroke:var(--wire);stroke-width:2}
+.lay .brk.kern{stroke:var(--copper)}
+.lay .brk.user{stroke:var(--accent)}
+/* 26-rasm: jarayon holatlari */
+.sm .edge{fill:none;stroke:var(--wire);stroke-width:2.5;transition:stroke .3s}
+.sm .edge.on{stroke:var(--accent);stroke-width:3.5}
+.sm .node rect{transition:all .3s}
+.sm .elbl{transition:fill .3s}
+.sm .elbl.on{fill:var(--accent);font-weight:700}
+/* 27-rasm: virtual xotira */
+.vm .m{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:700;stroke-dashoffset:700;animation:drawMap 1s ease-out both;animation-delay:calc(var(--i) * .5s)}
+.vm .m.a{stroke:var(--accent)}
+.vm .m.b{stroke:var(--blue)}
+.vm .m.d{stroke:var(--copper);stroke-dasharray:700;animation:drawMap 1s ease-out both,dashy 1s linear infinite;animation-delay:calc(var(--i) * .5s),calc(var(--i) * .5s + 1s)}
+@keyframes drawMap{to{stroke-dashoffset:0}}
+@keyframes dashy{from{stroke-dasharray:6 8;stroke-dashoffset:0}to{stroke-dasharray:6 8;stroke-dashoffset:-14}}
+.vm .pg{animation:pgOn .4s both;animation-delay:calc(var(--i) * .5s)}
+.vm .fr{animation:frOn .4s both;animation-delay:calc(var(--i) * .5s + .9s)}
+.vm .fr.blue{animation-name:frOnB}
+@keyframes pgOn{from{fill:var(--surface);stroke:var(--line)}to{fill:var(--code);stroke:var(--ink)}}
+@keyframes frOn{from{fill:var(--surface);stroke:var(--line)}to{fill:var(--accent-soft);stroke:var(--accent)}}
+@keyframes frOnB{from{fill:var(--surface);stroke:var(--line)}to{fill:var(--blue-soft);stroke:var(--blue)}}
+.vm .mmu{animation:mmuPulse 1.2s ease-in-out infinite alternate}
+@keyframes mmuPulse{from{stroke:var(--line)}to{stroke:var(--accent);stroke-width:3}}
+/* 28-rasm: fayl daraxti */
+.fs .node{cursor:pointer}
+.fs .node rect{transition:all .25s}
+.fs .node text{pointer-events:none}
+.fs .edge{stroke:var(--wire);stroke-width:2;transition:stroke .25s}
+.fs .edge.on{stroke:var(--accent);stroke-width:3}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">11-bob</div>
+  <h1>Operatsion tizim</h1>
+  <p class="lede">Apparat va ilovalar o'rtasida turadigan asosiy dastur: u yuklanadi, resurslarni taqsimlaydi, dasturlarni bir-biridan himoya qiladi va diskdagi bloklardan "fayl" yasaydi.</p>
+</div>
+
+<p>Apparat o'z-o'zidan hech narsa qila olmaydi — unga buyruq beradigan dastur kerak. Lekin har bir dastur disk, xotira, ekran bilan to'g'ridan-to'g'ri ishlaganida, tartibsizlik yuzaga kelardi: ikki dastur bir xil xotira joyiga yozib, bir-birini buzardi. Bu muammoni <strong>operatsion tizim</strong> (OS) hal qiladi. OS — apparat va ilovalar o'rtasida turadigan asosiy dastur. Mashhur OS'lar: Windows, macOS, Linux (serverlarning ~90% i), Android (Linux yadrosi asosida), iOS.</p>
+<p>OS'ning uchta asosiy vazifasi bor: (1) <strong>resurslarni boshqarish</strong> — protsessor vaqti, xotira, disklarni dasturlar o'rtasida adolatli taqsimlash; (2) <strong>abstraksiya</strong> — apparatning murakkabligini yashirib, dasturlarga oddiy interfeys berish (masalan, "fayl" tushunchasi); (3) <strong>himoya</strong> — dasturlarni bir-biridan va tizimni xato yoki zararli dasturlardan himoya qilish.</p>
+
+<h2 id="11-1">11.1. Kompyuterning yuklanishi</h2>
+
+<figure class="fig" id="bootFig">
+  <svg class="sv bootsv" id="bootSvg" viewBox="0 0 760 130" role="img" aria-label="Yuklanish bosqichlari: quvvat, UEFI/BIOS va POST, bootloader, kernel, servislar, desktop">
+    <g class="st" style="--i:0"><rect x="10" y="20" width="110" height="60" rx="10" class="box"/><text x="65" y="46" text-anchor="middle" class="ttl">Quvvat</text><text x="65" y="66" text-anchor="middle">PSU tok</text></g>
+    <path class="flow arr" style="--i:0" d="M120 50 H 136"/>
+    <g class="st" style="--i:1"><rect x="136" y="20" width="110" height="60" rx="10" class="box"/><text x="191" y="46" text-anchor="middle" class="ttl">UEFI/BIOS</text><text x="191" y="66" text-anchor="middle">POST test</text></g>
+    <path class="flow arr" style="--i:1" d="M246 50 H 262"/>
+    <g class="st" style="--i:2"><rect x="262" y="20" width="110" height="60" rx="10" class="box"/><text x="317" y="46" text-anchor="middle" class="ttl">Bootloader</text><text x="317" y="66" text-anchor="middle">GRUB, WBM</text></g>
+    <path class="flow arr" style="--i:2" d="M372 50 H 388"/>
+    <g class="st" style="--i:3"><rect x="388" y="20" width="110" height="60" rx="10" class="box"/><text x="443" y="46" text-anchor="middle" class="ttl">Kernel</text><text x="443" y="66" text-anchor="middle">yadro</text></g>
+    <path class="flow arr" style="--i:3" d="M498 50 H 514"/>
+    <g class="st" style="--i:4"><rect x="514" y="20" width="110" height="60" rx="10" class="box"/><text x="569" y="46" text-anchor="middle" class="ttl">Servislar</text><text x="569" y="66" text-anchor="middle">drayverlar</text></g>
+    <path class="flow arr" style="--i:4" d="M624 50 H 640"/>
+    <g class="st" style="--i:5"><rect x="640" y="20" width="110" height="60" rx="10" class="box"/><text x="695" y="46" text-anchor="middle" class="ttl">Desktop</text><text x="695" y="66" text-anchor="middle">login</text></g>
+    <text x="380" y="112" text-anchor="middle" class="lbl">Kompyuter yoqilgandan ish stoli chiqquncha: ~5-30 soniya</text>
+  </svg>
+  <div class="controls"><button class="primary" type="button" data-chain="boot" id="bootBtn">Yoqish</button><span class="small muted">Har bosqich keyingisini RAM'ga yuklab, boshqaruvni unga beradi</span></div>
+  <div class="chain" id="boot">
+    <div><span>Quvvat bloki barqaror kuchlanish beradi<small>PSU → "Power Good" signali → protsessor reset</small></span></div>
+    <div><span>UEFI/BIOS ishga tushadi, POST o'tkazadi<small>RAM, videokarta, disklar tekshiriladi</small></span></div>
+    <div><span>Bootloader RAM'ga yuklanadi<small>GRUB yoki Windows Boot Manager</small></span></div>
+    <div><span>Kernel (yadro) yuklanadi<small>qurilmalar, drayverlar, MMU, jarayonlar</small></span></div>
+    <div><span>Birinchi jarayon xizmatlarni ishga tushiradi<small>Linux'da systemd</small></span></div>
+    <div><span>Grafik interfeys va login<small>~5–30 soniya o'tdi</small></span></div>
+  </div>
+  <figcaption><span><b>24-rasm.</b> Kompyuterning yuklanish bosqichlari</span></figcaption>
+</figure>
+
+<p>Quvvat tugmasi bosilganda PSU barqaror kuchlanish hosil qilgach, ona plataga "Power Good" signalini yuboradi. Protsessor qayta o'rnatiladi (reset) va xotiraning belgilangan manzilidan birinchi buyruqni o'qiydi — bu manzil BIOS/UEFI flesh chipiga yo'naltirilgan. UEFI <strong>POST</strong> (yoqilishdagi o'z-o'zini tekshirish) jarayonini bajaradi: RAM, videokarta, disklarni tekshiradi. Agar biror narsa ishlamasa, signal tovushlari chiqaradi. So'ng u sozlamalarda ko'rsatilgan diskdan <strong>bootloaderni</strong> (Linux'da GRUB, Windows'da Windows Boot Manager) topib, RAM'ga yuklaydi va boshqaruvni unga beradi. Bootloader OS yadrosini RAM'ga yuklaydi. Yadro qurilmalarni ishga tushiradi, drayverlarni yuklaydi, birinchi jarayonni (Linux'da systemd) boshlaydi, u esa qolgan barcha xizmatlarni va nihoyat grafik interfeysni ishga tushiradi.</p>
+
+<h2 id="11-2">11.2. Yadro va himoya rejimlari</h2>
+<p>OS'ning markaziy qismi — <strong>yadro</strong> (kernel). U protsessorning maxsus imtiyozli rejimida (<strong>kernel mode</strong>) ishlaydi va barcha apparat resurslariga to'liq kirish huquqiga ega. Oddiy ilovalar esa foydalanuvchi rejimida (<strong>user mode</strong>) ishlaydi — ular apparatga to'g'ridan-to'g'ri murojaat qila olmaydi. Protsessorning o'zi bu cheklovni apparat darajasida nazorat qiladi. Ilova faylni o'qishi yoki tarmoqqa ma'lumot yuborishi kerak bo'lsa, u yadroga <strong>tizim chaqirig'i</strong> (system call) orqali murojaat qiladi. Node.js'dagi <code>fs.readFile()</code> oxir-oqibat Linux'ning <code>open()</code> va <code>read()</code> tizim chaqiriqlariga aylanadi.</p>
+
+<figure class="fig">
+  <svg class="sv lay" viewBox="0 0 720 350" role="img" aria-label="Dasturiy ta'minot qatlamlari: foydalanuvchi, ilovalar, tizim chaqiriqlari, OS yadrosi, drayverlar, apparat; user mode va kernel mode chegarasidan syscall o'tadi">
+    <defs><marker id="la" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--wire)"/></marker></defs>
+    <!-- yuqori / past -->
+    <text x="60" y="22" text-anchor="middle" class="lbl">yuqori</text>
+    <line x1="60" y1="30" x2="60" y2="318" class="wire thin" marker-end="url(#la)"/>
+    <text x="60" y="340" text-anchor="middle" class="lbl">past</text>
+    <!-- qatlamlar -->
+    <g class="stagger">
+      <g style="--i:0"><rect x="110" y="16" width="430" height="44" rx="8" class="box"/><text x="125" y="34" class="ttl">Foydalanuvchi</text><text x="125" y="51">siz</text></g>
+      <g style="--i:1"><rect x="110" y="70" width="430" height="44" rx="8" class="box"/><text x="125" y="88" class="ttl">Ilovalar</text><text x="125" y="105">Telegram, Chrome, VS Code</text></g>
+      <g style="--i:2"><rect x="110" y="124" width="430" height="44" rx="8" class="box"/><text x="125" y="142" class="ttl">Tizim chaqiriqlari (syscall)</text><text x="125" y="159">open(), read(), write()</text></g>
+      <g style="--i:3"><rect x="110" y="178" width="430" height="44" rx="8" class="box soft"/><text x="125" y="196" class="ttl">OS yadrosi (kernel)</text><text x="125" y="213">jarayon, xotira, fayl, tarmoq</text></g>
+      <g style="--i:4"><rect x="110" y="232" width="430" height="44" rx="8" class="box soft"/><text x="125" y="250" class="ttl">Drayverlar</text><text x="125" y="267">GPU, Wi-Fi, disk</text></g>
+      <g style="--i:5"><rect x="110" y="286" width="430" height="44" rx="8" class="box soft"/><text x="125" y="304" class="ttl">Apparat</text><text x="125" y="321">CPU, RAM, SSD, ...</text></g>
+    </g>
+    <!-- user/kernel chegarasi -->
+    <line x1="100" y1="173" x2="580" y2="173" class="border"/>
+    <!-- qavslar -->
+    <path class="brk user" d="M596 16 H 604 V 168 H 596"/>
+    <text x="612" y="88" class="lbl">user</text><text x="612" y="102" class="lbl">mode</text>
+    <path class="brk kern" d="M596 178 H 604 V 330 H 596"/>
+    <text x="612" y="250" class="lbl">kernel</text><text x="612" y="264" class="lbl">mode</text>
+    <!-- syscall yo'li -->
+    <text x="470" y="88" class="lbl">fs.readFile()</text>
+    <text x="470" y="105">so'rov ↓ · javob ↑</text>
+    <circle r="7" class="dot travel tok" style="offset-path:path('M560 92 V 308 H 520 V 92')"/>
+    <circle r="5" class="dot blue travel tok" style="offset-path:path('M560 92 V 308 H 520 V 92');animation-delay:-2s"/>
+  </svg>
+  <figcaption><span><b>25-rasm.</b> Dasturiy ta'minot qatlamlari</span></figcaption>
+</figure>
+
+<h2 id="11-3">11.3. Jarayonlar va rejalashtirish</h2>
+<p>Ishga tushirilgan dastur <strong>jarayon</strong> (process) deyiladi. Har bir jarayonning o'z xotira maydoni, ochiq fayllari va kamida bitta bajarilish oqimi (<strong>thread</strong>) bor. Kompyuteringizda bir vaqtda yuzlab jarayon ishlaydi, protsessor yadrolari esa bor-yo'g'i 4-16 ta. Qanday qilib? OS'ning <strong>rejalashtiruvchisi</strong> (scheduler) har bir jarayonga bir necha millisekundlik vaqt bo'lagi beradi, so'ng uni to'xtatib, keyingisiga o'tadi. Bu almashinuv (kontekst almashinuvi) shunchalik tez sodir bo'ladiki, barcha dasturlar bir vaqtda ishlayotgandek tuyuladi.</p>
+
+<figure class="fig" id="smFig">
+  <div class="controls"><button class="primary" type="button" id="smRun">Ishga tushir</button><button type="button" id="smStep">Qadam</button><span class="small muted">Bitta jarayonning hayoti</span></div>
+  <svg class="sv sm" id="smSvg" viewBox="0 0 700 290" role="img" aria-label="Jarayonning holatlari: Yangi, Tayyor (navbatda), Bajarilmoqda (CPU'da), Kutmoqda (disk, tarmoq), Tugadi; o'tishlar: tanlandi, vaqt tugadi (taymer)">
+    <defs><marker id="sa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--wire)"/></marker></defs>
+    <path id="e1" class="edge" d="M120 120 H 183" marker-end="url(#sa)"/>
+    <path id="e2" class="edge" d="M295 106 C 320 62, 360 62, 383 106" marker-end="url(#sa)"/>
+    <path id="e3" class="edge" d="M385 134 C 360 178, 320 178, 297 134" marker-end="url(#sa)"/>
+    <path id="e4" class="edge" d="M515 120 H 578" marker-end="url(#sa)"/>
+    <path id="e5" class="edge" d="M450 144 C 450 200, 440 235, 407 235" marker-end="url(#sa)"/>
+    <path id="e6" class="edge" d="M285 235 C 250 235, 240 200, 240 146" marker-end="url(#sa)"/>
+    <text x="340" y="72" text-anchor="middle" class="elbl" data-e="e2">tanlandi</text>
+    <text x="340" y="180" text-anchor="middle" class="elbl" data-e="e3">vaqt tugadi (taymer)</text>
+    <text x="470" y="200" class="elbl" data-e="e5">kutish</text>
+    <text x="170" y="200" text-anchor="middle" class="elbl" data-e="e6">javob keldi</text>
+    <g class="node" data-n="Yangi"><rect x="20" y="96" width="100" height="48" rx="10" class="box"/><text x="70" y="125" text-anchor="middle" class="ttl">Yangi</text></g>
+    <g class="node" data-n="Tayyor"><rect x="185" y="96" width="110" height="48" rx="10" class="box"/><text x="240" y="118" text-anchor="middle" class="ttl">Tayyor</text><text x="240" y="134" text-anchor="middle">navbatda</text></g>
+    <g class="node" data-n="Bajarilmoqda"><rect x="385" y="96" width="130" height="48" rx="10" class="box"/><text x="450" y="118" text-anchor="middle" class="ttl">Bajarilmoqda</text><text x="450" y="134" text-anchor="middle">CPU'da</text></g>
+    <g class="node" data-n="Tugadi"><rect x="580" y="96" width="100" height="48" rx="10" class="box"/><text x="630" y="125" text-anchor="middle" class="ttl">Tugadi</text></g>
+    <g class="node" data-n="Kutmoqda"><rect x="285" y="211" width="120" height="48" rx="10" class="box"/><text x="345" y="233" text-anchor="middle" class="ttl">Kutmoqda</text><text x="345" y="249" text-anchor="middle">disk, tarmoq</text></g>
+    <circle id="smTok" r="8" class="dot" cx="70" cy="120"/>
+  </svg>
+  <div class="out" id="smOut">Jarayon yaratildi (Yangi)</div>
+  <figcaption><span><b>26-rasm.</b> Jarayonning holatlari</span></figcaption>
+</figure>
+
+<p>Jarayon disk yoki tarmoqdan javob kutayotganda "kutish" holatiga o'tadi va protsessor vaqtini boshqalarga beradi. Node.js'ning asinxron modeli aynan shunga asoslangan: <code>await fetch(...)</code> yozganingizda, Node.js OS'ga so'rov yuboradi va javob kelguncha boshqa so'rovlarga xizmat qiladi. Shuning uchun bitta oqimli Node.js serveri minglab foydalanuvchiga xizmat qila oladi.</p>
+
+<h2 id="11-4">11.4. Virtual xotira</h2>
+<p>Har bir jarayon o'zini butun xotiraning yagona egasi deb "o'ylaydi": uning uchun manzillar 0 dan boshlanadi va juda katta maydon mavjud. Bu <strong>virtual xotira</strong> deyiladi. Aslida OS va protsessordagi <strong>MMU</strong> (xotirani boshqarish bloki) har bir virtual manzilni haqiqiy fizik manzilga o'giradi. Xotira 4 KB lik <strong>sahifalarga</strong> bo'lingan va OS har bir jarayon uchun sahifalar jadvalini yuritadi.</p>
+
+<figure class="fig">
+  <svg class="sv vm" viewBox="0 0 700 400" role="img" aria-label="Virtual xotira: Dastur A va Dastur B sahifalari MMU orqali haqiqiy RAM freymlariga o'giriladi; ba'zi sahifalar diskda">
+    <text x="80" y="24" text-anchor="middle" class="ttl">Dastur A ko'radi</text>
+    <rect x="20" y="40" width="120" height="30" rx="5" class="box pg" style="--i:0"/><text x="80" y="60" text-anchor="middle" class="lbl">sahifa 0</text>
+    <rect x="20" y="80" width="120" height="30" rx="5" class="box pg" style="--i:1"/><text x="80" y="100" text-anchor="middle" class="lbl">sahifa 1</text>
+    <rect x="20" y="120" width="120" height="30" rx="5" class="box pg" style="--i:2"/><text x="80" y="140" text-anchor="middle" class="lbl">sahifa 2</text>
+    <rect x="20" y="160" width="120" height="30" rx="5" class="box pg" style="--i:3"/><text x="80" y="180" text-anchor="middle" class="lbl">sahifa 3</text>
+    <text x="80" y="226" text-anchor="middle" class="ttl">Dastur B ko'radi</text>
+    <rect x="20" y="240" width="120" height="30" rx="5" class="box pg" style="--i:4"/><text x="80" y="260" text-anchor="middle" class="lbl">sahifa 0</text>
+    <rect x="20" y="280" width="120" height="30" rx="5" class="box pg" style="--i:5"/><text x="80" y="300" text-anchor="middle" class="lbl">sahifa 1</text>
+    <rect x="20" y="320" width="120" height="30" rx="5" class="box pg" style="--i:6"/><text x="80" y="340" text-anchor="middle" class="lbl">sahifa 2</text>
+    <rect x="20" y="360" width="120" height="30" rx="5" class="box pg" style="--i:7"/><text x="80" y="380" text-anchor="middle" class="lbl">sahifa 3</text>
+
+    <text x="600" y="24" text-anchor="middle" class="ttl">Haqiqiy RAM</text>
+    <rect x="540" y="40" width="120" height="30" rx="5" class="box fr" style="--i:1"/><text x="600" y="60" text-anchor="middle" class="lbl">freym 0</text>
+    <rect x="540" y="80" width="120" height="30" rx="5" class="box fr blue" style="--i:4"/><text x="600" y="100" text-anchor="middle" class="lbl">freym 1</text>
+    <rect x="540" y="120" width="120" height="30" rx="5" class="box fr" style="--i:0"/><text x="600" y="140" text-anchor="middle" class="lbl">freym 2</text>
+    <rect x="540" y="160" width="120" height="30" rx="5" class="box fr blue" style="--i:6"/><text x="600" y="180" text-anchor="middle" class="lbl">freym 3</text>
+    <rect x="540" y="200" width="120" height="30" rx="5" class="box fr blue" style="--i:5"/><text x="600" y="220" text-anchor="middle" class="lbl">freym 4</text>
+    <rect x="540" y="240" width="120" height="30" rx="5" class="box fr" style="--i:2"/><text x="600" y="260" text-anchor="middle" class="lbl">freym 5</text>
+    <g>
+      <path d="M532 335 a68 9 0 0 0 136 0 V 365 a68 9 0 0 1 -136 0 z" fill="var(--copper-soft)" stroke="var(--copper)" stroke-width="1.5"/>
+      <ellipse cx="600" cy="335" rx="68" ry="9" fill="var(--copper-soft)" stroke="var(--copper)" stroke-width="1.5"/>
+      <text x="600" y="356" text-anchor="middle" class="lbl">sahifa 3 → diskda</text>
+      <text x="600" y="388" text-anchor="middle">swap fayl</text>
+    </g>
+
+    <!-- moslashtirish chiziqlari: A → yashil, B → ko'k, diskka → mis; hammasi MMU orqali -->
+    <path class="m a" style="--i:0" d="M140 55 C 230 55, 240 200, 300 200 L 410 200 C 470 200, 480 135, 540 135"/>
+    <path class="m a" style="--i:1" d="M140 95 C 230 95, 240 200, 300 200 L 410 200 C 470 200, 480 55, 540 55"/>
+    <path class="m a" style="--i:2" d="M140 135 C 230 135, 240 200, 300 200 L 410 200 C 470 200, 480 255, 540 255"/>
+    <path class="m d" style="--i:3" d="M140 175 C 230 175, 240 200, 300 200 L 410 200 C 470 200, 480 350, 540 350"/>
+    <path class="m b" style="--i:4" d="M140 255 C 230 255, 240 200, 300 200 L 410 200 C 470 200, 480 95, 540 95"/>
+    <path class="m b" style="--i:5" d="M140 295 C 230 295, 240 200, 300 200 L 410 200 C 470 200, 480 215, 540 215"/>
+    <path class="m b" style="--i:6" d="M140 335 C 230 335, 240 200, 300 200 L 410 200 C 470 200, 480 175, 540 175"/>
+    <path class="m d" style="--i:7" d="M140 375 C 230 375, 240 200, 300 200 L 410 200 C 470 200, 480 350, 540 350"/>
+    <!-- MMU (chiziqlar ustida) -->
+    <rect x="300" y="170" width="110" height="60" rx="10" class="box mmu"/>
+    <text x="355" y="196" text-anchor="middle" class="ttl">MMU</text>
+    <text x="355" y="214" text-anchor="middle">sahifalar jadvali</text>
+    <text x="355" y="250" text-anchor="middle" class="lbl">MMU manzillarni o'giradi</text>
+  </svg>
+  <figcaption><span><b>27-rasm.</b> Virtual xotira: har bir dastur o'z manzil maydonini ko'radi</span></figcaption>
+</figure>
+
+<p>Bu yondashuvning afzalliklari: (1) <strong>izolyatsiya</strong> — bir jarayon boshqasining xotirasini ko'ra olmaydi, shuning uchun brauzerdagi bitta sahifa qulasa, boshqalari ishlashda davom etadi; (2) <strong>RAM'dan ko'proq xotira</strong> — kam ishlatiladigan sahifalar diskka (swap fayl) chiqariladi va kerak bo'lganda qayta yuklanadi; (3) <strong>qulaylik</strong> — dasturchi fizik manzillar haqida o'ylamaydi. Mashhur "Segmentation fault" xatosi — dastur o'ziga ajratilmagan manzilga murojaat qilganda MMU uni to'xtatishining natijasi.</p>
+
+<h2 id="11-5">11.5. Fayl tizimi</h2>
+<p>Disk aslida raqamlangan bloklarning (odatda 4 KB) katta ketma-ketligi. "Fayl" va "papka" tushunchalarini OS'ning <strong>fayl tizimi</strong> yaratadi. U har bir fayl haqida ma'lumotni (nomi, hajmi, yaratilgan sanasi, huquqlari va qaysi bloklarda joylashgani) maxsus tuzilmalarda saqlaydi. Linux'da bu tuzilma <strong>inode</strong> deyiladi. Mashhur fayl tizimlari: NTFS (Windows), ext4 (Linux), APFS (macOS), FAT32/exFAT (fleshkalar).</p>
+
+<figure class="fig" id="fsFig">
+  <div class="controls"><span class="small muted">Istalgan tugunni bosing — OS uning yo'lini ildizdan boshlab qadam-baqadam topadi</span></div>
+  <svg class="sv fs" id="fsSvg" viewBox="0 0 640 300" role="img" aria-label="Linux fayl tizimining daraxtsimon tuzilishi: ildiz, home, etc, usr, muhammad, bot.js, rasm.png, bin">
+    <line class="edge" data-e="home" x1="320" y1="56" x2="160" y2="104"/>
+    <line class="edge" data-e="etc" x1="320" y1="56" x2="320" y2="104"/>
+    <line class="edge" data-e="usr" x1="320" y1="56" x2="480" y2="104"/>
+    <line class="edge" data-e="muhammad" x1="160" y1="136" x2="160" y2="184"/>
+    <line class="edge" data-e="bot.js" x1="160" y1="216" x2="100" y2="264"/>
+    <line class="edge" data-e="rasm.png" x1="160" y1="216" x2="220" y2="264"/>
+    <line class="edge" data-e="bin" x1="480" y1="136" x2="480" y2="184"/>
+    <g class="node" data-name="/" data-path="/" tabindex="0" role="button"><rect x="270" y="24" width="100" height="32" rx="7" class="box"/><text x="320" y="44" text-anchor="middle" class="ttl">/  (ildiz)</text></g>
+    <g class="node" data-name="home" data-path="/home" tabindex="0" role="button"><rect x="110" y="104" width="100" height="32" rx="7" class="box"/><text x="160" y="125" text-anchor="middle" class="lbl">home</text></g>
+    <g class="node" data-name="etc" data-path="/etc" tabindex="0" role="button"><rect x="270" y="104" width="100" height="32" rx="7" class="box"/><text x="320" y="125" text-anchor="middle" class="lbl">etc</text></g>
+    <g class="node" data-name="usr" data-path="/usr" tabindex="0" role="button"><rect x="430" y="104" width="100" height="32" rx="7" class="box"/><text x="480" y="125" text-anchor="middle" class="lbl">usr</text></g>
+    <g class="node" data-name="muhammad" data-path="/home/muhammad" tabindex="0" role="button"><rect x="110" y="184" width="100" height="32" rx="7" class="box"/><text x="160" y="205" text-anchor="middle" class="lbl">muhammad</text></g>
+    <g class="node" data-name="bin" data-path="/usr/bin" tabindex="0" role="button"><rect x="430" y="184" width="100" height="32" rx="7" class="box"/><text x="480" y="205" text-anchor="middle" class="lbl">bin</text></g>
+    <g class="node" data-name="bot.js" data-path="/home/muhammad/bot.js" tabindex="0" role="button"><rect x="50" y="264" width="100" height="32" rx="7" class="box"/><text x="100" y="285" text-anchor="middle" class="lbl">bot.js</text></g>
+    <g class="node" data-name="rasm.png" data-path="/home/muhammad/rasm.png" tabindex="0" role="button"><rect x="170" y="264" width="100" height="32" rx="7" class="box"/><text x="220" y="285" text-anchor="middle" class="lbl">rasm.png</text></g>
+  </svg>
+  <div class="out" id="fsOut">/home/muhammad/bot.js</div>
+  <figcaption><span><b>28-rasm.</b> Linux fayl tizimining daraxtsimon tuzilishi</span></figcaption>
+</figure>
+
+<p>Faylni o'chirganingizda, odatda faqat uning yozuvi o'chiriladi, ma'lumot bloklari esa "bo'sh" deb belgilanadi va ustiga yangi ma'lumot yozilgunicha saqlanib qoladi. Shuning uchun maxsus dasturlar o'chirilgan fayllarni ba'zan tiklay oladi.</p>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="11">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s16">16</a>, <a href="../savollar.html#s17">17</a>, <a href="../savollar.html#s18">18-savollar</a></span></div>
+
+<nav class="pager">
+  <a href="10.html"><small>Oldingi</small>10-bob. Kirish-chiqish qurilmalari va GPU</a>
+  <a class="next" href="12.html"><small>Keyingi</small>12-bob. Dasturlash tilidan mashina kodigacha</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+/* "↻ qayta": figuradagi CSS animatsiyalarini boshidan boshlash */
+document.querySelectorAll('.fig').forEach(f=>f.addEventListener('replay',()=>{const all=f.querySelectorAll('*');all.forEach(e=>{e.style.animationName='none';});void f.offsetWidth;all.forEach(e=>{e.style.animationName='';});}));
+</script>
+<script>
+(function(){
+  /* .play sinfi qo'shilganda bir marta chaqirish */
+  const onPlay=(fig,fn)=>{if(fig.classList.contains('play')){fn();return;}
+    const mo=new MutationObserver(()=>{if(fig.classList.contains('play')){mo.disconnect();fn();}});
+    mo.observe(fig,{attributes:true,attributeFilter:['class']});};
+
+  /* ---- 24-rasm: tugma bosilganda SVG bosqichlarini ham qayta yoqish ---- */
+  (function(){
+    const svg=document.getElementById('bootSvg');
+    document.getElementById('bootBtn').addEventListener('click',()=>{
+      svg.querySelectorAll('.st rect,.st text,.arr').forEach(e=>{e.style.animation='none';void e.getBBox();e.style.animation='';});
+    });
+  })();
+
+  /* ---- 26-rasm: jarayon holatlari ---- */
+  (function(){
+    const fig=document.getElementById('smFig'),svg=document.getElementById('smSvg'),tok=document.getElementById('smTok'),out=document.getElementById('smOut');
+    const nodes={};svg.querySelectorAll('.node').forEach(n=>nodes[n.dataset.n]=n);
+    const seq=[
+      ['e1','Tayyor','Jarayon yaratildi → navbatga qo\'yildi (Tayyor)'],
+      ['e2','Bajarilmoqda','Rejalashtiruvchi tanladi → CPU\'da, bir necha ms vaqt bo\'lagi'],
+      ['e3','Tayyor','Vaqt bo\'lagi tugadi (taymer uzilishi) → kontekst almashinuvi → navbatga'],
+      ['e2','Bajarilmoqda','Yana tanlandi → CPU\'da davom etadi'],
+      ['e5','Kutmoqda','await fetch(...) → OS\'ga so\'rov, javob kelguncha CPU boshqalarga beriladi'],
+      ['e6','Tayyor','Disk/tarmoqdan javob keldi → yana navbatda'],
+      ['e2','Bajarilmoqda','Tanlandi → javobni qayta ishlaydi'],
+      ['e4','Tugadi','Dastur ishini tugatdi → xotirasi bo\'shatiladi']
+    ];
+    let idx=0,busy=false,auto=false,timer=null,raf=null;
+    const setNode=name=>{svg.querySelectorAll('.node rect').forEach(r=>r.classList.remove('on'));if(name)nodes[name].querySelector('rect').classList.add('on');};
+    const setEdge=id=>{svg.querySelectorAll('.edge').forEach(e=>e.classList.toggle('on',e.id===id));svg.querySelectorAll('.elbl').forEach(t=>t.classList.toggle('on',t.dataset.e===id));};
+    const reset=()=>{clearTimeout(timer);cancelAnimationFrame(raf);busy=false;idx=0;setEdge(null);setNode('Yangi');tok.setAttribute('cx',70);tok.setAttribute('cy',120);out.textContent='Jarayon yaratildi (Yangi)';};
+    const step=(done)=>{if(busy)return;if(idx>=seq.length){reset();}
+      const [eid,to,msg]=seq[idx++];const path=document.getElementById(eid),L=path.getTotalLength();
+      busy=true;setEdge(eid);setNode(null);out.textContent=msg;
+      const dur=KQI.reduce?0:900;const t0=performance.now();
+      const frame=now=>{let k=dur?Math.min(1,(now-t0)/dur):1;k=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;const p=path.getPointAtLength(k*L);tok.setAttribute('cx',p.x);tok.setAttribute('cy',p.y);
+        if(k<1)raf=requestAnimationFrame(frame);else{setNode(to);busy=false;if(done)done();}};
+      raf=requestAnimationFrame(frame);};
+    const loop=()=>{if(!auto)return;if(!fig.classList.contains('play')){timer=setTimeout(loop,500);return;}
+      if(idx>=seq.length){timer=setTimeout(()=>{reset();loop();},1800);return;}
+      step(()=>{timer=setTimeout(loop,KQI.reduce?1600:800);});};
+    document.getElementById('smRun').onclick=()=>{auto=true;reset();loop();};
+    document.getElementById('smStep').onclick=()=>{auto=false;clearTimeout(timer);step();};
+    fig.addEventListener('replay',()=>{auto=true;reset();loop();});
+    onPlay(fig,()=>{auto=true;reset();loop();});
+  })();
+
+  /* ---- 28-rasm: yo'lni tugunma-tugun topish ---- */
+  (function(){
+    const fig=document.getElementById('fsFig'),svg=document.getElementById('fsSvg'),out=document.getElementById('fsOut');
+    const nodes=[...svg.querySelectorAll('.node')],edges=[...svg.querySelectorAll('.edge')];
+    let timers=[];
+    const clear=()=>{timers.forEach(clearTimeout);timers=[];nodes.forEach(n=>n.querySelector('rect').classList.remove('on'));edges.forEach(e=>e.classList.remove('on'));};
+    const resolve=path=>{clear();const parts=path==='/'?['/']:['/',...path.slice(1).split('/')];let cur='';
+      parts.forEach((p,i)=>{timers.push(setTimeout(()=>{
+        if(i===0){cur='/';}else{cur=(cur==='/'?'/':cur+'/')+p;}
+        const n=nodes.find(x=>x.dataset.path===cur);if(n)n.querySelector('rect').classList.add('on');
+        const e=edges.find(x=>x.dataset.e===p);if(e&&i>0)e.classList.add('on');
+        out.innerHTML=(i===0?'ildiz <b>/</b>':'… → <b>'+p+'</b> topildi')+' &nbsp;·&nbsp; yo\'l: <b>'+cur+'</b>'+(i===parts.length-1?' ✓':'');
+      },KQI.reduce?0:i*650));});};
+    nodes.forEach(n=>{n.addEventListener('click',()=>resolve(n.dataset.path));n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();resolve(n.dataset.path);}});});
+    const demo=()=>resolve('/home/muhammad/bot.js');
+    fig.addEventListener('replay',demo);
+    onPlay(fig,demo);
+  })();
+})();
+</script>
+</body>
+</html>

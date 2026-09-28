@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>10-bob. Kirish-chiqish qurilmalari va GPU · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Klaviatura matritsasi, sichqoncha, monitor va kadr buferi, GPU arxitekturasi, drayverlar va DMA.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* klaviatura matritsasi */
+.kb .rowline{stroke:var(--wire);stroke-width:2;transition:stroke .15s}
+.kb .rowline.on{stroke:var(--accent)}
+.kb .colline{stroke:var(--wire);stroke-width:2;transition:stroke .15s}
+.kb .colline.on{stroke:var(--copper)}
+.kb .key{cursor:pointer}
+.kb .key rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5;transition:all .15s}
+.kb .key.pressed rect{fill:var(--copper-soft);stroke:var(--copper)}
+.kb .key.hit rect{fill:var(--accent-soft);stroke:var(--accent)}
+.kb .key text{pointer-events:none}
+.kb .scanner{fill:var(--accent);transition:transform .15s}
+/* 22-rasm: kadr buferi → ekran */
+.fb{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.fb-ttl{font-family:var(--display);font-weight:600;font-size:14px;margin-bottom:6px}
+.fb-ttl small{display:block;font-family:var(--mono);font-weight:400;color:var(--muted);font-size:12px}
+.px{display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(9,1fr);gap:1px;background:var(--line);border:2px solid var(--line);border-radius:6px;overflow:hidden;position:relative;aspect-ratio:16/9}
+.px i{display:block;background:var(--code);transition:background .12s}
+.px i.on{background:var(--accent)}
+.px i.b{background:var(--blue)}
+.px i.c{background:var(--copper)}
+.px .scan{position:absolute;left:0;right:0;top:-6%;height:6%;background:var(--accent);opacity:0;pointer-events:none}
+.px .scan.go{animation:scan .45s linear both}
+@keyframes scan{from{top:-6%;opacity:.55}to{top:100%;opacity:.55}}
+.fb-note{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px}
+.fb-cable{text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.fb-cable svg{width:70px;margin:0 auto}
+.subpx{display:inline-grid;grid-template-columns:repeat(3,10px);gap:2px;vertical-align:middle;margin:0 6px}
+.subpx i{display:block;height:18px;border-radius:2px}
+.subpx i:nth-child(1){background:var(--copper)}.subpx i:nth-child(2){background:var(--accent)}.subpx i:nth-child(3){background:var(--blue)}
+@media (max-width:560px){.fb{grid-template-columns:1fr}.fb-cable svg{transform:rotate(90deg);margin:-14px auto}}
+/* 23-rasm: CPU vs GPU */
+.cg .core{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.cg .cpu .core{animation:cpuBusy 1.6s ease-in-out infinite;animation-delay:calc(var(--i) * .2s)}
+@keyframes cpuBusy{0%,100%{fill:var(--surface);stroke:var(--line)}50%{fill:var(--accent-soft);stroke:var(--accent)}}
+.cg .gpu .core{stroke-width:.6;animation:gpuAll .7s steps(2) infinite}
+@keyframes gpuAll{0%{fill:var(--surface);stroke:var(--line)}50%{fill:var(--blue);stroke:var(--blue)}}
+.cg .bar{fill:var(--code);stroke:var(--line)}
+.cg .fill{transform-box:fill-box;transform-origin:left center}
+.cg .fill.slow{fill:var(--accent);animation:fillSlow 8s steps(40) infinite}
+.cg .fill.fast{fill:var(--blue);animation:fillFast 8s linear infinite}
+@keyframes fillSlow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes fillFast{0%{transform:scaleX(0)}12%{transform:scaleX(1)}100%{transform:scaleX(1)}}
+.cg .tile{fill:var(--code);stroke:var(--wire);stroke-width:.8}
+.cg .task .tile{animation:taskGo 8s infinite both;animation-delay:calc(var(--i) * .05s)}
+@keyframes taskGo{0%{fill:var(--code)}8%{fill:var(--copper)}12%,100%{fill:var(--code)}}
+/* DMA */
+.dma .step{animation:dmaStep 8s infinite both;animation-delay:calc(var(--i) * 2s)}
+@keyframes dmaStep{0%{opacity:.25}4%,26%{opacity:1}30%,100%{opacity:.25}}
+.dma .cpuwork{animation:cpuWork 1s linear infinite}
+@keyframes cpuWork{to{stroke-dashoffset:-12}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">10-bob</div>
+  <h1>Kirish-chiqish qurilmalari va GPU</h1>
+  <p class="lede">Bosilgan tugma qanday aniqlanadi, tasvir xotiradan ekranga qanday yetib boradi va nega sun'iy intellekt uchun aynan videokarta kerak.</p>
+</div>
+
+<p>Kompyuter tashqi dunyo bilan <strong>kirish-chiqish (I/O) qurilmalari</strong> orqali muloqot qiladi. Kirish qurilmalari: klaviatura, sichqoncha, sensorli ekran, mikrofon, kamera, skaner. Chiqish qurilmalari: monitor, karnay, printer. Ikkala yo'nalishda ham ishlaydigan qurilmalar: tarmoq kartasi, disklar, USB fleshka.</p>
+
+<h2 id="10-1">10.1. Klaviatura va sichqoncha</h2>
+<p>Klaviatura ichida tugmalar qatorlar va ustunlardan iborat <strong>matritsa</strong> shaklida ulangan. Klaviatura mikrokontrolleri sekundiga yuzlab marta har bir qatorga navbatma-navbat signal berib, qaysi ustunda tok paydo bo'lishini tekshiradi — shu tarzda bosilgan tugma aniqlanadi. So'ng tugmaning <strong>skan-kodi</strong> USB orqali kompyuterga yuboriladi. Optik sichqonchada esa kichik kamera sekundiga minglab marta stol yuzasini suratga oladi va rasmlar orasidagi siljishdan harakat yo'nalishi va tezligini hisoblaydi.</p>
+
+<figure class="fig" id="kbFig">
+  <div class="controls"><span class="small muted">Tugmani bosing (tanlang) — mikrokontroller qatorlarni birma-bir skanerlab uni topadi</span></div>
+  <svg class="sv kb" id="kbSvg" viewBox="0 0 560 250" role="img" aria-label="Klaviatura matritsasi: 4 qator va 6 ustun; mikrokontroller qatorlarga navbatma-navbat signal beradi va bosilgan tugma ustunida tok paydo bo'ladi">
+    <rect x="10" y="20" width="90" height="200" rx="8" class="box soft"/>
+    <text x="55" y="105" text-anchor="middle" class="ttl">Mikro-</text>
+    <text x="55" y="121" text-anchor="middle" class="ttl">kontroller</text>
+    <text x="55" y="140" text-anchor="middle">qatorlarni</text>
+    <text x="55" y="154" text-anchor="middle">skanerlaydi</text>
+    <g id="kbRows"></g>
+    <g id="kbCols"></g>
+    <g id="kbKeys"></g>
+    <rect id="kbScanner" class="scanner" x="100" y="46" width="8" height="8" rx="2"/>
+    <text x="330" y="14" text-anchor="middle">ustunlar → mikrokontrollerga qaytadi</text>
+    <text x="500" y="14" text-anchor="middle" class="lbl">USB →</text>
+  </svg>
+  <div class="out" id="kbOut">Skanerlash…</div>
+  <figcaption><span><b>Klaviatura matritsasi.</b> Qator signali bosilgan tugma orqali ustunga o'tadi: qator + ustun = tugma, so'ng uning skan-kodi USB orqali yuboriladi.</span></figcaption>
+</figure>
+
+<h2 id="10-2">10.2. Monitor</h2>
+<p>Monitor ekrani <strong>piksellar</strong> matritsasidan iborat. Har bir piksel uchta kichik subpikseldan tashkil topgan: qizil, yashil va ko'k. Ularning yorqinligini o'zgartirish orqali ko'z millionlab rang ko'radi. LCD ekranlarda orqa yorug'lik manbai va har bir subpiksel oldida yorug'likni o'tkazadigan yoki to'sadigan suyuq kristall bor. OLED ekranlarda esa har bir subpikselning o'zi yorug'lik chiqaradi, shuning uchun qora rang haqiqiy qora bo'ladi.</p>
+
+<figure class="fig" id="fbFig">
+  <div class="fb">
+    <div>
+      <div class="fb-ttl">Kadr buferi<small>VRAM</small></div>
+      <div class="px" id="fbVram"></div>
+      <div class="fb-note" id="fbCount">kadr #0</div>
+    </div>
+    <div class="fb-cable">
+      <svg class="sv" viewBox="0 0 70 40" aria-hidden="true"><path class="flow" d="M2 20 H 68"/><path d="M58 12 L 68 20 L 58 28" fill="none" stroke="var(--accent)" stroke-width="2"/></svg>
+      HDMI/DP<br>kabel
+    </div>
+    <div>
+      <div class="fb-ttl">Monitor<small>60-240 Hz</small></div>
+      <div class="px" id="fbMon"><i class="scan" id="fbScan"></i></div>
+      <div class="fb-note">Ekran piksel matritsasi</div>
+    </div>
+  </div>
+  <p class="small muted" style="margin:10px 0 0">1920x1080 = 2 073 600 piksel, sekundiga 60+ marta. Har piksel = <span class="subpx"><i></i><i></i><i></i></span> uch subpiksel (qizil, yashil, ko'k).</p>
+  <figcaption><span><b>22-rasm.</b> Tasvirning xotiradan ekranga yo'li</span></figcaption>
+</figure>
+
+<p>Ekranga chiqariladigan tasvir videokarta xotirasidagi <strong>kadr buferida</strong> saqlanadi. 60 Hz monitor sekundiga 60 marta shu buferni o'qib, har bir pikselni yangilaydi. O'yinchilar uchun 144-240 Hz monitorlar harakatni silliqroq ko'rsatadi.</p>
+
+<h2 id="10-3">10.3. GPU — grafik protsessor</h2>
+<p><strong>GPU</strong> (videokarta) dastlab 3D grafikani chizish uchun yaratilgan. 3D sahna millionlab uchburchaklardan iborat va ekrandagi har bir pikselning rangini hisoblash kerak — bu bir xil turdagi, lekin bir-biriga bog'liq bo'lmagan juda ko'p hisob. CPU bunday ish uchun qulay emas: unda bir nechta, lekin juda "aqlli" yadrolar bor. GPU'da esa minglab oddiy yadrolar bor, ular bir vaqtning o'zida bitta amalni turli ma'lumotlar ustida bajaradi.</p>
+
+<figure class="fig">
+  <svg class="sv cg" id="cgSvg" viewBox="0 0 680 320" role="img" aria-label="CPU va GPU arxitekturasining farqi: CPU'da 8 ta kuchli yadro, GPU'da minglab oddiy yadro; bir xil vazifa ikkalasida qanday bajarilishi">
+    <text x="340" y="16" text-anchor="middle" class="lbl">Vazifa: ekrandagi har bir pikselning rangini hisoblash (bir xil amal, turli ma'lumot)</text>
+    <g class="task" id="cgTask"></g>
+    <path class="flow" d="M250 46 L 170 84"/>
+    <path class="flow blue" d="M430 46 L 510 84"/>
+    <!-- CPU -->
+    <g class="cpu">
+      <text x="170" y="100" text-anchor="middle" class="ttl">CPU: kam, lekin kuchli yadrolar</text>
+      <rect x="55" y="110" width="230" height="130" rx="10" class="box soft"/>
+      <g style="--i:0"><rect x="65" y="120" width="50" height="50" rx="6" class="core"/><text x="90" y="150" text-anchor="middle" class="lbl">Y1</text></g>
+      <g style="--i:1"><rect x="120" y="120" width="50" height="50" rx="6" class="core"/><text x="145" y="150" text-anchor="middle" class="lbl">Y2</text></g>
+      <g style="--i:2"><rect x="175" y="120" width="50" height="50" rx="6" class="core"/><text x="200" y="150" text-anchor="middle" class="lbl">Y3</text></g>
+      <g style="--i:3"><rect x="230" y="120" width="50" height="50" rx="6" class="core"/><text x="255" y="150" text-anchor="middle" class="lbl">Y4</text></g>
+      <g style="--i:4"><rect x="65" y="180" width="50" height="50" rx="6" class="core"/><text x="90" y="210" text-anchor="middle" class="lbl">Y5</text></g>
+      <g style="--i:5"><rect x="120" y="180" width="50" height="50" rx="6" class="core"/><text x="145" y="210" text-anchor="middle" class="lbl">Y6</text></g>
+      <g style="--i:6"><rect x="175" y="180" width="50" height="50" rx="6" class="core"/><text x="200" y="210" text-anchor="middle" class="lbl">Y7</text></g>
+      <g style="--i:7"><rect x="230" y="180" width="50" height="50" rx="6" class="core"/><text x="255" y="210" text-anchor="middle" class="lbl">Y8</text></g>
+      <text x="55" y="262">bajarildi: 8 tadan, navbat bilan</text>
+      <rect x="55" y="270" width="230" height="12" rx="6" class="bar"/>
+      <rect x="55" y="270" width="230" height="12" rx="6" class="fill slow"/>
+    </g>
+    <!-- GPU -->
+    <g class="gpu">
+      <text x="510" y="100" text-anchor="middle" class="ttl">GPU: minglab oddiy yadrolar</text>
+      <rect x="395" y="110" width="230" height="130" rx="10" class="box soft"/>
+      <g id="cgCores"></g>
+      <text x="395" y="262">bajarildi: hammasi bir vaqtda</text>
+      <rect x="395" y="270" width="230" height="12" rx="6" class="bar"/>
+      <rect x="395" y="270" width="230" height="12" rx="6" class="fill fast"/>
+    </g>
+    <text x="340" y="300" text-anchor="middle">CPU: har yadro murakkab, ketma-ket buyruqlarda kuchli</text>
+    <text x="340" y="314" text-anchor="middle">GPU: yadrolar sodda, lekin minglab — bir xil hisobni parallel bajaradi</text>
+  </svg>
+  <figcaption><span><b>23-rasm.</b> CPU va GPU arxitekturasining farqi</span></figcaption>
+</figure>
+
+<p>O'xshatish: CPU — bu bir nechta professor, ular har qanday murakkab masalani yecha oladi. GPU — bu minglab boshlang'ich sinf o'quvchisi, ularning har biri faqat oddiy qo'shish-ko'paytirishni biladi, lekin birgalikda million misolni bir zumda yechib tashlaydi. Sun'iy intellekt modellarini (masalan, neyron tarmoqlarni) o'qitish aynan shunday — milliardlab oddiy matritsaviy ko'paytirishlar. Shuning uchun bugun GPU'lar AI inqilobining asosiy dvigateliga aylandi. PyTorch'da <code>model.to('cuda')</code> yozganingizda, hisoblar NVIDIA GPU yadrolariga o'tkaziladi.</p>
+
+<h2 id="10-4">10.4. Qurilmalar bilan aloqa: drayverlar va DMA</h2>
+<p>Har bir qurilma o'zining "tilida" gapiradi. Operatsion tizim ular bilan <strong>drayver</strong> — qurilma ishlab chiqaruvchisi yozgan maxsus dastur orqali muloqot qiladi. Katta hajmdagi ma'lumotni (masalan, diskdan faylni) ko'chirishda protsessorni band qilmaslik uchun <strong>DMA</strong> (to'g'ridan-to'g'ri xotiraga murojaat) texnologiyasi ishlatiladi: protsessor faqat "shu ma'lumotni diskdan RAM'ning mana bu joyiga ko'chir" deb buyruq beradi va o'z ishini davom ettiradi. Ko'chirish tugagach, qurilma uzilish orqali xabar beradi.</p>
+
+<figure class="fig">
+  <svg class="sv dma" viewBox="0 0 660 240" role="img" aria-label="DMA: protsessor buyruq beradi, DMA kontroller diskdan RAM'ga ma'lumotni o'zi ko'chiradi, protsessor o'z ishini davom ettiradi, tugagach uzilish keladi">
+    <rect x="20" y="60" width="120" height="70" rx="10" class="box"/>
+    <text x="80" y="90" text-anchor="middle" class="ttl">CPU</text>
+    <path class="cpuwork" d="M40 112 H 120" stroke="var(--accent)" stroke-width="3" stroke-dasharray="6 6" stroke-linecap="round" fill="none"/>
+    <text x="80" y="158" text-anchor="middle">o'z ishini</text>
+    <text x="80" y="172" text-anchor="middle">davom ettiradi</text>
+    <rect x="230" y="60" width="120" height="70" rx="10" class="box"/>
+    <text x="290" y="90" text-anchor="middle" class="ttl">DMA</text>
+    <text x="290" y="108" text-anchor="middle">kontroller</text>
+    <rect x="520" y="20" width="120" height="60" rx="10" class="box soft"/>
+    <text x="580" y="45" text-anchor="middle" class="ttl">Disk</text>
+    <text x="580" y="63" text-anchor="middle">fayl bloklari</text>
+    <rect x="520" y="120" width="120" height="60" rx="10" class="box soft"/>
+    <text x="580" y="145" text-anchor="middle" class="ttl">RAM</text>
+    <text x="580" y="163" text-anchor="middle">"mana bu joy"</text>
+    <g class="step" style="--i:0">
+      <path class="flow" d="M140 80 H 228"/>
+      <text x="185" y="70" text-anchor="middle" class="lbl">1. buyruq</text>
+      <text x="185" y="40" text-anchor="middle">"diskdan RAM'ga 4 MB ko'chir"</text>
+    </g>
+    <g class="step" style="--i:1">
+      <path class="flow copper" d="M350 100 H 460"/>
+      <path class="flow copper" d="M518 50 H 460 V 150 H 518"/>
+      <text x="405" y="90" text-anchor="middle" class="lbl">2. ko'chirish</text>
+      <text x="405" y="118" text-anchor="middle">CPU'siz</text>
+    </g>
+    <g class="step" style="--i:2">
+      <path class="flow blue" d="M228 115 H 140"/>
+      <text x="200" y="136" text-anchor="middle" class="lbl">3. uzilish (IRQ): "tayyor!"</text>
+    </g>
+    <text x="330" y="210" text-anchor="middle">Protsessor har baytni o'zi tashimaydi —</text>
+    <text x="330" y="226" text-anchor="middle">faqat buyruq beradi va natijani uzilish orqali biladi</text>
+  </svg>
+  <figcaption><span><b>DMA — to'g'ridan-to'g'ri xotiraga murojaat.</b> Buyruq → qurilma o'zi ko'chiradi → uzilish bilan xabar beradi.</span></figcaption>
+</figure>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="10">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s15">15-savol</a></span></div>
+
+<nav class="pager">
+  <a href="09.html"><small>Oldingi</small>9-bob. Ona plata, shinalar va quvvat</a>
+  <a class="next" href="11.html"><small>Keyingi</small>11-bob. Operatsion tizim</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+/* "↻ qayta": figuradagi CSS animatsiyalarini boshidan boshlash */
+document.querySelectorAll('.fig').forEach(f=>f.addEventListener('replay',()=>{const all=f.querySelectorAll('*');all.forEach(e=>{e.style.animationName='none';});void f.offsetWidth;all.forEach(e=>{e.style.animationName='';});}));
+</script>
+<script>
+(function(){
+  const NS="http://www.w3.org/2000/svg";
+  const el=(t,a,txt)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;};
+
+  /* ---- Klaviatura matritsasi ---- */
+  (function(){
+    const fig=document.getElementById('kbFig'),svg=document.getElementById('kbSvg');
+    const rows=[["1","2","3","4","5","6"],["Q","W","E","R","T","Y"],["A","S","D","F","G","H"],["Z","X","C","V","B","N"]];
+    const codes={"1":"0x1E","2":"0x1F","3":"0x20","4":"0x21","5":"0x22","6":"0x23","Q":"0x14","W":"0x1A","E":"0x08","R":"0x15","T":"0x17","Y":"0x1C","A":"0x04","S":"0x16","D":"0x07","F":"0x09","G":"0x0A","H":"0x0B","Z":"0x1D","X":"0x1B","C":"0x06","V":"0x19","B":"0x05","N":"0x11"};
+    const X0=150,Y0=50,DX=60,DY=46;
+    const gR=document.getElementById('kbRows'),gC=document.getElementById('kbCols'),gK=document.getElementById('kbKeys');
+    const rowLines=[],colLines=[],keys=[];
+    for(let c=0;c<6;c++){const x=X0+c*DX+18;const l=el('line',{x1:x,y1:22,x2:x,y2:Y0+3*DY+30,class:'colline'});gC.appendChild(l);colLines.push(l);}
+    for(let r=0;r<4;r++){const y=Y0+r*DY;const l=el('line',{x1:100,y1:y,x2:X0+5*DX+36,y2:y,class:'rowline'});gR.appendChild(l);rowLines.push(l);
+      gR.appendChild(el('text',{x:112,y:y-5,class:'lbl'},'Q'+r));
+      for(let c=0;c<6;c++){const x=X0+c*DX;const g=el('g',{class:'key','data-r':r,'data-c':c,tabindex:0,role:'button','aria-label':rows[r][c]+' tugmasi'});
+        g.appendChild(el('rect',{x:x,y:y+6,width:36,height:28,rx:5}));
+        g.appendChild(el('text',{x:x+18,y:y+25,'text-anchor':'middle',class:'lbl'},rows[r][c]));
+        gK.appendChild(g);keys.push(g);
+        const press=()=>{keys.forEach(k=>k.classList.remove('pressed','hit'));g.classList.add('pressed');pressed={r,c};};
+        g.addEventListener('click',press);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();press();}});}
+    }
+    for(let c=0;c<6;c++)gC.appendChild(el('text',{x:X0+c*DX+18,y:Y0+3*DY+44,'text-anchor':'middle'},'U'+c));
+    let pressed={r:2,c:0};keys[12].classList.add('pressed');
+    const scanner=document.getElementById('kbScanner'),out=document.getElementById('kbOut');
+    let row=0;
+    const tick=()=>{if(!fig.classList.contains('play')&&!KQI.reduce)return;
+      rowLines.forEach((l,i)=>l.classList.toggle('on',i===row));
+      colLines.forEach(l=>l.classList.remove('on'));keys.forEach(k=>k.classList.remove('hit'));
+      scanner.setAttribute('y',Y0+row*DY-4);
+      if(row===pressed.r){colLines[pressed.c].classList.add('on');const k=keys[row*6+pressed.c];k.classList.add('hit');const ch=rows[row][pressed.c];
+        out.innerHTML='Q'+row+' qatoriga signal → U'+pressed.c+' ustunida tok bor → tugma <b>'+ch+'</b> → skan-kod <b>'+codes[ch]+'</b> USB orqali yuboriladi';}
+      else out.textContent='Q'+row+' qatoriga signal… hech qaysi ustunda tok yo\'q';
+      row=(row+1)%4;};
+    setInterval(tick,KQI.reduce?1200:420);
+    tick();
+  })();
+
+  /* ---- 22-rasm: kadr buferi ---- */
+  (function(){
+    const fig=document.getElementById('fbFig'),vram=document.getElementById('fbVram'),mon=document.getElementById('fbMon'),scan=document.getElementById('fbScan'),cnt=document.getElementById('fbCount');
+    const W=16,H=9;
+    const mk=p=>{for(let i=0;i<W*H;i++)p.appendChild(document.createElement('i'));};
+    mk(vram);mk(mon);
+    const vc=[...vram.children],mc=[...mon.querySelectorAll('i:not(.scan)')];
+    let bx=3,by=2,dx=1,dy=1,frame=0,px=4;
+    const paint=(cells)=>{for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=cells[y*W+x];c.className='';
+      if(y===H-1&&x>=px&&x<px+4)c.className='b';
+      if(Math.abs(x-bx)<=1&&Math.abs(y-by)<=1&&!(Math.abs(x-bx)===1&&Math.abs(y-by)===1))c.className='on';
+      if(x===bx&&y===by)c.className='c';}};
+    const step=()=>{bx+=dx;by+=dy;if(bx<=0||bx>=W-1)dx=-dx;if(by<=0||by>=H-2)dy=-dy;px=Math.max(0,Math.min(W-4,bx-1));frame++;
+      paint(vc);cnt.textContent='kadr #'+frame+' — GPU yozdi';
+      if(KQI.reduce){paint(mc);return;}
+      scan.classList.remove('go');void scan.offsetWidth;
+      setTimeout(()=>{scan.classList.add('go');setTimeout(()=>paint(mc),250);},220);};
+    paint(vc);paint(mc);
+    setInterval(()=>{if(fig.classList.contains('play')||KQI.reduce)step();},KQI.reduce?2500:900);
+    fig.addEventListener('replay',()=>{frame=0;step();});
+  })();
+
+  /* ---- 23-rasm: vazifa plitkalari va GPU yadrolari ---- */
+  (function(){
+    const task=document.getElementById('cgTask');
+    for(let i=0;i<40;i++){task.appendChild(el('rect',{x:140+i*10,y:24,width:8,height:14,rx:1.5,class:'tile',style:'--i:'+i}));}
+    const cores=document.getElementById('cgCores');
+    for(let r=0;r<12;r++)for(let c=0;c<24;c++){cores.appendChild(el('rect',{x:402+c*9.1,y:117+r*9.6,width:7.4,height:7.6,rx:1,class:'core',style:'--i:'+(r*24+c)}));}
+  })();
+})();
+</script>
+</body>
+</html>
