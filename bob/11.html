@@ -7,47 +7,11 @@
 <meta name="description" content="Kompyuterning yuklanishi, yadro va himoya rejimlari, jarayonlar va rejalashtirish, virtual xotira, fayl tizimi.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/board.css">
 <style>
-/* 24-rasm: yuklanish bosqichlari */
-.bootsv .st rect{animation:bootOn .5s both;animation-delay:calc(var(--i) * .55s)}
-.bootsv .st text{animation:bootTxt .5s both;animation-delay:calc(var(--i) * .55s)}
-@keyframes bootOn{from{fill:var(--surface);stroke:var(--line)}to{fill:var(--accent-soft);stroke:var(--accent)}}
-@keyframes bootTxt{from{opacity:.35}to{opacity:1}}
-.bootsv .arr{animation:bootTxt .4s both,dash 1s linear infinite;animation-delay:calc(var(--i) * .55s + .3s),0s}
-/* 25-rasm: qatlamlar va syscall */
-.lay .tok{animation-duration:4s}
-.lay .border{stroke:var(--wire);stroke-width:2;stroke-dasharray:6 5;animation:borderHit 4s linear infinite}
-@keyframes borderHit{0%,14%{stroke:var(--wire);stroke-width:2}18%,23%{stroke:var(--copper);stroke-width:4}27%,78%{stroke:var(--wire);stroke-width:2}82%,87%{stroke:var(--copper);stroke-width:4}91%,100%{stroke:var(--wire);stroke-width:2}}
-.lay .brk{fill:none;stroke:var(--wire);stroke-width:2}
-.lay .brk.kern{stroke:var(--copper)}
-.lay .brk.user{stroke:var(--accent)}
-/* 26-rasm: jarayon holatlari */
-.sm .edge{fill:none;stroke:var(--wire);stroke-width:2.5;transition:stroke .3s}
-.sm .edge.on{stroke:var(--accent);stroke-width:3.5}
-.sm .node rect{transition:all .3s}
-.sm .elbl{transition:fill .3s}
-.sm .elbl.on{fill:var(--accent);font-weight:700}
-/* 27-rasm: virtual xotira */
-.vm .m{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:700;stroke-dashoffset:700;animation:drawMap 1s ease-out both;animation-delay:calc(var(--i) * .5s)}
-.vm .m.a{stroke:var(--accent)}
-.vm .m.b{stroke:var(--blue)}
-.vm .m.d{stroke:var(--copper);stroke-dasharray:700;animation:drawMap 1s ease-out both,dashy 1s linear infinite;animation-delay:calc(var(--i) * .5s),calc(var(--i) * .5s + 1s)}
-@keyframes drawMap{to{stroke-dashoffset:0}}
-@keyframes dashy{from{stroke-dasharray:6 8;stroke-dashoffset:0}to{stroke-dasharray:6 8;stroke-dashoffset:-14}}
-.vm .pg{animation:pgOn .4s both;animation-delay:calc(var(--i) * .5s)}
-.vm .fr{animation:frOn .4s both;animation-delay:calc(var(--i) * .5s + .9s)}
-.vm .fr.blue{animation-name:frOnB}
-@keyframes pgOn{from{fill:var(--surface);stroke:var(--line)}to{fill:var(--code);stroke:var(--ink)}}
-@keyframes frOn{from{fill:var(--surface);stroke:var(--line)}to{fill:var(--accent-soft);stroke:var(--accent)}}
-@keyframes frOnB{from{fill:var(--surface);stroke:var(--line)}to{fill:var(--blue-soft);stroke:var(--blue)}}
-.vm .mmu{animation:mmuPulse 1.2s ease-in-out infinite alternate}
-@keyframes mmuPulse{from{stroke:var(--line)}to{stroke:var(--accent);stroke-width:3}}
-/* 28-rasm: fayl daraxti */
-.fs .node{cursor:pointer}
-.fs .node rect{transition:all .25s}
-.fs .node text{pointer-events:none}
-.fs .edge{stroke:var(--wire);stroke-width:2;transition:stroke .25s}
-.fs .edge.on{stroke:var(--accent);stroke-width:3}
+/* 11-bob: plata sahnalari uchun qo'shimcha */
+.board .region{fill:var(--b-box2);stroke:var(--b-line);stroke-width:1;stroke-dasharray:4 3}
+.board .region.kern{fill:var(--b-die)}
 </style>
 </head>
 <body>
@@ -69,30 +33,71 @@
 
 <h2 id="11-1">11.1. Kompyuterning yuklanishi</h2>
 
-<figure class="fig" id="bootFig">
-  <svg class="sv bootsv" id="bootSvg" viewBox="0 0 760 130" role="img" aria-label="Yuklanish bosqichlari: quvvat, UEFI/BIOS va POST, bootloader, kernel, servislar, desktop">
-    <g class="st" style="--i:0"><rect x="10" y="20" width="110" height="60" rx="10" class="box"/><text x="65" y="46" text-anchor="middle" class="ttl">Quvvat</text><text x="65" y="66" text-anchor="middle">PSU tok</text></g>
-    <path class="flow arr" style="--i:0" d="M120 50 H 136"/>
-    <g class="st" style="--i:1"><rect x="136" y="20" width="110" height="60" rx="10" class="box"/><text x="191" y="46" text-anchor="middle" class="ttl">UEFI/BIOS</text><text x="191" y="66" text-anchor="middle">POST test</text></g>
-    <path class="flow arr" style="--i:1" d="M246 50 H 262"/>
-    <g class="st" style="--i:2"><rect x="262" y="20" width="110" height="60" rx="10" class="box"/><text x="317" y="46" text-anchor="middle" class="ttl">Bootloader</text><text x="317" y="66" text-anchor="middle">GRUB, WBM</text></g>
-    <path class="flow arr" style="--i:2" d="M372 50 H 388"/>
-    <g class="st" style="--i:3"><rect x="388" y="20" width="110" height="60" rx="10" class="box"/><text x="443" y="46" text-anchor="middle" class="ttl">Kernel</text><text x="443" y="66" text-anchor="middle">yadro</text></g>
-    <path class="flow arr" style="--i:3" d="M498 50 H 514"/>
-    <g class="st" style="--i:4"><rect x="514" y="20" width="110" height="60" rx="10" class="box"/><text x="569" y="46" text-anchor="middle" class="ttl">Servislar</text><text x="569" y="66" text-anchor="middle">drayverlar</text></g>
-    <path class="flow arr" style="--i:4" d="M624 50 H 640"/>
-    <g class="st" style="--i:5"><rect x="640" y="20" width="110" height="60" rx="10" class="box"/><text x="695" y="46" text-anchor="middle" class="ttl">Desktop</text><text x="695" y="66" text-anchor="middle">login</text></g>
-    <text x="380" y="112" text-anchor="middle" class="lbl">Kompyuter yoqilgandan ish stoli chiqquncha: ~5-30 soniya</text>
+<figure class="fig" id="bootFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" id="bootSvg" viewBox="0 0 900 360" role="img" aria-label="Yuklanish: PSU Power Good signali, CPU reset va BIOS flesh chipidan birinchi buyruq, POST LEDlari, diskdan RAM ga bootloader va kernel yuklanishi, systemd va login ekrani">
+    <defs><pattern id="gB" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="360" fill="url(#gB)"/>
+    <text x="20" y="30" class="ttl">Kompyuter yuklanmoqda</text>
+    <text x="876" y="30" text-anchor="end" class="val" id="tTxt">t = 0.0 s</text>
+    <!-- simlar -->
+    <path class="wire w-ctl" id="wPG" d="M180 100 H 220"/>
+    <path class="wire w-addr" id="wBios" d="M270 190 V 230"/>
+    <path class="wire w-data bus" id="wRam" d="M420 110 H 450"/>
+    <path class="wire w-data bus" id="wDisk" d="M560 230 V 190"/>
+    <path class="wire w-data" id="wScr" d="M670 110 H 700"/>
+    <text x="685" y="100" text-anchor="middle" class="mut xs">GPU</text>
+    <!-- PSU -->
+    <rect x="30" y="50" width="150" height="100" rx="8" class="unit" id="uPSU"/>
+    <text x="42" y="70" class="ttl">PSU</text>
+    <circle cx="50" cy="90" r="4.5" class="led bad" id="l12"/><text x="60" y="94" class="xs">12 V</text>
+    <circle cx="96" cy="90" r="4.5" class="led bad" id="l5"/><text x="106" y="94" class="xs">5 V</text>
+    <circle cx="138" cy="90" r="4.5" class="led bad" id="l33"/><text x="148" y="94" class="xs">3.3</text>
+    <circle cx="50" cy="118" r="5" class="led" id="lPG"/><text x="60" y="122" class="xs">Power Good</text>
+    <text x="42" y="140" class="mut xs" id="psuTxt">kuchlanish barqarorlashmoqda…</text>
+    <!-- CPU -->
+    <rect x="220" y="40" width="200" height="150" rx="12" class="die"/>
+    <text x="234" y="62" class="ttl">CPU</text>
+    <circle cx="240" cy="84" r="5" class="led warn" id="lRst"/><text x="250" y="88" class="xs">RESET</text>
+    <circle cx="320" cy="84" r="5" class="led" id="lRun"/><text x="330" y="88" class="xs">ishlamoqda</text>
+    <text x="234" y="114" class="mut xs">PC (keyingi buyruq):</text>
+    <text x="234" y="132" class="val" id="pcTxt">—</text>
+    <text x="234" y="156" class="mut xs">rejim:</text>
+    <text x="234" y="174" class="val" id="modeTxt">—</text>
+    <!-- BIOS -->
+    <rect x="220" y="230" width="200" height="52" rx="6" class="unit" id="uBIOS"/>
+    <text x="232" y="250" class="ttl">UEFI · SPI flesh · 32 MB</text>
+    <text x="232" y="268" class="mut xs">0xFFFFFFF0 · POST + bootloader qidirish</text>
+    <circle cx="411" cy="244" r="4.5" class="led" id="lBios"/>
+    <!-- POST LED -->
+    <rect x="220" y="294" width="200" height="52" rx="6" class="unit" id="uPost"/>
+    <text x="232" y="312" class="ttl">Q-LED (POST)</text>
+    <circle cx="238" cy="332" r="5" class="led warn" id="pCPU"/><text x="246" y="336" class="xs">CPU</text>
+    <circle cx="280" cy="332" r="5" class="led warn" id="pRAM"/><text x="288" y="336" class="xs">DRAM</text>
+    <circle cx="330" cy="332" r="5" class="led warn" id="pVGA"/><text x="338" y="336" class="xs">VGA</text>
+    <circle cx="370" cy="332" r="5" class="led warn" id="pBOOT"/><text x="378" y="336" class="xs">BOOT</text>
+    <!-- RAM -->
+    <rect x="450" y="40" width="220" height="150" rx="8" class="chip"/>
+    <text x="462" y="58" class="ttl">RAM</text><text x="658" y="58" text-anchor="end" class="mut xs">16 GB DDR5</text>
+    <rect x="462" y="66" width="196" height="26" rx="4" class="cell" id="r0"/><text x="470" y="83" class="xs">0x7C00 · bootloader</text><text x="650" y="83" text-anchor="end" class="mut xs" id="rs0">bo'sh</text>
+    <rect x="462" y="96" width="196" height="26" rx="4" class="cell" id="r1"/><text x="470" y="113" class="xs">0x100000 · kernel</text><text x="650" y="113" text-anchor="end" class="mut xs" id="rs1">bo'sh</text>
+    <rect x="462" y="126" width="196" height="26" rx="4" class="cell" id="r2"/><text x="470" y="143" class="xs">initramfs · drayverlar</text><text x="650" y="143" text-anchor="end" class="mut xs" id="rs2">bo'sh</text>
+    <rect x="462" y="156" width="196" height="26" rx="4" class="cell" id="r3"/><text x="470" y="173" class="xs">systemd · PID 1</text><text x="650" y="173" text-anchor="end" class="mut xs" id="rs3">bo'sh</text>
+    <!-- Disk -->
+    <rect x="450" y="230" width="220" height="100" rx="8" class="chip"/>
+    <text x="462" y="248" class="ttl">NVMe SSD</text><text x="658" y="248" text-anchor="end" class="mut xs">GPT bo'limlari</text>
+    <rect x="462" y="258" width="60" height="60" rx="4" class="cell" id="k0"/><text x="492" y="274" text-anchor="middle" class="mut xs">EFI</text><text x="492" y="296" text-anchor="middle" class="val">GRUB</text><text x="492" y="310" text-anchor="middle" class="mut xs">1 MB</text>
+    <rect x="528" y="258" width="60" height="60" rx="4" class="cell" id="k1"/><text x="558" y="274" text-anchor="middle" class="mut xs">/boot</text><text x="558" y="296" text-anchor="middle" class="val">vmlinuz</text><text x="558" y="310" text-anchor="middle" class="mut xs">12 MB</text>
+    <rect x="594" y="258" width="64" height="60" rx="4" class="cell" id="k2"/><text x="626" y="274" text-anchor="middle" class="mut xs">/ ext4</text><text x="626" y="296" text-anchor="middle" class="val">systemd</text><text x="626" y="310" text-anchor="middle" class="mut xs">480 GB</text>
+    <!-- Ekran -->
+    <rect x="700" y="40" width="180" height="290" rx="6" class="screen"/>
+    <g id="scrLines"></g>
+    <g class="tokens"></g>
   </svg>
-  <div class="controls"><button class="primary" type="button" data-chain="boot" id="bootBtn">Yoqish</button><span class="small muted">Har bosqich keyingisini RAM'ga yuklab, boshqaruvni unga beradi</span></div>
-  <div class="chain" id="boot">
-    <div><span>Quvvat bloki barqaror kuchlanish beradi<small>PSU → "Power Good" signali → protsessor reset</small></span></div>
-    <div><span>UEFI/BIOS ishga tushadi, POST o'tkazadi<small>RAM, videokarta, disklar tekshiriladi</small></span></div>
-    <div><span>Bootloader RAM'ga yuklanadi<small>GRUB yoki Windows Boot Manager</small></span></div>
-    <div><span>Kernel (yadro) yuklanadi<small>qurilmalar, drayverlar, MMU, jarayonlar</small></span></div>
-    <div><span>Birinchi jarayon xizmatlarni ishga tushiradi<small>Linux'da systemd</small></span></div>
-    <div><span>Grafik interfeys va login<small>~5–30 soniya o'tdi</small></span></div>
   </div>
+  <div class="board-ctl"><button class="primary" type="button" id="bootBtn">Yoqish</button><span class="small muted">Har bosqich keyingisini RAM'ga yuklab, boshqaruvni unga beradi</span></div>
+  <div class="board-steps"><span>Quvvat</span><span>POST</span><span>Bootloader</span><span>Kernel</span><span>systemd</span><span>Xulosa</span></div>
+  <div class="board-narr">Quvvat tugmasi bosildi. "Yoqish" ni bosing yoki pastga suring — sahna o'zi boshlanadi.</div>
   <figcaption><span><b>24-rasm.</b> Kompyuterning yuklanish bosqichlari</span></figcaption>
 </figure>
 
@@ -101,63 +106,123 @@
 <h2 id="11-2">11.2. Yadro va himoya rejimlari</h2>
 <p>OS'ning markaziy qismi — <strong>yadro</strong> (kernel). U protsessorning maxsus imtiyozli rejimida (<strong>kernel mode</strong>) ishlaydi va barcha apparat resurslariga to'liq kirish huquqiga ega. Oddiy ilovalar esa foydalanuvchi rejimida (<strong>user mode</strong>) ishlaydi — ular apparatga to'g'ridan-to'g'ri murojaat qila olmaydi. Protsessorning o'zi bu cheklovni apparat darajasida nazorat qiladi. Ilova faylni o'qishi yoki tarmoqqa ma'lumot yuborishi kerak bo'lsa, u yadroga <strong>tizim chaqirig'i</strong> (system call) orqali murojaat qiladi. Node.js'dagi <code>fs.readFile()</code> oxir-oqibat Linux'ning <code>open()</code> va <code>read()</code> tizim chaqiriqlariga aylanadi.</p>
 
-<figure class="fig">
-  <svg class="sv lay" viewBox="0 0 720 350" role="img" aria-label="Dasturiy ta'minot qatlamlari: foydalanuvchi, ilovalar, tizim chaqiriqlari, OS yadrosi, drayverlar, apparat; user mode va kernel mode chegarasidan syscall o'tadi">
-    <defs><marker id="la" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--wire)"/></marker></defs>
-    <!-- yuqori / past -->
-    <text x="60" y="22" text-anchor="middle" class="lbl">yuqori</text>
-    <line x1="60" y1="30" x2="60" y2="318" class="wire thin" marker-end="url(#la)"/>
-    <text x="60" y="340" text-anchor="middle" class="lbl">past</text>
-    <!-- qatlamlar -->
-    <g class="stagger">
-      <g style="--i:0"><rect x="110" y="16" width="430" height="44" rx="8" class="box"/><text x="125" y="34" class="ttl">Foydalanuvchi</text><text x="125" y="51">siz</text></g>
-      <g style="--i:1"><rect x="110" y="70" width="430" height="44" rx="8" class="box"/><text x="125" y="88" class="ttl">Ilovalar</text><text x="125" y="105">Telegram, Chrome, VS Code</text></g>
-      <g style="--i:2"><rect x="110" y="124" width="430" height="44" rx="8" class="box"/><text x="125" y="142" class="ttl">Tizim chaqiriqlari (syscall)</text><text x="125" y="159">open(), read(), write()</text></g>
-      <g style="--i:3"><rect x="110" y="178" width="430" height="44" rx="8" class="box soft"/><text x="125" y="196" class="ttl">OS yadrosi (kernel)</text><text x="125" y="213">jarayon, xotira, fayl, tarmoq</text></g>
-      <g style="--i:4"><rect x="110" y="232" width="430" height="44" rx="8" class="box soft"/><text x="125" y="250" class="ttl">Drayverlar</text><text x="125" y="267">GPU, Wi-Fi, disk</text></g>
-      <g style="--i:5"><rect x="110" y="286" width="430" height="44" rx="8" class="box soft"/><text x="125" y="304" class="ttl">Apparat</text><text x="125" y="321">CPU, RAM, SSD, ...</text></g>
-    </g>
-    <!-- user/kernel chegarasi -->
-    <line x1="100" y1="173" x2="580" y2="173" class="border"/>
-    <!-- qavslar -->
-    <path class="brk user" d="M596 16 H 604 V 168 H 596"/>
-    <text x="612" y="88" class="lbl">user</text><text x="612" y="102" class="lbl">mode</text>
-    <path class="brk kern" d="M596 178 H 604 V 330 H 596"/>
-    <text x="612" y="250" class="lbl">kernel</text><text x="612" y="264" class="lbl">mode</text>
-    <!-- syscall yo'li -->
-    <text x="470" y="88" class="lbl">fs.readFile()</text>
-    <text x="470" y="105">so'rov ↓ · javob ↑</text>
-    <circle r="7" class="dot travel tok" style="offset-path:path('M560 92 V 308 H 520 V 92')"/>
-    <circle r="5" class="dot blue travel tok" style="offset-path:path('M560 92 V 308 H 520 V 92');animation-delay:-2s"/>
+<figure class="fig" id="layFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" id="laySvg" viewBox="0 0 900 380" role="img" aria-label="User mode va kernel mode chegarasi: ilova read() tizim chaqirig'ini syscall raqami 0 bilan yadroga yuboradi, yadro VFS, ext4 va NVMe drayveri orqali diskdan o'qib natijani qaytaradi; to'g'ridan-to'g'ri apparatga murojaat #GP xatosi bilan to'xtatiladi">
+    <defs><pattern id="gL" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="380" fill="url(#gL)"/>
+    <rect x="20" y="20" width="860" height="150" rx="10" class="region"/>
+    <text x="34" y="40" class="ttl">user mode · ring 3 · imtiyozsiz</text>
+    <rect x="20" y="200" width="860" height="170" rx="10" class="region kern"/>
+    <text x="34" y="220" class="ttl">kernel mode · ring 0 · apparatga to'liq kirish</text>
+    <path class="wire w-ctl bus" id="border" d="M20 185 H 880"/>
+    <text x="450" y="181" text-anchor="middle" class="mut xs">chegara — faqat syscall buyrug'i orqali o'tiladi, CPU nazorat qiladi</text>
+    <!-- yo'llar -->
+    <path class="wire w-ctl" id="wSys" d="M470 160 V 246 H 260"/>
+    <path class="wire w-data" id="wRet" d="M650 282 H 545 V 160"/>
+    <path class="wire w-ctl" id="w1" d="M260 246 H 290"/>
+    <path class="wire w-ctl" id="w2" d="M365 275 V 290"/>
+    <path class="wire w-ctl" id="w3" d="M440 320 H 470"/>
+    <path class="wire w-ctl" id="w4" d="M620 282 H 650"/>
+    <path class="wire w-pwr" id="wBad" d="M190 160 V 185"/>
+    <!-- ilova -->
+    <rect x="40" y="52" width="300" height="100" rx="8" class="unit" id="uApp"/>
+    <text x="52" y="72" class="ttl">bot.js · Node.js jarayoni · PID 2001</text>
+    <circle cx="326" cy="66" r="4.5" class="led" id="lApp"/>
+    <text x="52" y="96" class="val" id="appL1">fs.readFile('config.json')</text>
+    <text x="52" y="116" class="mut xs" id="appL2">→ libc: read(fd=3, buf, 4096)</text>
+    <text x="52" y="138" class="mut xs" id="appL3">kutmoqda…</text>
+    <!-- registrlar -->
+    <rect x="360" y="52" width="220" height="100" rx="8" class="unit" id="uReg"/>
+    <text x="372" y="72" class="ttl">registrlar (syscall ABI)</text>
+    <text x="372" y="92" class="xs" id="rRax">rax = —</text>
+    <text x="372" y="108" class="xs" id="rRdi">rdi = —</text>
+    <text x="372" y="124" class="xs" id="rRsi">rsi = —</text>
+    <text x="372" y="140" class="xs" id="rRdx">rdx = —</text>
+    <!-- CPU rejimi -->
+    <rect x="600" y="52" width="260" height="100" rx="8" class="unit" id="uCPU"/>
+    <text x="612" y="72" class="ttl">CPU · imtiyoz darajasi (CPL)</text>
+    <circle cx="622" cy="94" r="5" class="led" id="lR3"/><text x="632" y="98" class="xs">CPL 3 — ilova</text>
+    <circle cx="622" cy="116" r="5" class="led warn" id="lR0"/><text x="632" y="120" class="xs">CPL 0 — yadro</text>
+    <circle cx="622" cy="138" r="5" class="led bad" id="lGP"/><text x="632" y="142" class="xs" id="gpTxt">#GP xato: yo'q</text>
+    <text x="850" y="98" text-anchor="end" class="val" id="insT">—</text>
+    <!-- yadro -->
+    <rect x="40" y="232" width="220" height="130" rx="8" class="unit" id="uTab"/>
+    <text x="52" y="250" class="ttl">syscall jadvali</text>
+    <rect x="50" y="258" width="200" height="18" rx="3" class="cell" id="sc0"/><text x="58" y="271" class="xs">0 · read</text><text x="242" y="271" text-anchor="end" class="mut xs">sys_read()</text>
+    <rect x="50" y="279" width="200" height="18" rx="3" class="cell" id="sc1"/><text x="58" y="292" class="xs">1 · write</text><text x="242" y="292" text-anchor="end" class="mut xs">sys_write()</text>
+    <rect x="50" y="300" width="200" height="18" rx="3" class="cell" id="sc2"/><text x="58" y="313" class="xs">2 · open</text><text x="242" y="313" text-anchor="end" class="mut xs">sys_open()</text>
+    <rect x="50" y="321" width="200" height="18" rx="3" class="cell" id="sc3"/><text x="58" y="334" class="xs">3 · close</text><text x="242" y="334" text-anchor="end" class="mut xs">sys_close()</text>
+    <rect x="50" y="342" width="200" height="18" rx="3" class="cell" id="sc4"/><text x="58" y="355" class="xs">60 · exit</text><text x="242" y="355" text-anchor="end" class="mut xs">sys_exit()</text>
+    <rect x="290" y="232" width="150" height="48" rx="6" class="unit" id="uVFS"/>
+    <text x="302" y="250" class="ttl">VFS</text><text x="302" y="266" class="mut xs">fd 3 → inode 315</text>
+    <rect x="290" y="300" width="150" height="55" rx="6" class="unit" id="uExt4"/>
+    <text x="302" y="318" class="ttl">ext4</text><text x="302" y="334" class="mut xs">inode 315 → blok 8192</text>
+    <text x="302" y="347" class="mut xs">kesh (page cache)?</text>
+    <rect x="470" y="232" width="150" height="123" rx="6" class="unit" id="uDrv"/>
+    <text x="482" y="250" class="ttl">NVMe drayveri</text>
+    <text x="482" y="268" class="mut xs">buyruq navbati</text>
+    <text x="482" y="284" class="mut xs">DMA → bufer</text>
+    <circle cx="492" cy="304" r="4.5" class="led warn" id="lDrvIrq"/><text x="502" y="308" class="xs">IRQ</text>
+    <text x="482" y="332" class="mut xs" id="drvTxt">bo'sh</text>
+    <rect x="650" y="232" width="210" height="123" rx="6" class="chip" id="uSsd"/>
+    <text x="662" y="250" class="ttl">NVMe SSD (apparat)</text>
+    <circle cx="672" cy="272" r="5" class="led" id="lSsd"/><text x="682" y="276" class="xs" id="ssdTxt">kutmoqda</text>
+    <text x="662" y="300" class="mut xs">blok 8192 · 4 KB</text>
+    <text x="662" y="316" class="mut xs">o'qish ~80 µs</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>Ilova</span><span>syscall</span><span>Yadro</span><span>Drayver</span><span>Qaytish</span><span>Himoya</span></div>
+  <div class="board-narr">bot.js faylni o'qimoqchi. Sahna o'zi boshlanadi.</div>
   <figcaption><span><b>25-rasm.</b> Dasturiy ta'minot qatlamlari</span></figcaption>
 </figure>
 
 <h2 id="11-3">11.3. Jarayonlar va rejalashtirish</h2>
 <p>Ishga tushirilgan dastur <strong>jarayon</strong> (process) deyiladi. Har bir jarayonning o'z xotira maydoni, ochiq fayllari va kamida bitta bajarilish oqimi (<strong>thread</strong>) bor. Kompyuteringizda bir vaqtda yuzlab jarayon ishlaydi, protsessor yadrolari esa bor-yo'g'i 4-16 ta. Qanday qilib? OS'ning <strong>rejalashtiruvchisi</strong> (scheduler) har bir jarayonga bir necha millisekundlik vaqt bo'lagi beradi, so'ng uni to'xtatib, keyingisiga o'tadi. Bu almashinuv (kontekst almashinuvi) shunchalik tez sodir bo'ladiki, barcha dasturlar bir vaqtda ishlayotgandek tuyuladi.</p>
 
-<figure class="fig" id="smFig">
-  <div class="controls"><button class="primary" type="button" id="smRun">Ishga tushir</button><button type="button" id="smStep">Qadam</button><span class="small muted">Bitta jarayonning hayoti</span></div>
-  <svg class="sv sm" id="smSvg" viewBox="0 0 700 290" role="img" aria-label="Jarayonning holatlari: Yangi, Tayyor (navbatda), Bajarilmoqda (CPU'da), Kutmoqda (disk, tarmoq), Tugadi; o'tishlar: tanlandi, vaqt tugadi (taymer)">
-    <defs><marker id="sa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--wire)"/></marker></defs>
-    <path id="e1" class="edge" d="M120 120 H 183" marker-end="url(#sa)"/>
-    <path id="e2" class="edge" d="M295 106 C 320 62, 360 62, 383 106" marker-end="url(#sa)"/>
-    <path id="e3" class="edge" d="M385 134 C 360 178, 320 178, 297 134" marker-end="url(#sa)"/>
-    <path id="e4" class="edge" d="M515 120 H 578" marker-end="url(#sa)"/>
-    <path id="e5" class="edge" d="M450 144 C 450 200, 440 235, 407 235" marker-end="url(#sa)"/>
-    <path id="e6" class="edge" d="M285 235 C 250 235, 240 200, 240 146" marker-end="url(#sa)"/>
-    <text x="340" y="72" text-anchor="middle" class="elbl" data-e="e2">tanlandi</text>
-    <text x="340" y="180" text-anchor="middle" class="elbl" data-e="e3">vaqt tugadi (taymer)</text>
-    <text x="470" y="200" class="elbl" data-e="e5">kutish</text>
-    <text x="170" y="200" text-anchor="middle" class="elbl" data-e="e6">javob keldi</text>
-    <g class="node" data-n="Yangi"><rect x="20" y="96" width="100" height="48" rx="10" class="box"/><text x="70" y="125" text-anchor="middle" class="ttl">Yangi</text></g>
-    <g class="node" data-n="Tayyor"><rect x="185" y="96" width="110" height="48" rx="10" class="box"/><text x="240" y="118" text-anchor="middle" class="ttl">Tayyor</text><text x="240" y="134" text-anchor="middle">navbatda</text></g>
-    <g class="node" data-n="Bajarilmoqda"><rect x="385" y="96" width="130" height="48" rx="10" class="box"/><text x="450" y="118" text-anchor="middle" class="ttl">Bajarilmoqda</text><text x="450" y="134" text-anchor="middle">CPU'da</text></g>
-    <g class="node" data-n="Tugadi"><rect x="580" y="96" width="100" height="48" rx="10" class="box"/><text x="630" y="125" text-anchor="middle" class="ttl">Tugadi</text></g>
-    <g class="node" data-n="Kutmoqda"><rect x="285" y="211" width="120" height="48" rx="10" class="box"/><text x="345" y="233" text-anchor="middle" class="ttl">Kutmoqda</text><text x="345" y="249" text-anchor="middle">disk, tarmoq</text></g>
-    <circle id="smTok" r="8" class="dot" cx="70" cy="120"/>
+<figure class="fig" id="smFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" id="smSvg" viewBox="0 0 900 360" role="img" aria-label="Rejalashtiruvchi: 2 ta yadro, tayyor jarayonlar navbati, I/O kutayotganlar; taymer uzilishi har 4 ms da jarayonni almashtiradi">
+    <defs><pattern id="gS" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="360" fill="url(#gS)"/>
+    <text x="20" y="30" class="ttl">Rejalashtiruvchi (scheduler) · 5 jarayon, 2 yadro</text>
+    <text x="876" y="30" text-anchor="end" class="val" id="tmTxt">t = 0 ms</text>
+    <path class="wire w-data" id="wQ0" d="M320 115 H 280"/>
+    <path class="wire w-data" id="wQ1" d="M320 245 H 280"/>
+    <path class="wire w-ctl" id="wW" d="M620 180 H 650"/>
+    <!-- yadrolar -->
+    <rect x="30" y="60" width="250" height="110" rx="8" class="unit" id="c0"/>
+    <text x="42" y="80" class="ttl">Yadro 0</text><circle cx="266" cy="74" r="5" class="led" id="c0l"/>
+    <text x="42" y="106" class="big" id="c0p">—</text>
+    <text x="42" y="126" class="mut xs" id="c0s">bo'sh</text>
+    <rect x="42" y="136" width="226" height="10" rx="5" class="bar"/><rect x="42" y="136" width="0" height="10" rx="5" class="bar f" id="c0b"/>
+    <text x="42" y="162" class="mut xs">vaqt bo'lagi: 4 ms</text>
+    <rect x="30" y="190" width="250" height="110" rx="8" class="unit" id="c1"/>
+    <text x="42" y="210" class="ttl">Yadro 1</text><circle cx="266" cy="204" r="5" class="led" id="c1l"/>
+    <text x="42" y="236" class="big" id="c1p">—</text>
+    <text x="42" y="256" class="mut xs" id="c1s">bo'sh</text>
+    <rect x="42" y="266" width="226" height="10" rx="5" class="bar"/><rect x="42" y="266" width="0" height="10" rx="5" class="bar f" id="c1b"/>
+    <text x="42" y="292" class="mut xs">vaqt bo'lagi: 4 ms</text>
+    <!-- navbat -->
+    <rect x="320" y="60" width="300" height="240" rx="8" class="chip"/>
+    <text x="332" y="80" class="ttl">Tayyor navbat (runqueue)</text>
+    <g id="qSlots"></g>
+    <!-- kutish -->
+    <rect x="650" y="60" width="230" height="240" rx="8" class="chip"/>
+    <text x="662" y="80" class="ttl">Kutmoqda (I/O)</text>
+    <g id="wSlots"></g>
+    <!-- taymer -->
+    <rect x="30" y="316" width="850" height="34" rx="6" class="unit" id="uTimer"/>
+    <circle cx="48" cy="333" r="5" class="led warn" id="lTimer"/><text x="58" y="337" class="xs">taymer uzilishi · 250 Hz (har 4 ms)</text>
+    <text x="330" y="337" class="mut xs" id="csTxt">kontekst almashinuvlari: 0</text>
+    <text x="866" y="337" text-anchor="end" class="mut xs">PCB: registrlar, PC, ochiq fayllar saqlanadi</text>
+    <g class="tokens"></g>
   </svg>
-  <div class="out" id="smOut">Jarayon yaratildi (Yangi)</div>
+  </div>
+  <div class="board-ctl"><button class="primary" type="button" id="smRun">Ishga tushir</button><span class="small muted">5 ta jarayon 2 ta yadroda: navbat, vaqt bo'lagi, I/O kutish</span></div>
+  <div class="board-steps"><span>Navbat</span><span>Tanlash</span><span>Vaqt bo'lagi</span><span>Kutish</span><span>Xulosa</span></div>
+  <div class="board-narr">5 ta jarayon tayyor, yadrolar bo'sh. Sahna o'zi boshlanadi.</div>
   <figcaption><span><b>26-rasm.</b> Jarayonning holatlari</span></figcaption>
 </figure>
 
@@ -166,48 +231,56 @@
 <h2 id="11-4">11.4. Virtual xotira</h2>
 <p>Har bir jarayon o'zini butun xotiraning yagona egasi deb "o'ylaydi": uning uchun manzillar 0 dan boshlanadi va juda katta maydon mavjud. Bu <strong>virtual xotira</strong> deyiladi. Aslida OS va protsessordagi <strong>MMU</strong> (xotirani boshqarish bloki) har bir virtual manzilni haqiqiy fizik manzilga o'giradi. Xotira 4 KB lik <strong>sahifalarga</strong> bo'lingan va OS har bir jarayon uchun sahifalar jadvalini yuritadi.</p>
 
-<figure class="fig">
-  <svg class="sv vm" viewBox="0 0 700 400" role="img" aria-label="Virtual xotira: Dastur A va Dastur B sahifalari MMU orqali haqiqiy RAM freymlariga o'giriladi; ba'zi sahifalar diskda">
-    <text x="80" y="24" text-anchor="middle" class="ttl">Dastur A ko'radi</text>
-    <rect x="20" y="40" width="120" height="30" rx="5" class="box pg" style="--i:0"/><text x="80" y="60" text-anchor="middle" class="lbl">sahifa 0</text>
-    <rect x="20" y="80" width="120" height="30" rx="5" class="box pg" style="--i:1"/><text x="80" y="100" text-anchor="middle" class="lbl">sahifa 1</text>
-    <rect x="20" y="120" width="120" height="30" rx="5" class="box pg" style="--i:2"/><text x="80" y="140" text-anchor="middle" class="lbl">sahifa 2</text>
-    <rect x="20" y="160" width="120" height="30" rx="5" class="box pg" style="--i:3"/><text x="80" y="180" text-anchor="middle" class="lbl">sahifa 3</text>
-    <text x="80" y="226" text-anchor="middle" class="ttl">Dastur B ko'radi</text>
-    <rect x="20" y="240" width="120" height="30" rx="5" class="box pg" style="--i:4"/><text x="80" y="260" text-anchor="middle" class="lbl">sahifa 0</text>
-    <rect x="20" y="280" width="120" height="30" rx="5" class="box pg" style="--i:5"/><text x="80" y="300" text-anchor="middle" class="lbl">sahifa 1</text>
-    <rect x="20" y="320" width="120" height="30" rx="5" class="box pg" style="--i:6"/><text x="80" y="340" text-anchor="middle" class="lbl">sahifa 2</text>
-    <rect x="20" y="360" width="120" height="30" rx="5" class="box pg" style="--i:7"/><text x="80" y="380" text-anchor="middle" class="lbl">sahifa 3</text>
-
-    <text x="600" y="24" text-anchor="middle" class="ttl">Haqiqiy RAM</text>
-    <rect x="540" y="40" width="120" height="30" rx="5" class="box fr" style="--i:1"/><text x="600" y="60" text-anchor="middle" class="lbl">freym 0</text>
-    <rect x="540" y="80" width="120" height="30" rx="5" class="box fr blue" style="--i:4"/><text x="600" y="100" text-anchor="middle" class="lbl">freym 1</text>
-    <rect x="540" y="120" width="120" height="30" rx="5" class="box fr" style="--i:0"/><text x="600" y="140" text-anchor="middle" class="lbl">freym 2</text>
-    <rect x="540" y="160" width="120" height="30" rx="5" class="box fr blue" style="--i:6"/><text x="600" y="180" text-anchor="middle" class="lbl">freym 3</text>
-    <rect x="540" y="200" width="120" height="30" rx="5" class="box fr blue" style="--i:5"/><text x="600" y="220" text-anchor="middle" class="lbl">freym 4</text>
-    <rect x="540" y="240" width="120" height="30" rx="5" class="box fr" style="--i:2"/><text x="600" y="260" text-anchor="middle" class="lbl">freym 5</text>
-    <g>
-      <path d="M532 335 a68 9 0 0 0 136 0 V 365 a68 9 0 0 1 -136 0 z" fill="var(--copper-soft)" stroke="var(--copper)" stroke-width="1.5"/>
-      <ellipse cx="600" cy="335" rx="68" ry="9" fill="var(--copper-soft)" stroke="var(--copper)" stroke-width="1.5"/>
-      <text x="600" y="356" text-anchor="middle" class="lbl">sahifa 3 → diskda</text>
-      <text x="600" y="388" text-anchor="middle">swap fayl</text>
-    </g>
-
-    <!-- moslashtirish chiziqlari: A → yashil, B → ko'k, diskka → mis; hammasi MMU orqali -->
-    <path class="m a" style="--i:0" d="M140 55 C 230 55, 240 200, 300 200 L 410 200 C 470 200, 480 135, 540 135"/>
-    <path class="m a" style="--i:1" d="M140 95 C 230 95, 240 200, 300 200 L 410 200 C 470 200, 480 55, 540 55"/>
-    <path class="m a" style="--i:2" d="M140 135 C 230 135, 240 200, 300 200 L 410 200 C 470 200, 480 255, 540 255"/>
-    <path class="m d" style="--i:3" d="M140 175 C 230 175, 240 200, 300 200 L 410 200 C 470 200, 480 350, 540 350"/>
-    <path class="m b" style="--i:4" d="M140 255 C 230 255, 240 200, 300 200 L 410 200 C 470 200, 480 95, 540 95"/>
-    <path class="m b" style="--i:5" d="M140 295 C 230 295, 240 200, 300 200 L 410 200 C 470 200, 480 215, 540 215"/>
-    <path class="m b" style="--i:6" d="M140 335 C 230 335, 240 200, 300 200 L 410 200 C 470 200, 480 175, 540 175"/>
-    <path class="m d" style="--i:7" d="M140 375 C 230 375, 240 200, 300 200 L 410 200 C 470 200, 480 350, 540 350"/>
-    <!-- MMU (chiziqlar ustida) -->
-    <rect x="300" y="170" width="110" height="60" rx="10" class="box mmu"/>
-    <text x="355" y="196" text-anchor="middle" class="ttl">MMU</text>
-    <text x="355" y="214" text-anchor="middle">sahifalar jadvali</text>
-    <text x="355" y="250" text-anchor="middle" class="lbl">MMU manzillarni o'giradi</text>
+<figure class="fig" id="vmFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" id="vmSvg" viewBox="0 0 900 380" role="img" aria-label="Virtual xotira: CPU bergan virtual manzil sahifa raqami va siljishga bo'linadi, MMU TLB va sahifalar jadvali orqali fizik freymga o'giradi; sahifa RAM da bo'lmasa page fault va swapdan yuklash">
+    <defs><pattern id="gV" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="380" fill="url(#gV)"/>
+    <path class="wire w-addr bus" id="wVa" d="M260 101 H 290"/>
+    <path class="wire w-addr bus" id="wPa" d="M570 101 H 600"/>
+    <path class="wire w-data" id="wPt" d="M600 250 H 570"/>
+    <path class="wire w-data" id="wSwap" d="M740 250 V 230"/>
+    <path class="wire w-ctl" id="wFault" d="M290 300 H 240 V 190"/>
+    <text x="576" y="244" class="mut xs">jadval RAM da</text>
+    <!-- CPU -->
+    <rect x="20" y="40" width="240" height="150" rx="12" class="die"/>
+    <text x="34" y="62" class="ttl">CPU · jarayon PID 2001</text>
+    <text x="34" y="78" class="mut xs">virtual manzil (32 bit):</text>
+    <rect x="32" y="84" width="120" height="34" rx="4" class="cell" id="vpnBox"/><text x="92" y="106" text-anchor="middle" class="val" id="vpnT">—</text>
+    <rect x="156" y="84" width="92" height="34" rx="4" class="cell" id="offBox"/><text x="202" y="106" text-anchor="middle" class="val" id="offT">—</text>
+    <text x="92" y="132" text-anchor="middle" class="mut xs">sahifa raqami · 20 bit</text>
+    <text x="202" y="132" text-anchor="middle" class="mut xs">siljish · 12 bit</text>
+    <text x="34" y="156" class="xs" id="vaT">VA = —</text>
+    <text x="34" y="176" class="xs" id="paT">PA = —</text>
+    <circle cx="240" cy="172" r="5" class="led bad" id="lFault"/>
+    <!-- MMU -->
+    <rect x="290" y="40" width="280" height="300" rx="8" class="unit" id="uMMU"/>
+    <text x="302" y="60" class="ttl">MMU</text>
+    <rect x="302" y="68" width="256" height="76" rx="6" class="chip"/>
+    <text x="310" y="84" class="mut xs">TLB — tarjimalar keshi (~1 takt)</text>
+    <circle cx="500" cy="80" r="4.5" class="led" id="lHit"/><text x="508" y="84" class="xs">hit</text>
+    <circle cx="534" cy="80" r="4.5" class="led bad" id="lMiss"/><text x="542" y="84" class="xs">miss</text>
+    <rect x="310" y="92" width="240" height="14" rx="3" class="cell" id="tlb0"/><text x="316" y="103" class="xs" id="tlbT0">0x00401 → 0x1F0</text>
+    <rect x="310" y="109" width="240" height="14" rx="3" class="cell" id="tlb1"/><text x="316" y="120" class="xs" id="tlbT1">0x00402 → 0x1F1</text>
+    <rect x="310" y="126" width="240" height="14" rx="3" class="cell" id="tlb2"/><text x="316" y="137" class="xs" id="tlbT2">— bo'sh —</text>
+    <rect x="302" y="154" width="256" height="176" rx="6" class="chip"/>
+    <text x="310" y="170" class="mut xs">sahifalar jadvali (RAM da, ~100 takt)</text>
+    <text x="310" y="184" class="mut xs">VPN → PFN · P (RAM da?)</text>
+    <g id="ptRows"></g>
+    <!-- RAM -->
+    <rect x="600" y="40" width="280" height="190" rx="8" class="chip"/>
+    <text x="612" y="58" class="ttl">Fizik RAM</text><text x="868" y="58" text-anchor="end" class="mut xs">freymlar · 4 KB</text>
+    <g id="frRows"></g>
+    <!-- Swap -->
+    <rect x="600" y="250" width="280" height="100" rx="8" class="chip"/>
+    <text x="612" y="268" class="ttl">Swap (disk)</text><text x="868" y="268" text-anchor="end" class="mut xs">~100 µs · RAM dan 1000× sekin</text>
+    <rect x="612" y="280" width="256" height="24" rx="4" class="cell" id="sw0"/><text x="620" y="296" class="xs">sahifa 0x00405 · PID 2001 (kam ishlatilgan)</text>
+    <rect x="612" y="310" width="256" height="24" rx="4" class="cell" id="sw1"/><text x="620" y="326" class="xs">sahifa 0x00210 · PID 1234 chrome</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>Virtual manzil</span><span>TLB</span><span>Jadval</span><span>Fizik manzil</span><span>Page fault</span><span>Xulosa</span></div>
+  <div class="board-narr">Jarayon xotiraga murojaat qilmoqda. Sahna o'zi boshlanadi.</div>
   <figcaption><span><b>27-rasm.</b> Virtual xotira: har bir dastur o'z manzil maydonini ko'radi</span></figcaption>
 </figure>
 
@@ -216,26 +289,47 @@
 <h2 id="11-5">11.5. Fayl tizimi</h2>
 <p>Disk aslida raqamlangan bloklarning (odatda 4 KB) katta ketma-ketligi. "Fayl" va "papka" tushunchalarini OS'ning <strong>fayl tizimi</strong> yaratadi. U har bir fayl haqida ma'lumotni (nomi, hajmi, yaratilgan sanasi, huquqlari va qaysi bloklarda joylashgani) maxsus tuzilmalarda saqlaydi. Linux'da bu tuzilma <strong>inode</strong> deyiladi. Mashhur fayl tizimlari: NTFS (Windows), ext4 (Linux), APFS (macOS), FAT32/exFAT (fleshkalar).</p>
 
-<figure class="fig" id="fsFig">
-  <div class="controls"><span class="small muted">Istalgan tugunni bosing — OS uning yo'lini ildizdan boshlab qadam-baqadam topadi</span></div>
-  <svg class="sv fs" id="fsSvg" viewBox="0 0 640 300" role="img" aria-label="Linux fayl tizimining daraxtsimon tuzilishi: ildiz, home, etc, usr, muhammad, bot.js, rasm.png, bin">
-    <line class="edge" data-e="home" x1="320" y1="56" x2="160" y2="104"/>
-    <line class="edge" data-e="etc" x1="320" y1="56" x2="320" y2="104"/>
-    <line class="edge" data-e="usr" x1="320" y1="56" x2="480" y2="104"/>
-    <line class="edge" data-e="muhammad" x1="160" y1="136" x2="160" y2="184"/>
-    <line class="edge" data-e="bot.js" x1="160" y1="216" x2="100" y2="264"/>
-    <line class="edge" data-e="rasm.png" x1="160" y1="216" x2="220" y2="264"/>
-    <line class="edge" data-e="bin" x1="480" y1="136" x2="480" y2="184"/>
-    <g class="node" data-name="/" data-path="/" tabindex="0" role="button"><rect x="270" y="24" width="100" height="32" rx="7" class="box"/><text x="320" y="44" text-anchor="middle" class="ttl">/  (ildiz)</text></g>
-    <g class="node" data-name="home" data-path="/home" tabindex="0" role="button"><rect x="110" y="104" width="100" height="32" rx="7" class="box"/><text x="160" y="125" text-anchor="middle" class="lbl">home</text></g>
-    <g class="node" data-name="etc" data-path="/etc" tabindex="0" role="button"><rect x="270" y="104" width="100" height="32" rx="7" class="box"/><text x="320" y="125" text-anchor="middle" class="lbl">etc</text></g>
-    <g class="node" data-name="usr" data-path="/usr" tabindex="0" role="button"><rect x="430" y="104" width="100" height="32" rx="7" class="box"/><text x="480" y="125" text-anchor="middle" class="lbl">usr</text></g>
-    <g class="node" data-name="muhammad" data-path="/home/muhammad" tabindex="0" role="button"><rect x="110" y="184" width="100" height="32" rx="7" class="box"/><text x="160" y="205" text-anchor="middle" class="lbl">muhammad</text></g>
-    <g class="node" data-name="bin" data-path="/usr/bin" tabindex="0" role="button"><rect x="430" y="184" width="100" height="32" rx="7" class="box"/><text x="480" y="205" text-anchor="middle" class="lbl">bin</text></g>
-    <g class="node" data-name="bot.js" data-path="/home/muhammad/bot.js" tabindex="0" role="button"><rect x="50" y="264" width="100" height="32" rx="7" class="box"/><text x="100" y="285" text-anchor="middle" class="lbl">bot.js</text></g>
-    <g class="node" data-name="rasm.png" data-path="/home/muhammad/rasm.png" tabindex="0" role="button"><rect x="170" y="264" width="100" height="32" rx="7" class="box"/><text x="220" y="285" text-anchor="middle" class="lbl">rasm.png</text></g>
+<figure class="fig" id="fsFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" id="fsSvg" viewBox="0 0 900 400" role="img" aria-label="Fayl tizimi: yo'l qadam-baqadam inode jadvali va disk bloklari orqali yechiladi — ildiz inode 2, katalog bloklari, fayl inode va uning ma'lumot bloklari">
+    <defs><pattern id="gFS" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="400" fill="url(#gFS)"/>
+    <path class="wire w-addr" id="wIn" d="M250 100 H 270"/>
+    <path class="wire w-data bus" id="wBl" d="M560 200 H 580"/>
+    <!-- VFS -->
+    <rect x="20" y="40" width="230" height="130" rx="8" class="unit" id="uVFS"/>
+    <text x="32" y="60" class="ttl">Yadro · VFS · ext4</text>
+    <circle cx="236" cy="54" r="4.5" class="led" id="lVfs"/>
+    <text x="32" y="80" class="mut xs">yo'l:</text>
+    <text x="32" y="96" class="xs" id="pathT">/home/muhammad/bot.js</text>
+    <text x="32" y="118" class="mut xs">qidirilmoqda:</text>
+    <text x="32" y="134" class="val" id="partT">—</text>
+    <text x="32" y="158" class="mut xs" id="curT">joriy inode: —</text>
+    <rect x="20" y="190" width="230" height="190" rx="8" class="chip"/>
+    <text x="32" y="210" class="ttl">tanlangan inode</text>
+    <text x="32" y="232" class="xs" id="iNo">#—</text>
+    <text x="32" y="250" class="mut xs" id="iType">tur: —</text>
+    <text x="32" y="268" class="mut xs" id="iMode">huquq: —</text>
+    <text x="32" y="286" class="mut xs" id="iSize">hajm: —</text>
+    <text x="32" y="304" class="mut xs" id="iBlocks">bloklar: —</text>
+    <text x="32" y="330" class="mut xs">nom inode ichida YO'Q —</text>
+    <text x="32" y="344" class="mut xs">nom katalog blokida saqlanadi</text>
+    <!-- inode jadvali -->
+    <rect x="270" y="40" width="290" height="340" rx="8" class="chip"/>
+    <text x="282" y="60" class="ttl">inode jadvali</text><text x="548" y="60" text-anchor="end" class="mut xs">har fayl/katalog = 1 inode</text>
+    <g id="inCells"></g>
+    <text x="282" y="290" class="mut xs">inode: tur, hajm, huquqlar, sana,</text>
+    <text x="282" y="304" class="mut xs">ma'lumot qaysi bloklarda — ro'yxat</text>
+    <!-- bloklar -->
+    <rect x="580" y="40" width="300" height="340" rx="8" class="chip"/>
+    <text x="592" y="60" class="ttl">ma'lumot bloklari · 4 KB</text><text x="868" y="60" text-anchor="end" class="mut xs">disk</text>
+    <g id="blCells"></g>
+    <g class="tokens"></g>
   </svg>
-  <div class="out" id="fsOut">/home/muhammad/bot.js</div>
+  </div>
+  <div class="board-ctl"><button type="button" class="primary" data-path="/home/muhammad/bot.js">bot.js</button><button type="button" data-path="/home/muhammad/rasm.png">rasm.png</button><button type="button" data-path="/usr/bin/node">/usr/bin/node</button><span class="small muted">Yo'lni tanlang — OS uni ildizdan boshlab qadam-baqadam bloklarga yechadi</span></div>
+  <div class="board-steps"><span>ildiz /</span><span>1-katalog</span><span>2-katalog</span><span>fayl inode</span><span>ma'lumot</span><span>Xulosa</span></div>
+  <div class="board-narr">open("/home/muhammad/bot.js") chaqirildi. Sahna o'zi boshlanadi.</div>
   <figcaption><span><b>28-rasm.</b> Linux fayl tizimining daraxtsimon tuzilishi</span></figcaption>
 </figure>
 
@@ -252,80 +346,250 @@
 </main>
 
 <script src="../js/site.js"></script>
-<script src="../js/quiz-data.js"></script>
-<script src="../js/quiz.js"></script>
+<script src="../js/board.js"></script>
 <script>
-/* "↻ qayta": figuradagi CSS animatsiyalarini boshidan boshlash */
-document.querySelectorAll('.fig').forEach(f=>f.addEventListener('replay',()=>{const all=f.querySelectorAll('*');all.forEach(e=>{e.style.animationName='none';});void f.offsetWidth;all.forEach(e=>{e.style.animationName='';});}));
-</script>
-<script>
+/* 11-bob sahnalari: yuklanish, user/kernel chegarasi, rejalashtiruvchi, MMU, fayl tizimi */
 (function(){
-  /* .play sinfi qo'shilganda bir marta chaqirish */
-  const onPlay=(fig,fn)=>{if(fig.classList.contains('play')){fn();return;}
-    const mo=new MutationObserver(()=>{if(fig.classList.contains('play')){mo.disconnect();fn();}});
-    mo.observe(fig,{attributes:true,attributeFilter:['class']});};
+  if(!window.KQIBoard) return;
+  var B=KQIBoard;
 
-  /* ---- 24-rasm: tugma bosilganda SVG bosqichlarini ham qayta yoqish ---- */
+  /* ---- 24-rasm: yuklanish ---- */
   (function(){
-    const svg=document.getElementById('bootSvg');
-    document.getElementById('bootBtn').addEventListener('click',()=>{
-      svg.querySelectorAll('.st rect,.st text,.arr').forEach(e=>{e.style.animation='none';void e.getBBox();e.style.animation='';});
+    var fig=document.getElementById('bootFig'); if(!fig) return;
+    var svg=document.getElementById('bootSvg'), gl=svg.querySelector('#scrLines');
+    for(var i=0;i<11;i++) gl.appendChild(B.el('text',{x:710,y:64+i*24,'class':'scr',id:'sl'+i,style:'font-size:11px'},''));
+    B.scene(fig,async function(c){
+      var ln=0; function line(t,dim){ if(ln>=11){ for(var i=0;i<10;i++) c.text('sl'+i,svg.querySelector('#sl'+(i+1)).textContent); ln=10; } c.text('sl'+ln,t); svg.querySelector('#sl'+ln).classList.toggle('dim',!!dim); ln++; }
+      for(var i=0;i<11;i++) c.text('sl'+i,'');
+      ['rs0','rs1','rs2','rs3'].forEach(function(id){ c.text(id,'bo\'sh',null); });
+      c.text('pcTxt','—'); c.text('modeTxt','—'); c.text('tTxt','t = 0.0 s'); c.text('psuTxt','kuchlanish barqarorlashmoqda…');
+      c.step(0,'<b>Quvvat.</b> Tugma bosildi. PSU avval 12 V, 5 V, 3.3 V shinalarni barqarorlashtiradi (~300 ms). Shungacha CPU RESET holatida ushlab turiladi.');
+      c.led('lRst',1,'warn');
+      await c.delay(400); c.led('l12',1,'bad'); await c.delay(250); c.led('l5',1,'bad'); await c.delay(250); c.led('l33',1,'bad'); if(!c.alive()) return;
+      await c.delay(300); c.text('psuTxt','barqaror → Power Good'); c.led('lPG',1); c.unit('uPSU','on'); c.lit('wPG');
+      await c.token('PWR_OK','ctl',[[180,100],[220,100]],600); if(!c.alive()) return;
+      c.led('lRst',0,'warn'); c.led('lRun',1); c.text('pcTxt','0xFFFFFFF0'); c.text('modeTxt','16 bit real rejim'); c.text('tTxt','t = 0.3 s');
+      c.narr('<b>Quvvat.</b> Power Good keldi → RESET olib tashlandi. CPU apparat darajasida qat\'iy manzildan boshlaydi: PC = 0xFFFFFFF0 — bu manzil SPI flesh chipga xaritalangan.');
+      await c.delay(1300); if(!c.alive()) return;
+      c.step(1,'<b>POST.</b> Birinchi buyruq BIOS/UEFI chipidan o\'qiladi. UEFI o\'z-o\'zini tekshirish (POST) qiladi: CPU, RAM, videokarta, disk. Har muvaffaqiyatli bosqichda Q-LED o\'chadi; xato bo\'lsa — o\'sha LED yonib qoladi va signal chalinadi.');
+      c.lit('wBios'); await c.token('0xFFFFFFF0','addr',[[270,190],[270,230]],600); c.unit('uBIOS','on'); c.led('lBios',1);
+      await c.token('UEFI kod','data',[[270,230],[270,190]],600); if(!c.alive()) return;
+      line('UEFI v2.8  POST'); c.unit('uPost','on');
+      c.led('pCPU',1,'warn'); await c.delay(450); line('CPU: 8 yadro OK'); c.led('pCPU',0,'warn'); c.text('tTxt','t = 0.5 s');
+      c.led('pRAM',1,'warn'); c.lit('wRam'); await c.token('test','data',[[420,110],[450,110]],400); await c.delay(350); line('RAM: 16384 MB OK'); c.led('pRAM',0,'warn'); c.text('tTxt','t = 1.0 s');
+      c.led('pVGA',1,'warn'); c.lit('wScr'); await c.delay(450); line('GPU: PCIe x16 OK'); c.led('pVGA',0,'warn'); c.text('tTxt','t = 1.4 s');
+      c.led('pBOOT',1,'warn'); await c.delay(450); line('boot: NVMe0 (GPT)'); c.led('pBOOT',0,'warn'); c.text('tTxt','t = 1.8 s'); if(!c.alive()) return;
+      await c.delay(500);
+      c.step(2,'<b>Bootloader.</b> UEFI diskning EFI bo\'limidan bootloaderni (GRUB) topib, RAM ga yuklaydi va boshqaruvni unga beradi: PC endi RAM dagi manzilni ko\'rsatadi.');
+      c.lit('wDisk'); c.cell('k0','warn');
+      await c.token('GRUB · 1 MB','data',[[492,258],[560,250],[560,190],[560,79]],1100); if(!c.alive()) return;
+      c.cell('k0','hi'); c.cell('r0','hi'); c.text('rs0','yuklandi ✓','label-on'); c.flash('r0'); line('GRUB 2.12 → Linux'); c.text('pcTxt','0x7C00 (RAM)'); c.text('tTxt','t = 2.2 s');
+      await c.delay(1300); if(!c.alive()) return;
+      c.step(3,'<b>Kernel.</b> GRUB /boot dan yadro faylini (vmlinuz) va initramfs ni RAM ga yuklaydi. Yadro 64 bit rejimga o\'tadi, MMU ni yoqadi, drayverlarni ishga tushiradi.');
+      c.cell('k1','warn');
+      await c.token('vmlinuz · 12 MB','data',[[558,258],[560,250],[560,190],[560,109]],1100); if(!c.alive()) return;
+      c.cell('k1','hi'); c.cell('r1','hi'); c.text('rs1','yuklandi ✓','label-on'); c.flash('r1'); c.text('pcTxt','0x100000'); c.text('modeTxt','64 bit · kernel mode'); line('Linux 6.8.0 boshlandi'); c.text('tTxt','t = 3.0 s');
+      await c.token('initramfs','data',[[558,258],[560,250],[560,190],[560,139]],900); if(!c.alive()) return;
+      c.cell('r2','hi'); c.text('rs2','yuklandi ✓','label-on'); c.flash('r2'); line('[0.4] MMU, PCIe, NVMe OK'); c.text('tTxt','t = 4.5 s');
+      await c.delay(1300); if(!c.alive()) return;
+      c.step(4,'<b>systemd.</b> Yadro ildiz fayl tizimini (ext4) ulab, birinchi jarayonni — systemd (PID 1) ni ishga tushiradi. U qolgan xizmatlarni parallel ko\'taradi: tarmoq, jurnal, grafik interfeys.');
+      c.cell('k2','warn');
+      await c.token('systemd','data',[[626,258],[560,250],[560,190],[560,169]],1000); if(!c.alive()) return;
+      c.cell('k2','hi'); c.cell('r3','hi'); c.text('rs3','PID 1 ✓','label-on'); c.flash('r3'); c.text('modeTxt','user mode · PID 1'); c.text('pcTxt','0x55e1…'); line('systemd[1]: xizmatlar…'); c.text('tTxt','t = 6.0 s');
+      await c.delay(500); line('[ OK ] network.service'); await c.delay(400); line('[ OK ] journald, dbus'); await c.delay(400); line('[ OK ] gdm (grafik)'); c.text('tTxt','t = 9.5 s');
+      await c.delay(600); if(!c.alive()) return;
+      line('login: _'); c.text('tTxt','t = 12 s');
+      c.step(5,'<b>Xulosa.</b> Power Good → BIOS (flesh chip) → POST → bootloader (disk → RAM) → kernel (disk → RAM) → systemd → login. Har bosqich keyingisini RAM ga yuklab, boshqaruvni unga beradi. Jami ~5–30 soniya.');
+    });
+    document.getElementById('bootBtn').onclick=function(){ fig.dispatchEvent(new CustomEvent('replay')); };
+  })();
+
+  /* ---- 25-rasm: user / kernel chegarasi ---- */
+  (function(){
+    var fig=document.getElementById('layFig'); if(!fig) return;
+    B.scene(fig,async function(c){
+      ['rRax','rRdi','rRsi','rRdx'].forEach(function(id,i){ c.text(id,['rax','rdi','rsi','rdx'][i]+' = —'); });
+      c.text('insT','—'); c.text('appL3','kutmoqda…'); c.text('gpTxt','#GP xato: yo\'q'); c.text('drvTxt','bo\'sh'); c.text('ssdTxt','kutmoqda'); c.text('appL1',"fs.readFile('config.json')"); c.text('appL2','→ libc: read(fd=3, buf, 4096)');
+      c.step(0,'<b>Ilova.</b> bot.js <code>fs.readFile()</code> chaqirdi. Node.js uni libc ning read() funksiyasiga aylantiradi. Ilova ring 3 da — diskka bevosita murojaat qila olmaydi, yadrodan so\'rashi kerak.');
+      c.led('lApp',1); c.unit('uApp','on'); c.led('lR3',1); c.text('insT','CPL 3');
+      await c.delay(1500); if(!c.alive()) return;
+      c.step(1,'<b>syscall.</b> Argumentlar registrlarga: rax = 0 (read raqami), rdi = 3 (fayl deskriptori), rsi = bufer manzili, rdx = 4096 bayt. So\'ng <b>syscall</b> buyrug\'i — CPU ring 0 ga o\'tadi va yadroning jadvalidagi 0-yozuvga sakraydi.');
+      c.unit('uReg','on'); c.text('rRax','rax = 0  (read)'); await c.delay(250); c.text('rRdi','rdi = 3  (fd)'); await c.delay(250); c.text('rRsi','rsi = 0x7ffd2c10 (buf)'); await c.delay(250); c.text('rRdx','rdx = 4096'); await c.delay(500);
+      c.text('insT','syscall'); c.lit(['wSys','border']);
+      await c.token('syscall · rax=0','ctl',[[470,160],[470,246],[260,246]],1300); if(!c.alive()) return;
+      c.led('lR3',0); c.led('lR0',1,'warn'); c.unit('uCPU','warn'); c.text('insT','CPL 0'); c.cell('sc0','hi'); c.unit('uTab','on');
+      await c.delay(1200); if(!c.alive()) return;
+      c.step(2,'<b>Yadro.</b> sys_read() → VFS: "fd 3 qaysi fayl?" → inode 315, ext4 fayl tizimida. ext4: inode 315 ning ma\'lumoti 8192-blokda. Page cache\'da yo\'q — diskdan o\'qish kerak.');
+      c.lit('w1'); await c.token('fd 3','ctl',[[260,246],[290,246]],400); c.unit('uVFS','on'); await c.delay(600);
+      c.lit('w2'); await c.token('inode 315','ctl',[[365,275],[365,290]],400); c.unit('uExt4','on'); await c.delay(900); if(!c.alive()) return;
+      c.step(3,'<b>Drayver.</b> NVMe drayveri diskning buyruq navbatiga "LBA 65536 dan 4 KB o\'qi" yozadi. Disk ma\'lumotni DMA bilan buferga ko\'chirib, IRQ beradi (10-bob). Shu paytda yadro boshqa jarayonga o\'tishi mumkin.');
+      c.lit('w3'); await c.token('blok 8192','ctl',[[440,320],[470,320]],400); c.unit('uDrv','on'); c.text('drvTxt','read LBA 65536');
+      c.lit('w4'); await c.token('NVMe cmd','ctl',[[620,282],[650,282]],400); c.led('lSsd',1); c.text('ssdTxt','o\'qilmoqda… 80 µs');
+      await c.delay(800); c.text('ssdTxt','tayyor · DMA → bufer'); c.led('lDrvIrq',1,'warn'); await c.delay(700); if(!c.alive()) return;
+      c.step(4,'<b>Qaytish.</b> Ma\'lumot buferda. Yadro rax ga natijani (4096 bayt) yozib, <b>sysret</b> bilan ring 3 ga qaytaradi. Ilova uchun bu oddiy funksiya chaqirig\'idek ko\'rinadi.');
+      c.lit('wRet'); await c.token('4096 bayt','data',[[650,282],[545,282],[545,160]],1300); if(!c.alive()) return;
+      c.led('lR0',0,'warn'); c.led('lR3',1); c.unit('uCPU','on'); c.text('insT','sysret → CPL 3'); c.text('rRax','rax = 4096 (o\'qildi)'); c.text('appL3','callback: config.json — 4096 B ✓');
+      await c.delay(1600); if(!c.alive()) return;
+      c.step(5,'<b>Himoya.</b> Ilova chegarani chetlab o\'tmoqchi bo\'lsa — masalan diskning portiga to\'g\'ridan-to\'g\'ri <code>out</code> buyrug\'i bersa — CPL 3 da CPU buni bajarmaydi: #GP (General Protection) istisnosi → yadro jarayonni o\'ldiradi. Bu "Segmentation fault" ning apparat ildizi.',true);
+      c.text('appL1','out 0x3F8, al   ; portga bevosita'); c.text('appL2','→ imtiyozli buyruq, ring 3 da'); c.text('insT','out (CPL 3)');
+      c.lit('wBad'); await c.token('out dx, al','warn',[[190,160],[190,185]],700); if(!c.alive()) return;
+      c.led('lGP',1,'bad'); c.unit('uCPU','bad'); c.text('gpTxt','#GP xato: ring 3 da imtiyozli buyruq!','label-bad'); c.unit('uApp','bad'); c.led('lApp',0); c.text('appL3','Segmentation fault (core dumped)','label-bad');
     });
   })();
 
-  /* ---- 26-rasm: jarayon holatlari ---- */
+  /* ---- 26-rasm: rejalashtiruvchi ---- */
   (function(){
-    const fig=document.getElementById('smFig'),svg=document.getElementById('smSvg'),tok=document.getElementById('smTok'),out=document.getElementById('smOut');
-    const nodes={};svg.querySelectorAll('.node').forEach(n=>nodes[n.dataset.n]=n);
-    const seq=[
-      ['e1','Tayyor','Jarayon yaratildi → navbatga qo\'yildi (Tayyor)'],
-      ['e2','Bajarilmoqda','Rejalashtiruvchi tanladi → CPU\'da, bir necha ms vaqt bo\'lagi'],
-      ['e3','Tayyor','Vaqt bo\'lagi tugadi (taymer uzilishi) → kontekst almashinuvi → navbatga'],
-      ['e2','Bajarilmoqda','Yana tanlandi → CPU\'da davom etadi'],
-      ['e5','Kutmoqda','await fetch(...) → OS\'ga so\'rov, javob kelguncha CPU boshqalarga beriladi'],
-      ['e6','Tayyor','Disk/tarmoqdan javob keldi → yana navbatda'],
-      ['e2','Bajarilmoqda','Tanlandi → javobni qayta ishlaydi'],
-      ['e4','Tugadi','Dastur ishini tugatdi → xotirasi bo\'shatiladi']
-    ];
-    let idx=0,busy=false,auto=false,timer=null,raf=null;
-    const setNode=name=>{svg.querySelectorAll('.node rect').forEach(r=>r.classList.remove('on'));if(name)nodes[name].querySelector('rect').classList.add('on');};
-    const setEdge=id=>{svg.querySelectorAll('.edge').forEach(e=>e.classList.toggle('on',e.id===id));svg.querySelectorAll('.elbl').forEach(t=>t.classList.toggle('on',t.dataset.e===id));};
-    const reset=()=>{clearTimeout(timer);cancelAnimationFrame(raf);busy=false;idx=0;setEdge(null);setNode('Yangi');tok.setAttribute('cx',70);tok.setAttribute('cy',120);out.textContent='Jarayon yaratildi (Yangi)';};
-    const step=(done)=>{if(busy)return;if(idx>=seq.length){reset();}
-      const [eid,to,msg]=seq[idx++];const path=document.getElementById(eid),L=path.getTotalLength();
-      busy=true;setEdge(eid);setNode(null);out.textContent=msg;
-      const dur=KQI.reduce?0:900;const t0=performance.now();
-      const frame=now=>{let k=dur?Math.min(1,(now-t0)/dur):1;k=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;const p=path.getPointAtLength(k*L);tok.setAttribute('cx',p.x);tok.setAttribute('cy',p.y);
-        if(k<1)raf=requestAnimationFrame(frame);else{setNode(to);busy=false;if(done)done();}};
-      raf=requestAnimationFrame(frame);};
-    const loop=()=>{if(!auto)return;if(!fig.classList.contains('play')){timer=setTimeout(loop,500);return;}
-      if(idx>=seq.length){timer=setTimeout(()=>{reset();loop();},1800);return;}
-      step(()=>{timer=setTimeout(loop,KQI.reduce?1600:800);});};
-    document.getElementById('smRun').onclick=()=>{auto=true;reset();loop();};
-    document.getElementById('smStep').onclick=()=>{auto=false;clearTimeout(timer);step();};
-    fig.addEventListener('replay',()=>{auto=true;reset();loop();});
-    onPlay(fig,()=>{auto=true;reset();loop();});
+    var fig=document.getElementById('smFig'); if(!fig) return;
+    var svg=document.getElementById('smSvg'), gq=svg.querySelector('#qSlots'), gw=svg.querySelector('#wSlots');
+    for(var i=0;i<6;i++){ gq.appendChild(B.el('rect',{x:332,y:92+i*32,width:276,height:26,rx:4,'class':'cell',id:'q'+i})); gq.appendChild(B.el('text',{x:342,y:109+i*32,'class':'xs',id:'qt'+i},'—')); }
+    for(var j=0;j<4;j++){ gw.appendChild(B.el('rect',{x:662,y:92+j*32,width:206,height:26,rx:4,'class':'cell',id:'w'+j})); gw.appendChild(B.el('text',{x:672,y:109+j*32,'class':'xs',id:'wt'+j},'—')); }
+    var P=[{pid:1234,n:'chrome'},{pid:2001,n:'node bot.js'},{pid:512,n:'systemd'},{pid:3000,n:'code'},{pid:777,n:'telegram'}];
+    function lbl(p){ return 'PID '+p.pid+' · '+p.n; }
+    B.scene(fig,async function(c){
+      var ready=[0,1,2,3,4], core=[null,null], waiting=[], t=0, cs=0, firstDisp=true, firstExp=true, firstWait=true;
+      function render(){
+        for(var i=0;i<6;i++){ var p=ready[i]; c.text('qt'+i,p===undefined?'—':lbl(P[p])); c.cell('q'+i,p===undefined?null:'hi'); }
+        for(var j=0;j<4;j++){ var w=waiting[j]; c.text('wt'+j,w?lbl(P[w.p])+' · I/O':'—'); c.cell('w'+j,w?'warn':null); }
+        c.text('tmTxt','t = '+t+' ms'); c.text('csTxt','kontekst almashinuvlari: '+cs);
+      }
+      function setCore(i,p,status){ c.text('c'+i+'p',p===null?'—':lbl(P[p])); c.text('c'+i+'s',status); c.led('c'+i+'l',p!==null); c.unit('c'+i,p===null?null:'on'); svg.querySelector('#c'+i+'b').setAttribute('width',0); }
+      setCore(0,null,'bo\'sh'); setCore(1,null,'bo\'sh'); render();
+      c.step(0,'<b>Navbat.</b> 5 ta jarayon "tayyor" holatda navbatda turibdi, 2 ta yadro bo\'sh. Rejalashtiruvchi har biriga 4 ms lik vaqt bo\'lagi beradi.');
+      await c.delay(1200); if(!c.alive()) return;
+      for(var tick=0;tick<6&&c.alive();tick++){
+        for(var i=0;i<2&&c.alive();i++){
+          if(core[i]===null&&ready.length){
+            var p=ready.shift(); render();
+            if(firstDisp){ firstDisp=false; c.step(1,'<b>Tanlash.</b> Navbat boshidagi jarayon yadroga yuklanadi: uning registrlari va PC si PCB dan tiklanadi (kontekst almashinuvi, ~1–2 µs). Holat: tayyor → bajarilmoqda.'); }
+            c.lit('wQ'+i); await c.token('PID '+P[p].pid,'data',[[332,105],[320,115+130*i],[280,115+130*i]],450);
+            core[i]=p; cs++; setCore(i,p,'bajarilmoqda · vaqt bo\'lagi 4 ms'); render();
+            await c.delay(30); svg.querySelector('#c'+i+'b').setAttribute('width',226);
+          }
+        }
+        if(!c.alive()) return;
+        await c.delay(650);
+        c.led('lTimer',1,'warn'); c.unit('uTimer','warn'); t+=4; render(); await c.delay(250); c.led('lTimer',0,'warn'); c.unit('uTimer',null);
+        for(var k=0;k<2&&c.alive();k++){
+          var q=core[k]; if(q===null) continue;
+          var y=115+130*k;
+          if(P[q].n==='node bot.js'&&tick<=1&&firstWait){
+            firstWait=false;
+            c.step(3,'<b>Kutish.</b> node bot.js <code>await fetch()</code> qildi — tarmoqdan javob kelguncha CPU unga kerak emas. Holat: bajarilmoqda → kutmoqda; yadro darhol boshqasiga beriladi.');
+            setCore(k,null,'bo\'sh'); c.lit('wW');
+            await c.token('PID '+P[q].pid,'ctl',[[280,y],[300,180],[650,180],[662,105+32*waiting.length]],700);
+            waiting.push({p:q,until:tick+3}); core[k]=null; render();
+          } else {
+            if(firstExp){ firstExp=false; c.step(2,'<b>Vaqt bo\'lagi tugadi.</b> Taymer uzilishi (har 4 ms) yadroni to\'xtatadi: registrlar PCB ga saqlanadi, jarayon navbat oxiriga qaytadi, keyingisi olinadi. Bu sekundiga yuzlab marta.'); }
+            setCore(k,null,'bo\'sh');
+            await c.token('PID '+P[q].pid,'data',[[280,y],[320,105+32*ready.length],[332,105+32*ready.length]],450);
+            ready.push(q); core[k]=null; render();
+          }
+        }
+        if(!c.alive()) return;
+        for(var w=waiting.length-1;w>=0;w--){ if(waiting[w].until<=tick){ var wp=waiting[w].p; waiting.splice(w,1); render();
+          c.narr('<b>Javob keldi.</b> Tarmoq paketi keldi (IRQ) → node bot.js yana "tayyor" holatga, navbat oxiriga qo\'yiladi.');
+          await c.token('PID '+P[wp].pid,'data',[[662,105+32*w],[640,105+32*w],[640,105+32*ready.length],[608,105+32*ready.length]],600);
+          ready.push(wp); render(); } }
+      }
+      if(!c.alive()) return;
+      c.step(4,'<b>Xulosa.</b> '+t+' ms ichida 5 jarayon 2 yadroda '+cs+' marta almashdi — har biri "o\'zi yolg\'iz ishlayotgandek". Kutayotgan jarayon CPU olmaydi: shuning uchun bitta oqimli Node.js minglab ulanishga xizmat qila oladi.');
+    });
+    document.getElementById('smRun').onclick=function(){ fig.dispatchEvent(new CustomEvent('replay')); };
   })();
 
-  /* ---- 28-rasm: yo'lni tugunma-tugun topish ---- */
+  /* ---- 27-rasm: MMU ---- */
   (function(){
-    const fig=document.getElementById('fsFig'),svg=document.getElementById('fsSvg'),out=document.getElementById('fsOut');
-    const nodes=[...svg.querySelectorAll('.node')],edges=[...svg.querySelectorAll('.edge')];
-    let timers=[];
-    const clear=()=>{timers.forEach(clearTimeout);timers=[];nodes.forEach(n=>n.querySelector('rect').classList.remove('on'));edges.forEach(e=>e.classList.remove('on'));};
-    const resolve=path=>{clear();const parts=path==='/'?['/']:['/',...path.slice(1).split('/')];let cur='';
-      parts.forEach((p,i)=>{timers.push(setTimeout(()=>{
-        if(i===0){cur='/';}else{cur=(cur==='/'?'/':cur+'/')+p;}
-        const n=nodes.find(x=>x.dataset.path===cur);if(n)n.querySelector('rect').classList.add('on');
-        const e=edges.find(x=>x.dataset.e===p);if(e&&i>0)e.classList.add('on');
-        out.innerHTML=(i===0?'ildiz <b>/</b>':'… → <b>'+p+'</b> topildi')+' &nbsp;·&nbsp; yo\'l: <b>'+cur+'</b>'+(i===parts.length-1?' ✓':'');
-      },KQI.reduce?0:i*650));});};
-    nodes.forEach(n=>{n.addEventListener('click',()=>resolve(n.dataset.path));n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();resolve(n.dataset.path);}});});
-    const demo=()=>resolve('/home/muhammad/bot.js');
-    fig.addEventListener('replay',demo);
-    onPlay(fig,demo);
+    var fig=document.getElementById('vmFig'); if(!fig) return;
+    var svg=document.getElementById('vmSvg'), gp=svg.querySelector('#ptRows'), gf=svg.querySelector('#frRows');
+    var PT=['0x00401 → 0x1F0 · P=1','0x00402 → 0x1F1 · P=1','0x00403 → 0x1F2 · P=1','0x00404 → 0x1F3 · P=1','0x00405 → swap · P=0'];
+    PT.forEach(function(s,i){ gp.appendChild(B.el('rect',{x:310,y:192+i*26,width:240,height:22,rx:3,'class':'cell',id:'pt'+i})); gp.appendChild(B.el('text',{x:318,y:207+i*26,'class':'xs',id:'ptT'+i},s)); });
+    var FR=['0x1F0 · PID 2001 · kod','0x1F1 · PID 2001 · ma\'lumot','0x1F2 · PID 2001 · stek','0x1F3 · PID 1234 · chrome','0x1F4 · bo\'sh','0x1F5 · yadro (kernel)'];
+    FR.forEach(function(s,i){ gf.appendChild(B.el('rect',{x:612,y:66+i*26,width:256,height:22,rx:3,'class':'cell',id:'fr'+i})); gf.appendChild(B.el('text',{x:620,y:81+i*26,'class':'xs',id:'frT'+i},s)); });
+    B.scene(fig,async function(c){
+      c.text('ptT4',PT[4]); c.text('frT4',FR[4]); c.text('tlbT2','— bo\'sh —'); c.text('vpnT','—'); c.text('offT','—'); c.text('vaT','VA = —'); c.text('paT','PA = —',null);
+      c.step(0,'<b>Virtual manzil.</b> Jarayon 0x00403A2C manzilini o\'qimoqchi. MMU uni ikkiga bo\'ladi: yuqori 20 bit — sahifa raqami (VPN) 0x00403, past 12 bit — sahifa ichidagi siljish 0xA2C (4 KB = 2¹²).');
+      c.text('vaT','VA = 0x00403A2C'); await c.delay(700); c.text('vpnT','0x00403'); c.cell('vpnBox','hi'); await c.delay(400); c.text('offT','0xA2C'); c.cell('offBox','warn');
+      await c.delay(1300); if(!c.alive()) return;
+      c.step(1,'<b>TLB.</b> Avval TLB — so\'nggi tarjimalar keshi (~1 takt) tekshiriladi. 0x00403 unda yo\'q → <b>miss</b>. Endi jadvalga murojaat qilish kerak.');
+      c.lit('wVa'); await c.token('VPN 0x00403','addr',[[260,101],[290,101],[340,101]],700); if(!c.alive()) return;
+      c.cell('tlb0','warn'); await c.delay(250); c.cell('tlb0',null); c.cell('tlb1','warn'); await c.delay(250); c.cell('tlb1',null); c.led('lMiss',1,'bad'); c.unit('uMMU','warn');
+      await c.delay(900); if(!c.alive()) return;
+      c.step(2,'<b>Jadval.</b> Sahifalar jadvali RAM da (har jarayonga alohida). MMU 0x403-yozuvni o\'qiydi (~100 takt): PFN = 0x1F2, P = 1 — sahifa RAM da.');
+      c.lit('wPt'); c.dot('data',[[600,250],[570,250]],500);
+      await c.token('0x403','addr',[[340,140],[340,255]],600); if(!c.alive()) return;
+      c.cell('pt2','hi'); c.flash('pt2'); await c.delay(1000); c.led('lMiss',0,'bad');
+      c.step(3,'<b>Fizik manzil.</b> PFN va siljish qo\'shiladi: 0x1F2 ‖ 0xA2C = <b>0x1F2A2C</b>. Manzil shinasiga shu boradi — RAM dagi 0x1F2 freym. Tarjima TLB ga yoziladi, keyingi safar 1 takt.');
+      c.text('paT','PA = 0x1F2A2C','label-on'); c.unit('uMMU','on'); c.lit('wPa');
+      await c.token('PA 0x1F2A2C','addr',[[570,101],[600,101],[740,129]],800); if(!c.alive()) return;
+      c.cell('fr2','hi'); c.flash('fr2'); c.text('tlbT2','0x00403 → 0x1F2'); c.cell('tlb2','hi'); c.led('lHit',1);
+      await c.delay(1600); if(!c.alive()) return;
+      c.step(4,'<b>Page fault.</b> Keyingi murojaat: 0x00405F00. TLB miss, jadvalda P = 0 — sahifa RAM da emas, swapga chiqarilgan. MMU CPU ga <b>page fault</b> istisnosini beradi, yadro aralashadi.',true);
+      c.unlit(); c.cell('fr2',null); c.cell('pt2',null); c.led('lHit',0); c.text('paT','PA = —',null);
+      c.text('vaT','VA = 0x00405F00'); c.text('vpnT','0x00405'); c.text('offT','0xF00');
+      c.lit('wVa'); await c.token('VPN 0x00405','addr',[[260,101],[290,101],[340,101]],600); c.led('lMiss',1,'bad');
+      await c.token('0x405','addr',[[340,140],[340,307]],600); if(!c.alive()) return;
+      c.cell('pt4','warn'); c.unit('uMMU','bad'); c.lit('wFault');
+      await c.token('page fault','warn',[[290,300],[240,300],[240,190]],700); c.led('lFault',1,'bad');
+      await c.delay(800); if(!c.alive()) return;
+      c.narr('<b>Page fault.</b> Yadro bo\'sh freym topadi (0x1F4), sahifani swapdan o\'qib unga yozadi (~100 µs — RAM dan 1000 barobar sekin), jadvalni yangilaydi va buyruqni qayta bajaradi.',true);
+      c.lit('wSwap'); c.cell('sw0','warn');
+      await c.token('sahifa 0x405','data',[[740,292],[740,250],[740,230],[740,181]],1000); if(!c.alive()) return;
+      c.cell('sw0',null); c.text('frT4','0x1F4 · PID 2001 · swapdan ✓'); c.cell('fr4','hi'); c.flash('fr4');
+      c.text('ptT4','0x00405 → 0x1F4 · P=1'); c.cell('pt4','hi'); c.led('lFault',0,'bad'); c.unit('uMMU','on');
+      await c.delay(500); c.text('paT','PA = 0x1F4F00','label-on'); c.lit('wPa'); await c.token('PA 0x1F4F00','addr',[[570,101],[600,101],[740,181]],700);
+      await c.delay(800); if(!c.alive()) return;
+      c.step(5,'<b>Xulosa.</b> Jarayon faqat virtual manzillarni ko\'radi; MMU har murojaatni jadval orqali fizik freymga o\'giradi (TLB tezlashtiradi). P = 0 bo\'lsa — swapdan yuklanadi. Jadvalda umuman yo\'q manzil — Segmentation fault.');
+    });
+  })();
+
+  /* ---- 28-rasm: fayl tizimi ---- */
+  (function(){
+    var fig=document.getElementById('fsFig'); if(!fig) return;
+    var svg=document.getElementById('fsSvg');
+    var INO={2:{i:0,t:'katalog',m:'drwxr-xr-x',s:'4 KB',b:[100]},12:{i:1,t:'katalog',m:'drwxr-xr-x',s:'4 KB',b:[110]},13:{i:2,t:'katalog',m:'drwxr-xr-x',s:'4 KB',b:[111]},14:{i:3,t:'katalog',m:'drwxr-xr-x',s:'4 KB',b:[130]},200:{i:4,t:'katalog',m:'drwxr-x---',s:'4 KB',b:[120]},315:{i:5,t:'fayl',m:'-rw-r--r--',s:'2.1 KB',b:[8192,8193]},316:{i:6,t:'fayl',m:'-rw-r--r--',s:'48 KB',b:[9000]},400:{i:7,t:'katalog',m:'drwxr-xr-x',s:'4 KB',b:[140]},401:{i:8,t:'fayl',m:'-rwxr-xr-x',s:'92 MB',b:[20480]}};
+    var BLK={100:{j:0,d:{home:12,etc:13,usr:14}},110:{j:1,d:{muhammad:200}},111:{j:2,d:{}},120:{j:3,d:{'bot.js':315,'rasm.png':316}},130:{j:4,d:{bin:400}},140:{j:5,d:{node:401}},8192:{j:6,x:'const bot = new Telegraf(…)'},8193:{j:7,x:'bot.launch()'},9000:{j:8,x:'89 50 4E 47 … (PNG sarlavhasi)'},20480:{j:9,x:'7F 45 4C 46 … (ELF dastur)'}};
+    B.cells(svg.querySelector('#inCells'),{n:9,x:282,y:68,w:86,h:56,gap:6,cols:3,prefix:'in',labels:['#2','#12','#13','#14','#200','#315','#316','#400','#401'],vals:['/','home','etc','usr','muhammad','bot.js','rasm.png','bin','node']});
+    B.cells(svg.querySelector('#blCells'),{n:10,x:592,y:68,w:136,h:54,gap:6,cols:2,prefix:'bl',labels:['blok 100','blok 110','blok 111','blok 120','blok 130','blok 140','blok 8192','blok 8193','blok 9000','blok 20480'],vals:['home·etc·usr','muhammad','passwd·hosts','bot.js·rasm.png','bin·lib','node·python3','const bot=…','bot.launch()','89 50 4E 47…','7F 45 4C 46…']});
+    function ic(i){ return [282+(i%3)*92+43, 68+Math.floor(i/3)*62+28]; }
+    function bc(j){ return [592+(j%2)*142+68, 68+Math.floor(j/2)*60+27]; }
+    var path='/home/muhammad/bot.js';
+    B.scene(fig,async function(c){
+      var parts=path.split('/').filter(Boolean), cur=2, reads=0;
+      svg.querySelectorAll('.cell.hi,.cell.warn').forEach(function(e){ e.classList.remove('hi','warn'); });
+      c.text('pathT',path); c.text('partT','—'); c.text('curT','joriy inode: —');
+      function details(n){ var o=INO[n]; c.text('iNo','#'+n+(n===2?' (ildiz)':'')); c.text('iType','tur: '+o.t); c.text('iMode','huquq: '+o.m); c.text('iSize','hajm: '+o.s); c.text('iBlocks','bloklar: '+o.b.join(', ')); }
+      c.step(0,'<b>Ildiz.</b> Har yo\'l "/" dan boshlanadi. ext4 da ildiz katalogi doim inode <b>#2</b>. Inode ichida nom yo\'q — faqat tur, hajm, huquqlar va ma\'lumot qaysi bloklarda ekani.');
+      c.led('lVfs',1); c.unit('uVFS','on'); c.text('partT','/'); c.lit('wIn');
+      var p0=ic(0); await c.token('#2','addr',[[250,100],[270,100],[p0[0],p0[1]]],600); if(!c.alive()) return;
+      c.cell('in0','hi'); details(2); c.text('curT','joriy inode: #2'); reads++;
+      await c.delay(900);
+      for(var k=0;k<parts.length&&c.alive();k++){
+        var part=parts[k], o=INO[cur], blk=o.b[0], src=ic(o.i), dst=bc(BLK[blk].j);
+        c.narr('<b>'+(k<parts.length-1?'Katalog':'Fayl nomi')+'.</b> Inode #'+cur+' — katalog, mazmuni <b>'+blk+'</b>-blokda. Katalog bloki = "nom → inode raqami" yozuvlari ro\'yxati. Unda "<b>'+part+'</b>" qidiriladi…');
+        c.lit('wBl'); await c.token('blok '+blk,'data',[src,[560,src[1]],[580,dst[1]],dst],800); if(!c.alive()) return;
+        c.cell('bl'+BLK[blk].j,'hi'); c.flash('bl'+BLK[blk].j); reads++; c.text('partT',part); await c.delay(800);
+        var next=BLK[blk].d[part]; var ni=INO[next].i, np=ic(ni);
+        c.step(k+1,'<b>Topildi.</b> "'+part+'" → inode <b>#'+next+'</b>. Endi o\'sha inode o\'qiladi'+(k<parts.length-1?' — u ham katalog, qidiruv davom etadi.':' — bu fayl! Uning inode\'ida ma\'lumot bloklari ro\'yxati bor.'));
+        await c.token('#'+next,'addr',[dst,[580,dst[1]],[560,np[1]],np],800); if(!c.alive()) return;
+        c.cell('in'+ni,'hi'); c.flash('in'+ni); details(next); cur=next; c.text('curT','joriy inode: #'+cur); reads++;
+        await c.delay(900);
+      }
+      if(!c.alive()) return;
+      var f=INO[cur];
+      c.step(4,'<b>Ma\'lumot.</b> Inode #'+cur+' ("'+parts[parts.length-1]+'", '+f.s+') bloklari: '+f.b.join(', ')+'. OS ularni ketma-ket o\'qib, ilovaga faylning mazmunini beradi.');
+      for(var b=0;b<f.b.length&&c.alive();b++){ var bj=BLK[f.b[b]].j, s2=ic(f.i), d2=bc(bj);
+        await c.token('blok '+f.b[b],'data',[s2,[560,s2[1]],[580,d2[1]],d2],700); c.cell('bl'+bj,'hi'); c.flash('bl'+bj); reads++; }
+      if(!c.alive()) return;
+      var txt=f.b.map(function(n){ return BLK[n].x; }).join(' ');
+      c.narr('<b>Ma\'lumot.</b> O\'qildi: <b>'+txt+'</b>');
+      await c.delay(1600); if(!c.alive()) return;
+      c.step(5,'<b>Xulosa.</b> "'+path+'" uchun '+reads+' ta disk o\'qish bo\'ldi (inode → katalog bloki → inode …). Shuning uchun OS inode va katalog bloklarini keshlaydi. Faylni o\'chirish = katalog yozuvi va inode "bo\'sh" deb belgilanadi, bloklar esa ustiga yozilguncha qoladi.');
+    });
+    fig.querySelectorAll('.board-ctl button[data-path]').forEach(function(b){ b.onclick=function(){ path=b.dataset.path; fig.dispatchEvent(new CustomEvent('replay')); }; });
   })();
 })();
 </script>
+<script src="../js/quiz-data.js"></script>
+<script src="../js/quiz.js"></script>
 </body>
 </html>

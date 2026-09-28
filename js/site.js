@@ -38,7 +38,7 @@
   figs.forEach(f => {
     if (io) io.observe(f); else f.classList.add('play');
     const cap = $('figcaption', f);
-    if (cap && f.querySelector('[class*="seq"],[class*="stagger"],.flow,.pulse,.travel,.rise,[data-replay]')) {
+    if (cap && (f.hasAttribute('data-replay') || f.querySelector('[class*="seq"],[class*="stagger"],.flow,.pulse,.travel,.rise,[data-replay]'))) {
       const b = document.createElement('button');
       b.className = 'replay'; b.type = 'button'; b.textContent = '↻ qayta';
       b.onclick = () => { f.classList.remove('play'); void f.offsetWidth; f.classList.add('play'); f.dispatchEvent(new CustomEvent('replay')); };
