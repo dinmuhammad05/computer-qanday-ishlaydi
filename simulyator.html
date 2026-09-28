@@ -3,149 +3,105 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CPU simulyatori · Kompyuter qanday ishlaydi</title>
-<meta name="description" content="Interaktiv mini protsessor: assembler dasturini yozing, mashina kodiga yig'ing va Fetch-Decode-Execute-Store siklini qadam-baqadam kuzating.">
+<title>Mini kompyuter simulyatori · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Assembler dasturini yozing va protsessor uni qanday bajarishini plata ustida, shinalar bo'ylab kuzating: Fetch, Decode, Execute, Store.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="css/style.css">
 <style>
-.sim{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;margin-top:14px;align-items:start}
-@media (max-width:700px){.sim{grid-template-columns:1fr}}
+.wrap.wide{max-width:1120px}
+.sim-top{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;margin-top:14px;align-items:start}
+@media (max-width:760px){.sim-top{grid-template-columns:1fr}}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow);min-width:0}
 .panel h3{margin:0 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.panel h3.mt{margin-top:16px}
-textarea#src{display:block;width:100%;min-height:300px;font-family:var(--mono);font-size:13.5px;line-height:1.55;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);resize:vertical;tab-size:8;white-space:pre;overflow:auto}
+textarea#src{display:block;width:100%;min-height:230px;font-family:var(--mono);font-size:13.5px;line-height:1.55;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);resize:vertical;tab-size:8;white-space:pre;overflow:auto}
 textarea#src:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
 .row label{font-size:14px;color:var(--muted)}
 select{font:inherit;font-size:14px;font-weight:600;font-family:var(--display);padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);max-width:100%}
 .exdesc{font-size:14px;color:var(--muted);margin:0 0 6px}
-.errs{color:var(--copper);font-family:var(--mono);font-size:13px;margin:8px 0;white-space:pre-wrap}
+.errs{color:var(--copper);font-family:var(--mono);font-size:13px;margin:8px 0 0;white-space:pre-wrap}
 .errs:empty{display:none}
-.status{font-family:var(--mono);font-size:13px;color:var(--accent);margin:8px 0;min-height:1.4em}
+.status{font-family:var(--mono);font-size:13px;color:var(--accent);margin:8px 0 0;min-height:1.4em}
 .status.stale{color:var(--copper)}
-.scroll{overflow-x:auto}
-.lst{font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:8px;min-width:100%;width:max-content;max-width:none}
-.lst .tx{white-space:nowrap}
-.lst div{padding:4px 8px;display:flex;gap:8px;border-bottom:1px solid var(--line);align-items:baseline;transition:background .2s}
-.lst div:last-child{border-bottom:0}
-.lst div.pc{background:var(--accent-soft)}
-.lst div::before{content:"";color:var(--accent);flex:none;width:12px}
-.lst div.pc::before{content:"▶"}
-.lst .ad{color:var(--muted);flex:none;width:24px}
-.lst .tx{flex:1 0 auto}
-.lst .mc{flex:none;margin-left:auto}
-.lst .lb{color:var(--copper)}
-.lst .mc{color:var(--muted);font-size:12px;background:none;padding:0;white-space:nowrap}
-.lst div.pc .mc{color:var(--ink)}
-.lst .empty{display:block;color:var(--muted);padding:10px}
-.regs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-family:var(--mono);font-size:13px}
-.regs div{border:1px solid var(--line);border-radius:8px;padding:6px 4px;text-align:center;transition:background .3s;min-width:0}
-.regs div small{display:block;color:var(--muted);font-size:11px}
-.regs div b{font-size:18px;display:block}
-.regs div i{display:block;font-style:normal;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
-.phases{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px;font-family:var(--display);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
-.phases div{border:1px solid var(--line);border-radius:6px;padding:5px 2px;text-align:center;color:var(--muted)}
-.phases div.on{background:var(--accent);border-color:var(--accent);color:var(--surface)}
-.mem{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
-@media (max-width:420px){.mem{grid-template-columns:repeat(4,1fr)}}
-.mem label{display:block;border:1px solid var(--line);border-radius:6px;padding:3px 2px 2px;text-align:center;font-family:var(--mono);font-size:10.5px;color:var(--muted);transition:background .3s;min-width:0;cursor:text}
-.mem input{width:100%;font:inherit;font-family:var(--mono);font-size:13px;text-align:center;border:0;background:transparent;color:var(--ink);padding:1px 0;-moz-appearance:textfield;border-radius:4px}
-.mem input:focus-visible{outline:2px solid var(--accent);outline-offset:0}
-.mem input::-webkit-outer-spin-button,.mem input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.narr{font-family:var(--mono);font-size:13px;margin-top:10px;min-height:3.2em;padding:8px 10px;background:var(--code);border-radius:8px;white-space:pre-wrap;word-break:break-word}
+.ctl{display:grid;gap:10px}
+.ctl .btns{display:flex;flex-wrap:wrap;gap:8px}
+.ctl button{min-width:86px}
+button:disabled{opacity:.45;cursor:default}
+.speed{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);font-family:var(--mono)}
+.speed input{flex:1;max-width:220px}
+.narr{font-family:var(--mono);font-size:13.5px;min-height:4.6em;padding:10px 12px;background:var(--code);border-radius:8px;white-space:pre-wrap;word-break:break-word;line-height:1.5}
 .narr b{color:var(--accent)}
 .narr.err b{color:var(--copper)}
-.con{font-family:var(--mono);font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;min-height:2.6em;margin:0;white-space:pre-wrap;word-break:break-word}
-.con .ph{color:var(--muted)}
-.speed{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-family:var(--mono)}
-.speed input{width:120px}
-.enc{font-family:var(--mono);font-size:13px}
-.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0 16px;font-family:var(--mono);font-size:12.5px}
-.legend div{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--surface)}
-.legend b{display:block;font-family:var(--display);font-size:13px;color:var(--accent);margin-bottom:2px}
+.kbd{font-family:var(--mono);font-size:.9em;background:var(--code);padding:1px 5px;border-radius:4px}
+
+/* ---- plata ---- */
+.board-wrap{margin-top:14px;overflow-x:auto;border-radius:14px;background:#0B1119;border:1px solid #1E2A38;padding:6px}
+.board{min-width:820px;width:100%;height:auto;display:block;font-family:var(--mono);--b-ink:#DDE6F0;--b-mut:#8A9BB0;--b-line:#2B3B4E;--b-box:#121C28;--b-box2:#0F1721;--b-addr:#6EA0F5;--b-data:#3AD08F;--b-ctl:#F28B4B;--b-led:#1C2733;--b-hi:#183A2E}
+.board text{fill:var(--b-ink);font-size:11px}
+.board .mut{fill:var(--b-mut)}
+.board .ttl{font-family:var(--display);font-size:12px;font-weight:600;fill:var(--b-ink);letter-spacing:.04em}
+.board .die{fill:#0E1620;stroke:#2B3B4E;stroke-width:1.5}
+.board .chip{fill:var(--b-box);stroke:var(--b-line);stroke-width:1.2}
+.board .unit{fill:var(--b-box2);stroke:var(--b-line);stroke-width:1}
+.board .unit.on{stroke:var(--b-data);stroke-width:1.6}
+.board .wire{stroke:var(--b-line);stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.board .w-addr{stroke:var(--b-addr)}.board .w-data{stroke:var(--b-data)}.board .w-ctl{stroke:var(--b-ctl);stroke-dasharray:4 4}
+.board .wire.dim{opacity:.35}
+.board .wire.lit{opacity:1;stroke-width:2.6;filter:drop-shadow(0 0 3px currentColor)}
+.board .bus{stroke-width:4;opacity:.45}
+.board .bus.lit{opacity:1}
+.board .led{fill:var(--b-led);stroke:#26333F;stroke-width:1;transition:fill .15s}
+.board .led.on{fill:var(--b-data);stroke:var(--b-data);filter:drop-shadow(0 0 3px var(--b-data))}
+.board .led.warn.on{fill:var(--b-ctl);stroke:var(--b-ctl);filter:drop-shadow(0 0 3px var(--b-ctl))}
+.board .val{font-size:13px;font-weight:600}
+.board .big{font-size:20px;font-weight:600}
+.board .cell{fill:var(--b-box2);stroke:var(--b-line);stroke-width:1;cursor:pointer}
+.board .cell:hover{stroke:var(--b-ink)}
+.board .cell.hi{fill:var(--b-hi);stroke:var(--b-data)}
+.board .cell.flash{animation:cellflash .7s}
+@keyframes cellflash{0%{fill:var(--b-data)}100%{fill:var(--b-box2)}}
+.board .rowhi{fill:var(--b-hi);stroke:var(--b-data);stroke-width:1;opacity:0}
+.board .rowhi.on{opacity:1}
+.board .reg.flash rect{animation:regflash .7s}
+@keyframes regflash{0%{fill:var(--b-data)}100%{fill:var(--b-box2)}}
+.board .irb rect{fill:var(--b-box2);stroke:var(--b-line);stroke-width:1}
+.board .irb text{font-size:11px;font-weight:600;fill:var(--b-mut)}
+.board .irb.op rect{stroke:var(--b-data)}.board .irb.op text{fill:var(--b-data)}
+.board .irb.f1 rect{stroke:var(--b-addr)}.board .irb.f1 text{fill:var(--b-addr)}
+.board .irb.f2 rect{stroke:var(--b-ctl)}.board .irb.f2 text{fill:var(--b-ctl)}
+.board .irb.im rect{stroke:var(--b-ink)}.board .irb.im text{fill:var(--b-ink)}
+.board .irb.off rect{stroke:var(--b-line)}.board .irb.off text{fill:var(--b-mut)}
+.board .screen{fill:#04120B;stroke:#1E3A2C;stroke-width:1.5}
+.board .scr{fill:#5CF0A6;font-size:15px;font-weight:600}
+.board .scr.dim{fill:#2B6A4B}
+.board .alu{fill:var(--b-box2);stroke:var(--b-line);stroke-width:1.2}
+.board .alu.on{stroke:var(--b-data);stroke-width:1.8}
+.board .tok rect{rx:4;stroke-width:1}
+.board .tok text{font-size:11px;font-weight:600;fill:#08110B}
+.board .tok.addr rect{fill:var(--b-addr);stroke:var(--b-addr)}
+.board .tok.data rect{fill:var(--b-data);stroke:var(--b-data)}
+.board .tok.ctl rect{fill:var(--b-ctl);stroke:var(--b-ctl)}
+.board .grid{stroke:#162232;stroke-width:.5}
+.board .phase text{font-size:10px;letter-spacing:.06em}
+.board .clk.on{animation:clk .5s steps(2) infinite}
+@keyframes clk{to{fill:var(--b-led)}}
+.ram-edit{display:none;gap:8px;align-items:center;font-family:var(--mono);font-size:13px;margin-top:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--accent);border-radius:8px}
+.ram-edit.on{display:flex;flex-wrap:wrap}
+.ram-edit input{width:80px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:22px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--c)}
 .tasks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
 .tasks .card p{font-size:14.5px}
 .tasks details{font-size:14px;color:var(--muted)}
 .tasks summary{cursor:pointer;color:var(--accent);font-weight:600}
-.tasks pre{font-size:12.5px;margin:8px 0 0}
-.kbd{font-family:var(--mono);font-size:.9em;background:var(--code);padding:1px 5px;border-radius:4px}
-/* --- Tanishuv bo'limi --- */
-.tour-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;align-items:start}
-@media (max-width:640px){.tour-grid{grid-template-columns:1fr}}
-.tour .part{cursor:pointer}
-.tour .part:focus-visible{outline:none}
-.tour .halo{fill:transparent;stroke:transparent;stroke-width:2;stroke-dasharray:6 5;transition:stroke .3s}
-.tour .part.on .halo{stroke:var(--accent);animation:dash 1.2s linear infinite}
-.tour .part:hover .halo{stroke:var(--line)}
-.tour .part.on .box{stroke:var(--accent);fill:var(--accent-soft)}
-.tour .part.on .lbl{fill:var(--accent)}
-.tour .val{fill:var(--ink);font-weight:600;font-size:13px}
-.tour .val.big{font-size:17px}
-.tour .pcnum text{fill:var(--muted);font-weight:400;font-size:10px}
-.tour .pcnum text:nth-child(2){fill:var(--accent);font-weight:600}
-.tour .screen{fill:var(--code)}
-.tour .part.on .screen{fill:var(--accent-soft)}
-.tour .cells rect{fill:var(--surface);stroke:var(--line);stroke-width:1}
-.tour .cells text{font-size:9px}
-.tour .cells .v{fill:var(--ink);font-weight:600;font-size:11px}
-.tour .part.on .cells rect{stroke:var(--accent)}
-.tour-card{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 10px 10px 0;min-height:200px;animation:rise .4s both}
-.tour-card h3{margin:2px 0 6px;font-size:17px}
-.tour-card p{font-size:14.5px;margin-bottom:8px}
-.tour-hint{font-size:13.5px;color:var(--muted);margin:0}
-.tour-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
-.tour-tabs button{font-size:13px;padding:5px 12px;border-radius:999px}
-.tour-tabs button.on{background:var(--accent);border-color:var(--accent);color:var(--surface)}
-/* --- Oilalar --- */
-.fam-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
-.fam{border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:12px;padding:14px;background:var(--surface);box-shadow:var(--shadow);display:flex;flex-direction:column}
-.fam.blue{border-top-color:var(--blue)}.fam.copper{border-top-color:var(--copper)}.fam.ink{border-top-color:var(--ink)}
-.fam-head{display:flex;align-items:center;gap:10px}
-.fam-head b{font-family:var(--display);font-size:17px;display:block}
-.fam-head small{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.04em}
-.glyph{flex:none;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:19px;background:var(--accent-soft);color:var(--accent)}
-.fam.blue .glyph{background:var(--blue-soft);color:var(--blue)}
-.fam.copper .glyph{background:var(--copper-soft);color:var(--copper)}
-.fam.ink .glyph{background:var(--code);color:var(--ink)}
-.fam p{font-size:14px;margin:10px 0 8px;color:var(--muted)}
-.fam ul{list-style:none;padding:0;margin:0 0 10px;display:grid;gap:4px;font-size:13px;flex:1}
-.fam li{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.fam li span{color:var(--muted);text-align:right;font-family:var(--mono);font-size:12px}
-.fam button{align-self:flex-start}
-/* --- Flaglar --- */
-.flag-ctl{font-family:var(--mono);font-size:15px}
-.flag-ctl input{width:70px}
-.flag-view{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin-top:6px}
-@media (max-width:560px){.flag-view{grid-template-columns:1fr}}
-.flag-calc{font-family:var(--mono);font-size:14px;line-height:1.7;background:var(--code);border-radius:8px;padding:10px 12px;min-height:3.4em}
-.flag-calc b{color:var(--accent)}
-.lamps{display:flex;gap:12px}
-.lampbox{text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
-.lampbox i{display:block;width:44px;height:44px;border-radius:50%;background:var(--line);margin:0 auto 4px;transition:background .3s,box-shadow .3s}
-.lampbox.on i{background:var(--copper);box-shadow:0 0 0 6px var(--copper-soft)}
-.lampbox b{display:block;font-size:15px;color:var(--ink)}
-.jumps{grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-@media (max-width:480px){.jumps{grid-template-columns:repeat(2,1fr)}}
-.jump{border:1px solid var(--line);border-radius:8px;padding:8px 6px;text-align:center;font-family:var(--mono);font-size:12.5px;transition:all .3s}
-.jump b{display:block;font-size:15px;font-family:var(--display)}
-.jump small{display:block;color:var(--muted);font-size:11px}
-.jump.go{background:var(--accent-soft);border-color:var(--accent)}
-.jump.go b{color:var(--accent)}
-.jump.no{opacity:.45}
-/* --- Kodlovchi --- */
-.enc-in{width:200px!important}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chips button{font-family:var(--mono);font-weight:400;font-size:12px;padding:4px 9px;border-radius:999px}
-.bitrow{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 26px}
-.bitg{display:flex;gap:3px;padding:4px;border-radius:8px;position:relative;background:var(--code)}
-.bitg.op{background:var(--accent-soft)}.bitg.f1{background:var(--blue-soft)}.bitg.f2{background:var(--copper-soft)}
-.bitg small{position:absolute;left:4px;top:100%;margin-top:3px;font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
-.bit-cell{width:22px;height:30px;border-radius:5px;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:13px;background:var(--surface);border:1px solid var(--line);animation:rise .4s both;animation-delay:calc(var(--i) * .04s)}
-.bitg.op .bit-cell{color:var(--accent)}.bitg.f1 .bit-cell{color:var(--blue)}.bitg.f2 .bit-cell{color:var(--copper)}
-@media (max-width:480px){.bit-cell{width:16px;height:26px;font-size:11px}.bitg{gap:2px;padding:3px}}
+.enc{font-family:var(--mono);font-size:13px}
 .isa-table{margin-top:24px;border:1px solid var(--line);border-radius:12px;padding:12px 16px;background:var(--surface)}
 .isa-table summary{cursor:pointer;font-family:var(--display);font-weight:600;color:var(--accent)}
 .isa-table[open] summary{margin-bottom:8px}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
+.parts div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.parts b{font-family:var(--display);display:block;margin-bottom:2px}
+@media (prefers-reduced-motion:reduce){.board .tok{display:none}}
 </style>
 </head>
 <body>
@@ -155,221 +111,219 @@ select{font:inherit;font-size:14px;font-weight:600;font-family:var(--display);pa
   <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
 </div></header>
 
-<main class="wrap">
+<main class="wrap wide">
 <div class="chapter-head">
   <div class="eyebrow">Amaliyot</div>
-  <h1>Mini CPU simulyatori</h1>
-  <p class="lede">Assembler dasturini yozing, uni mashina kodiga "yig'ing" va protsessor uni qanday bajarishini bosqichma-bosqich kuzating.</p>
+  <h1>Mini kompyuter simulyatori</h1>
+  <p class="lede">Plata ustida haqiqiy tizim: 8 bitli protsessor, dastur xotirasi, RAM va ekran. Assembler yozing, "Qadam" bosing va har bir sonning qaysi shina bo'ylab qayerga borishini ko'ring.</p>
 </div>
 
-<p>Bu simulyator darslikning uchta g'oyasini bitta joyda ko'rsatadi: <a href="bob/07.html">7-bobdagi</a> <strong>Fetch-Decode-Execute-Store</strong> sikli (har bir buyruq to'rt bosqichda bajariladi), <a href="bob/06.html#6-4">6.4-bo'limdagi</a> <strong>ISA</strong> g'oyasi (protsessor tushunadigan buyruqlar to'plami — dastur va apparat o'rtasidagi shartnoma) va <a href="bob/12.html">12-bobdagi</a> <strong>mashina kodi</strong> (har bir buyruq aslida <code>0001 1000 0010 0101</code> kabi bitlar ketma-ketligi). Protsessor ataylab juda kichik qilingan: 4 ta registr, 16 ta xotira katagi, 15 ta buyruq (pastdagi <a href="#isa">tanishuv bo'limi</a>da har biri tushuntirilgan) — lekin unda sikl, shart va massiv bilan ishlaydigan haqiqiy dasturlar yoziladi.</p>
+<p>Bu 7-bobdagi <a href="bob/07.html">Fetch-Decode-Execute sikli</a>, 6.4-bo'limdagi <a href="bob/06.html#6-4">ISA</a> va 12-bobdagi <a href="bob/12.html">mashina kodi</a> bitta jonli sxemada. Ko'k shina manzilni tashiydi, yashil shina ma'lumotni, mis rangli boshqaruv liniyalari esa "nima qilish kerak" signalini. Xotira kataklarini bosib, sonni o'zingiz yozishingiz mumkin.</p>
 
-<div class="callout blue"><b>Qanday ishlatish:</b> chapda dastur matni turadi. "Yig'ish" tugmasi uni mashina kodiga aylantiradi (xato bo'lsa — qator raqami bilan ko'rsatadi). O'ngda "Qadam" bitta bosqichni (Fetch, Decode, Execute yoki Store), "Buyruq" to'liq bitta buyruqni bajaradi, "Avto" esa dasturni tanlangan tezlikda yuritadi. Xotira kataklarini bosib, qiymatini o'zgartirish mumkin.</div>
-
-<div class="sim">
+<div class="sim-top">
   <section class="panel" aria-label="Dastur va yig'uvchi">
     <h3>Dastur (assembler)</h3>
-    <div class="row">
-      <label for="exSel">Misollar:</label>
-      <select id="exSel" aria-label="Tayyor misolni tanlash"></select>
-    </div>
+    <div class="row"><label for="exSel">Misollar:</label><select id="exSel"></select></div>
     <p class="exdesc" id="exDesc"></p>
-    <textarea id="src" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Assembler dastur matni"></textarea>
-    <div class="row">
-      <button id="asmBtn" class="primary" type="button">Yig'ish (assemble)</button>
-      <span class="small muted">Ctrl+Enter ham yig'adi</span>
-    </div>
-    <div class="errs" id="errs" role="alert"></div>
+    <textarea id="src" spellcheck="false" aria-label="Assembler dasturi"></textarea>
+    <div class="row"><button type="button" class="primary" id="asmBtn">Yig'ish (assemble)</button><span class="small muted"><span class="kbd">Ctrl+Enter</span> ham yig'adi</span></div>
+    <div class="errs" id="errs"></div>
     <div class="status" id="status"></div>
-    <h3 class="mt">Mashina kodi (listing)</h3>
-    <div class="scroll"><div class="lst" id="lst" aria-live="off"><span class="empty">Dasturni yig'ing — bu yerda manzil, buyruq va uning bitlari chiqadi.</span></div></div>
-    <p class="small muted" style="margin-top:8px">Format: <span class="enc">oooo rrss nnnn nnnn</span> — 4 bit opkod, 2 bit birinchi registr, 2 bit ikkinchi registr, 8 bit son yoki manzil.</p>
   </section>
-
-  <section class="panel" aria-label="Protsessor holati">
-    <h3>Protsessor</h3>
-    <div class="row">
-      <button id="stepBtn" class="primary" type="button">Qadam</button>
-      <button id="instrBtn" type="button">Buyruq</button>
-      <button id="autoBtn" type="button">Avto</button>
-      <button id="stopBtn" type="button">To'xtat</button>
-      <button id="resetBtn" type="button">Qayta</button>
-    </div>
-    <div class="row"><div class="speed"><label for="speed">Tezlik:</label><input type="range" id="speed" min="1" max="20" value="4" aria-label="Tezlik, sekundiga buyruq"><span id="speedVal">4 buyruq/s</span></div></div>
-    <div class="phases"><div id="ph0">Fetch</div><div id="ph1">Decode</div><div id="ph2">Execute</div><div id="ph3">Store</div></div>
-    <div class="narr" id="narr" aria-live="polite">Dasturni yig'ing va "Qadam" tugmasini bosing.</div>
-    <h3 class="mt">Registrlar</h3>
-    <div class="regs" id="regs">
-      <div><small>R0</small><b id="rR0">0</b><i id="bR0">00000000</i></div>
-      <div><small>R1</small><b id="rR1">0</b><i id="bR1">00000000</i></div>
-      <div><small>R2</small><b id="rR2">0</b><i id="bR2">00000000</i></div>
-      <div><small>R3</small><b id="rR3">0</b><i id="bR3">00000000</i></div>
-      <div><small>PC</small><b id="rPC">0</b><i>keyingi buyruq</i></div>
-      <div><small>Flags</small><b id="rFL">Z=0 N=0</b><i>nol / manfiy</i></div>
-    </div>
-    <div class="row" style="justify-content:space-between;margin-bottom:4px"><h3 style="margin:0">Xotira (16 katak, 8 bit)</h3><button id="memClr" type="button" class="small" style="font-size:12px;padding:3px 10px">Tozalash</button></div>
-    <div class="mem" id="mem"></div>
-    <h3 class="mt">OUT (chiqish)</h3>
-    <pre class="con" id="con"><span class="ph">— hali hech narsa chiqmadi —</span></pre>
+  <section class="panel ctl" aria-label="Boshqaruv">
+    <h3>Boshqaruv pulti</h3>
+    <div class="btns"><button type="button" class="primary" id="stepBtn">Qadam</button><button type="button" id="instrBtn">Buyruq</button><button type="button" id="autoBtn">Avto</button><button type="button" id="stopBtn">To'xtat</button><button type="button" id="resetBtn">Qayta</button></div>
+    <div class="speed"><label for="speed">Tezlik</label><input type="range" id="speed" min="1" max="10" value="3"><span id="speedVal">3</span><span class="muted">(10 = animatsiyasiz)</span></div>
+    <div class="narr" id="narr">Dasturni yig'ing va "Qadam" tugmasini bosing.</div>
+    <div class="small muted">Qadam = bitta bosqich (Fetch, Decode, Execute yoki Store). Buyruq = to'rttasi ketma-ket. Avto = dastur oxirigacha.</div>
   </section>
 </div>
 
-<h2 id="isa">Protsessor bilan tanishing</h2>
-<p>Simulyator protsessori ataylab kichik: 4 ta cho'ntak, bitta barmoq, ikkita chiroq va 16 ta tokcha. Sxemadagi qismlarni bosing, har biri o'zini tanishtiradi.</p>
+<div class="board-wrap">
+<svg class="board" id="board" viewBox="0 0 1000 640" role="img" aria-label="Mini kompyuter platasi: protsessor, dastur xotirasi, RAM va ekran">
+  <defs>
+    <pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern>
+  </defs>
+  <rect x="0" y="0" width="1000" height="640" fill="url(#g)"/>
 
-<figure class="fig" id="cpuTour">
-  <div class="tour-grid">
-    <svg class="sv tour" viewBox="0 0 560 300" role="img" aria-label="Mini protsessor sxemasi: registrlar, ALU, PC, flaglar, xotira va chiqish">
-      <rect x="20" y="20" width="330" height="262" rx="14" class="box soft"/>
-      <text x="36" y="42" class="ttl">Protsessor (CPU)</text>
-      <g class="part" data-part="reg" tabindex="0" role="button" aria-label="Registrlar">
-        <rect x="34" y="52" width="150" height="112" rx="10" class="halo"/>
-        <text x="40" y="66" class="lbl">Registrlar</text>
-        <rect x="40" y="72" width="66" height="40" rx="7" class="box"/><text x="73" y="89" text-anchor="middle" class="lbl">R0</text><text x="73" y="104" text-anchor="middle" class="val">5</text>
-        <rect x="112" y="72" width="66" height="40" rx="7" class="box"/><text x="145" y="89" text-anchor="middle" class="lbl">R1</text><text x="145" y="104" text-anchor="middle" class="val">7</text>
-        <rect x="40" y="118" width="66" height="40" rx="7" class="box"/><text x="73" y="135" text-anchor="middle" class="lbl">R2</text><text x="73" y="150" text-anchor="middle" class="val">0</text>
-        <rect x="112" y="118" width="66" height="40" rx="7" class="box"/><text x="145" y="135" text-anchor="middle" class="lbl">R3</text><text x="145" y="150" text-anchor="middle" class="val">0</text>
-      </g>
-      <g class="part" data-part="alu" tabindex="0" role="button" aria-label="ALU">
-        <rect x="200" y="52" width="136" height="112" rx="10" class="halo"/>
-        <text x="206" y="66" class="lbl">ALU</text>
-        <polygon points="212,78 324,78 306,152 230,152" class="box"/>
-        <text x="268" y="106" text-anchor="middle" class="val big">+ − ?</text>
-        <text x="268" y="132" text-anchor="middle">hisob va taqqoslash</text>
-      </g>
-      <g class="part" data-part="pc" tabindex="0" role="button" aria-label="PC">
-        <rect x="34" y="176" width="150" height="96" rx="10" class="halo"/>
-        <text x="40" y="190" class="lbl">PC (barmoq)</text>
-        <rect x="40" y="198" width="138" height="60" rx="7" class="box"/>
-        <text x="60" y="224" class="val big">→ 3</text>
-        <text x="60" y="246">keyingi buyruq</text>
-        <g class="pcnum"><text x="130" y="218" text-anchor="middle" class="val">2</text><text x="130" y="232" text-anchor="middle" class="val">3</text><text x="130" y="246" text-anchor="middle" class="val">4</text></g>
-      </g>
-      <g class="part" data-part="flags" tabindex="0" role="button" aria-label="Flaglar">
-        <rect x="200" y="176" width="136" height="96" rx="10" class="halo"/>
-        <text x="206" y="190" class="lbl">Flaglar (chiroqlar)</text>
-        <rect x="212" y="198" width="112" height="60" rx="7" class="box"/>
-        <circle cx="240" cy="222" r="11" class="lamp flagZ"/><text x="240" y="248" text-anchor="middle" class="lbl">Z</text>
-        <circle cx="296" cy="222" r="11" class="lamp flagN on"/><text x="296" y="248" text-anchor="middle" class="lbl">N</text>
-      </g>
-      <path class="wire" d="M350 120 H 380"/><path class="flow" d="M350 120 H 380"/>
-      <path class="wire" d="M350 250 H 380"/><path class="flow copper" d="M380 250 H 350"/>
-      <g class="part" data-part="mem" tabindex="0" role="button" aria-label="Xotira">
-        <rect x="380" y="34" width="166" height="176" rx="10" class="halo"/>
-        <text x="386" y="48" class="lbl">Xotira (tokchalar)</text>
-        <g class="cells" id="tourCells"></g>
-      </g>
-      <g class="part" data-part="out" tabindex="0" role="button" aria-label="Chiqish">
-        <rect x="380" y="220" width="166" height="62" rx="10" class="halo"/>
-        <text x="386" y="234" class="lbl">OUT (ekran)</text>
-        <rect x="386" y="240" width="154" height="36" rx="6" class="box screen"/>
-        <text x="396" y="263" class="val big screen-txt">▸ 12</text>
-      </g>
-    </svg>
-    <div class="tour-card" id="tourCard">
-      <div class="eyebrow" id="tourEyebrow">Registrlar R0–R3</div>
-      <h3 id="tourTitle">Protsessorning to'rtta cho'ntagi</h3>
-      <p id="tourText">Har cho'ntakka 0 dan 255 gacha bitta son sig'adi. Protsessor faqat cho'ntagidagi sonlar bilan hisoblaydi: qo'shish, ayirish, solishtirish. Xotiradagi son bilan to'g'ridan-to'g'ri hisoblab bo'lmaydi, avval cho'ntakka olib kelinadi.</p>
-      <p class="tour-hint" id="tourHint"><code>MOV R0, 5</code> — R0 cho'ntagiga 5 ni sol</p>
-    </div>
-  </div>
-  <div class="tour-tabs" id="tourTabs">
-    <button type="button" data-part="reg" class="on">Registrlar</button>
-    <button type="button" data-part="alu">ALU</button>
-    <button type="button" data-part="pc">PC</button>
-    <button type="button" data-part="flags">Flaglar</button>
-    <button type="button" data-part="mem">Xotira</button>
-    <button type="button" data-part="out">OUT</button>
-  </div>
-  <figcaption><span><b>Mini protsessor.</b> 6-bobdagi haqiqiy CPU'ning kichraytirilgan nusxasi: registrlar 64 emas 8 bitli, buyruqlar yuzlab emas 15 ta, lekin tuzilishi bir xil.</span></figcaption>
-</figure>
+  <!-- CPU die -->
+  <rect x="20" y="20" width="610" height="600" rx="16" class="die"/>
+  <text x="36" y="44" class="ttl">CPU · 8 bit · 4 registr</text>
+  <text x="600" y="44" text-anchor="end" class="mut" id="clkTxt">takt 0</text>
 
-<div class="callout"><b>8 bit degani:</b> har registr va xotira katagi 0..255 oralig'ida. Natija chegaradan chiqsa, u "aylanadi", xuddi 12 dan keyin yana 1 ko'rsatadigan soat kabi: 250 + 10 = 260 → <b>4</b>, 3 − 5 = −2 → <b>254</b>. <code>MOV R0, -1</code> yozsangiz ham u 255 sifatida saqlanadi.</div>
+  <!-- internal wires -->
+  <g id="wires">
+    <line x1="40" y1="400" x2="630" y2="400" class="wire w-data bus" id="ibus"/>
+    <text x="44" y="416" class="mut">ichki ma'lumot shinasi</text>
+    <path class="wire w-data" id="wRegBus" d="M285 210 V 400"/>
+    <path class="wire w-data" id="wAluA" d="M285 200 H 350 V 215"/>
+    <path class="wire w-data" id="wAluB" d="M285 200 H 440 V 215"/>
+    <path class="wire w-data" id="wImmB" d="M560 160 V 178 H 440 V 215"/>
+    <path class="wire w-data" id="wAluOut" d="M395 330 V 400"/>
+    <path class="wire w-data" id="wPcBus" d="M555 350 V 400"/>
+    <path class="wire w-data" id="wIrOut" d="M600 150 H 620 V 400"/>
+    <path class="wire w-addr" id="wPcOut" d="M610 312 H 650"/>
+    <path class="wire w-addr" id="wIrAddr" d="M620 150 H 650"/>
+    <path class="wire w-data" id="wIrIn" d="M610 95 H 668"/>
+    <path class="wire w-data" id="wBusOut" d="M630 400 H 668"/>
+    <path class="wire w-ctl" id="wFlagCu" d="M555 190 V 175 H 330 V 160"/>
+    <path class="wire w-ctl" id="wCtlTrunk" d="M330 175 H 686 V 480 H 700"/>
+    <path class="wire w-ctl" id="wCtlAlu" d="M395 175 V 188"/>
+    <path class="wire w-ctl" id="wCtlReg" d="M150 160 V 180"/>
+    <!-- external buses -->
+    <path class="wire w-addr bus" id="addrTrunk" d="M650 100 V 420"/>
+    <path class="wire w-addr" d="M650 100 H 700 M650 420 H 700"/>
+    <path class="wire w-data bus" id="dataTrunk" d="M668 95 V 580"/>
+    <path class="wire w-data" d="M668 130 H 700 M668 450 H 700 M668 580 H 700"/>
+  </g>
 
-<h2 id="oilalar">Buyruqlar: 5 ta oila</h2>
-<p>Protsessor 15 ta buyruq biladi, lekin ular atigi 5 oilaga bo'linadi. Har kartadagi "Sinab ko'r" tugmasi tayyor kichik dasturni simulyatorga yuklaydi.</p>
-<div class="fam-grid">
-  <div class="fam blue">
-    <div class="fam-head"><span class="glyph">⇄</span><div><b>Ko'chirish</b><small>MOV</small></div></div>
-    <p>Sonni cho'ntakka solish yoki tokchaga qo'yish. Hech narsa hisoblamaydi, faqat tashiydi. Hamma dastur shundan boshlanadi.</p>
-    <ul>
-      <li><code>MOV R0, 5</code><span>R0 ← 5</span></li>
-      <li><code>MOV R1, R0</code><span>R1 ← R0 (nusxa)</span></li>
-      <li><code>MOV R0, [3]</code><span>R0 ← xotira[3]</span></li>
-      <li><code>MOV [3], R0</code><span>xotira[3] ← R0</span></li>
-      <li><code>MOV R0, [R1]</code><span>manzil R1 ichida</span></li>
-    </ul>
-    <button type="button" data-try="0">Sinab ko'r ▶</button>
-  </div>
-  <div class="fam">
-    <div class="fam-head"><span class="glyph">+−</span><div><b>Arifmetika</b><small>ADD · SUB · INC · DEC</small></div></div>
-    <p>Kalkulyatorning + va − tugmalari. Natija birinchi registrga yoziladi, Z va N chiroqlari yangilanadi. INC va DEC bu "1 qo'sh" va "1 ayir".</p>
-    <ul>
-      <li><code>ADD R0, R1</code><span>R0 ← R0 + R1</span></li>
-      <li><code>ADD R0, 10</code><span>R0 ← R0 + 10</span></li>
-      <li><code>SUB R0, R1</code><span>R0 ← R0 − R1</span></li>
-      <li><code>INC R0</code> / <code>DEC R0</code><span>R0 ± 1</span></li>
-    </ul>
-    <button type="button" data-try="1">Sinab ko'r ▶</button>
-  </div>
-  <div class="fam copper">
-    <div class="fam-head"><span class="glyph">?</span><div><b>Taqqoslash</b><small>CMP</small></div></div>
-    <p>Ayirib ko'radi-yu, natijani tashlab yuboradi. Faqat ikkita chiroqni qoldiradi: Z (teng chiqdimi?) va N (birinchisi kichikmi?). Keyingi sakrash shu chiroqlarga qaraydi.</p>
-    <ul>
-      <li><code>CMP R0, R1</code><span>R0 − R1 → Z, N</span></li>
-      <li><code>CMP R0, 10</code><span>R0 − 10 → Z, N</span></li>
-    </ul>
-    <button type="button" data-try="2">Sinab ko'r ▶</button>
-  </div>
-  <div class="fam ink">
-    <div class="fam-head"><span class="glyph">↷</span><div><b>Sakrash</b><small>JMP · JE · JNE · JL · JG</small></div></div>
-    <p>PC barmog'ini boshqa qatorga ko'chiradi. Shartlilari faqat chiroq yonganda sakraydi. <code>if</code> va <code>for</code> aynan shundan yasaladi.</p>
-    <ul>
-      <li><code>JMP nom</code><span>har doim</span></li>
-      <li><code>JE nom</code> / <code>JNE nom</code><span>teng / teng emas</span></li>
-      <li><code>JL nom</code> / <code>JG nom</code><span>kichik / katta</span></li>
-    </ul>
-    <button type="button" data-try="3">Sinab ko'r ▶</button>
-  </div>
-  <div class="fam">
-    <div class="fam-head"><span class="glyph">▸</span><div><b>Chiqish va to'xtash</b><small>OUT · HALT</small></div></div>
-    <p>OUT registrdagi sonni ekranga chiqaradi. HALT "bo'ldi" deydi. HALT'siz protsessor dastur oxiridan o'tib, bo'sh xotiraga yugurib ketadi.</p>
-    <ul>
-      <li><code>OUT R0</code><span>ekranga R0</span></li>
-      <li><code>HALT</code><span>to'xta</span></li>
-    </ul>
-    <button type="button" data-try="4">Sinab ko'r ▶</button>
-  </div>
+  <!-- Control unit -->
+  <g id="cu">
+    <rect x="40" y="60" width="300" height="100" rx="8" class="unit"/>
+    <text x="52" y="78" class="ttl">Boshqaruv qurilmasi (CU)</text>
+    <g class="phase">
+      <circle cx="62" cy="96" r="6" class="led" id="ph0"/><text x="74" y="100">FETCH</text>
+      <circle cx="132" cy="96" r="6" class="led" id="ph1"/><text x="144" y="100">DECODE</text>
+      <circle cx="210" cy="96" r="6" class="led" id="ph2"/><text x="222" y="100">EXECUTE</text>
+      <circle cx="286" cy="96" r="6" class="led" id="ph3"/><text x="298" y="100">STORE</text>
+    </g>
+    <text x="52" y="124" id="cuL1" class="val">—</text>
+    <text x="52" y="144" id="cuL2" class="mut">buyruq kutilmoqda</text>
+  </g>
+
+  <!-- Instruction register -->
+  <g id="ir">
+    <rect x="360" y="60" width="250" height="100" rx="8" class="unit"/>
+    <text x="372" y="78" class="ttl">IR — buyruq registri</text>
+    <g id="irBits"></g>
+    <text x="372" y="127" class="mut" style="font-size:9px">opkod</text>
+    <text x="437" y="127" class="mut" style="font-size:9px">Rd</text>
+    <text x="471" y="127" class="mut" style="font-size:9px">Rs</text>
+    <text x="505" y="127" class="mut" style="font-size:9px">son / manzil</text>
+    <text x="372" y="150" id="irTxt" class="val">—</text>
+  </g>
+
+  <!-- Registers -->
+  <g id="regs">
+    <rect x="40" y="180" width="230" height="190" rx="8" class="unit"/>
+    <text x="52" y="198" class="ttl">Registrlar</text>
+    <g id="regRows"></g>
+  </g>
+
+  <!-- ALU -->
+  <g id="aluG">
+    <text x="395" y="188" text-anchor="middle" class="ttl">ALU</text>
+    <polygon points="310,215 480,215 445,330 345,330" class="alu" id="alu"/>
+    <text x="350" y="232" text-anchor="middle" class="mut">A</text>
+    <text x="440" y="232" text-anchor="middle" class="mut">B</text>
+    <text x="350" y="252" text-anchor="middle" class="val" id="aluA"></text>
+    <text x="440" y="252" text-anchor="middle" class="val" id="aluB"></text>
+    <text x="395" y="282" text-anchor="middle" class="big" id="aluOp"></text>
+    <text x="395" y="312" text-anchor="middle" class="val" id="aluRes"></text>
+  </g>
+
+  <!-- Flags -->
+  <g id="flags">
+    <rect x="500" y="190" width="110" height="70" rx="8" class="unit"/>
+    <text x="512" y="208" class="ttl">Flaglar</text>
+    <circle cx="535" cy="234" r="9" class="led warn" id="ledZ"/><text x="535" y="255" text-anchor="middle">Z</text>
+    <circle cx="580" cy="234" r="9" class="led warn" id="ledN"/><text x="580" y="255" text-anchor="middle">N</text>
+  </g>
+
+  <!-- PC -->
+  <g id="pcG">
+    <rect x="500" y="275" width="110" height="75" rx="8" class="unit"/>
+    <text x="512" y="293" class="ttl">PC</text>
+    <text x="555" y="326" text-anchor="middle" class="big" id="pcVal">0</text>
+    <text x="555" y="343" text-anchor="middle" class="mut" style="font-size:9px">keyingi buyruq</text>
+  </g>
+
+  <!-- Clock and stats -->
+  <g id="clkG">
+    <rect x="40" y="440" width="170" height="80" rx="8" class="unit"/>
+    <text x="52" y="458" class="ttl">Takt generatori</text>
+    <circle cx="66" cy="490" r="9" class="led" id="clkLed"/>
+    <text x="84" y="486" id="clkMode">to'xtagan</text>
+    <text x="84" y="504" class="mut" id="clkRate">tezlik: 3</text>
+  </g>
+  <g id="statG">
+    <rect x="230" y="440" width="180" height="80" rx="8" class="unit"/>
+    <text x="242" y="458" class="ttl">Hisobchi</text>
+    <text x="242" y="484" class="mut">buyruqlar: <tspan class="val" id="stIns" style="fill:var(--b-ink)">0</tspan></text>
+    <text x="242" y="504" class="mut">holat: <tspan id="stState" style="fill:var(--b-ink)">tayyor</tspan></text>
+  </g>
+  <g id="legG">
+    <rect x="430" y="440" width="180" height="80" rx="8" class="unit"/>
+    <text x="442" y="458" class="ttl">Shinalar</text>
+    <line x1="442" y1="476" x2="466" y2="476" class="wire w-addr" style="opacity:1"/><text x="474" y="480">manzil (qayerga?)</text>
+    <line x1="442" y1="494" x2="466" y2="494" class="wire w-data" style="opacity:1"/><text x="474" y="498">ma'lumot (nima?)</text>
+    <line x1="442" y1="512" x2="466" y2="512" class="wire w-ctl" style="opacity:1"/><text x="474" y="516">boshqaruv (o'qi/yoz)</text>
+  </g>
+  <text x="36" y="600" class="mut" style="font-size:10px">Bitta buyruq = 4 takt: FETCH → DECODE → EXECUTE → STORE. Haqiqiy protsessorda sekundiga milliardlab.</text>
+
+  <!-- ROM -->
+  <g id="romG">
+    <rect x="700" y="40" width="280" height="300" rx="10" class="chip"/>
+    <text x="712" y="62" class="ttl">Dastur xotirasi (ROM)</text>
+    <text x="704" y="96" class="mut" style="font-size:8px">manzil</text>
+    <text x="704" y="126" class="mut" style="font-size:8px">ma'lumot</text>
+    <text x="968" y="80" text-anchor="end" class="mut" id="romInfo">bo'sh</text>
+    <g id="romRows"></g>
+  </g>
+
+  <!-- RAM -->
+  <g id="ramG">
+    <rect x="700" y="360" width="280" height="150" rx="10" class="chip"/>
+    <text x="712" y="382" class="ttl">Ma'lumot xotirasi (RAM)</text>
+    <text x="968" y="505" text-anchor="end" class="mut" style="font-size:9px">16 × 8 bit · katakni bosib qiymatni o'zgartiring</text>
+    <text x="704" y="416" class="mut" style="font-size:8px">manzil</text>
+    <text x="704" y="446" class="mut" style="font-size:8px">ma'lumot</text>
+    <text x="704" y="476" class="mut" style="font-size:8px" id="ramRW">RD/WR</text>
+    <g id="ramCells"></g>
+  </g>
+
+  <!-- OUT -->
+  <g id="outG">
+    <rect x="700" y="540" width="280" height="80" rx="10" class="chip"/>
+    <text x="712" y="558" class="ttl">Chiqish qurilmasi (ekran)</text>
+    <rect x="712" y="566" width="256" height="44" rx="4" class="screen"/>
+    <text x="722" y="594" class="scr dim" id="scr">▸ _</text>
+  </g>
+
+  <g id="tokens"></g>
+</svg>
+</div>
+<div class="ram-edit" id="ramEdit"><span>Xotira <b id="reAddr">[0]</b> =</span><input type="number" id="reVal" min="0" max="255" value="0" aria-label="Qiymat"><button type="button" class="primary" id="reOk">Yozish</button><button type="button" id="reCancel">Bekor</button><span class="muted">0..255</span></div>
+<div class="legend"><span style="--c:#6EA0F5">manzil shinasi</span><span style="--c:#3AD08F">ma'lumot shinasi</span><span style="--c:#F28B4B">boshqaruv liniyasi</span><span class="small">Telefonda platani yonga surib ko'ring.</span></div>
+
+<h2 id="qismlar">Platadagi qismlar</h2>
+<div class="parts">
+  <div><b>CU — boshqaruv qurilmasi</b>IR dagi bitlarni o'qib, qaysi blokka qanday signal berishni hal qiladi. To'rtta LED hozirgi bosqichni ko'rsatadi.</div>
+  <div><b>IR — buyruq registri</b>Xotiradan olingan 16 bitli buyruq shu yerda turadi: opkod, registr raqamlari, son yoki manzil.</div>
+  <div><b>Registrlar R0–R3</b>Protsessorning eng tez xotirasi. Har birida 8 ta bit-LED va o'nlik qiymat. ALU faqat shular bilan ishlaydi.</div>
+  <div><b>ALU</b>Qo'shadi, ayiradi, taqqoslaydi. A va B kirishlariga sonlar keladi, pastdan natija chiqadi, Z va N flaglar yonadi.</div>
+  <div><b>PC — buyruq hisoblagichi</b>Keyingi buyruqning ROM dagi manzili. Har buyruqdan keyin +1, sakrashda esa yangi manzil.</div>
+  <div><b>ROM va RAM</b>ROM da dastur (o'qish uchun), RAM da ma'lumot (16 katak, o'qish va yozish). Ikkalasiga ham manzil shinasi orqali murojaat qilinadi.</div>
 </div>
 
-<h2 id="flaglab">Chiroqlar laboratoriyasi</h2>
-<p>CMP nima qilishini his qilish uchun ikkita son kiriting. Qaysi sakrash "yo'l beradi", qaysi biri "o'tib ketadi" ko'rasiz.</p>
-<figure class="fig" id="flagLab">
-  <div class="controls flag-ctl"><code>CMP</code><input type="number" id="fa" value="5" min="0" max="255" aria-label="Birinchi son"><span>,</span><input type="number" id="fb" value="9" min="0" max="255" aria-label="Ikkinchi son"><button type="button" class="primary" id="fbtn">Solishtir</button></div>
-  <div class="flag-view">
-    <div class="flag-calc" id="flagCalc"></div>
-    <div class="lamps">
-      <div class="lampbox" id="lampZ"><i></i><b>Z</b><small>nol?</small></div>
-      <div class="lampbox" id="lampN"><i></i><b>N</b><small>manfiy?</small></div>
-    </div>
-    <div class="jumps" id="jumps"></div>
-  </div>
-  <figcaption><span><b>Flaglar.</b> Protsessor "kichik" yoki "teng" degan so'zni bilmaydi. U ayiradi va ikkita chiroqqa qaraydi.</span></figcaption>
-</figure>
+<div class="callout"><b>8 bit degani:</b> har registr va katak 0..255. Chegaradan chiqsa "aylanadi": 250 + 10 → <b>4</b>, 3 − 5 → <b>254</b> (N=1). Taqqoslash ishorasiz: JL "N=1 bo'lsa", JG "Z=0 va N=0 bo'lsa" degani.</div>
 
-<h2 id="kodlovchi">Mashina kodi: 16 bit ichida nima bor</h2>
-<p>Har bir buyruq protsessor uchun 16 ta bit. Buyruq yozing, bitlarga bo'linishini ko'ring. 12-bobdagi "manba koddan tranzistorgacha" yo'lining oxirgi bekati shu.</p>
-<figure class="fig" id="encLab">
-  <div class="controls"><input type="text" id="encIn" value="MOV R2, 37" class="enc-in" aria-label="Buyruq"><button type="button" class="primary" id="encBtn">Kodla</button>
-    <span class="chips"><button type="button" data-enc="MOV R2, 37">MOV R2, 37</button><button type="button" data-enc="ADD R0, R1">ADD R0, R1</button><button type="button" data-enc="CMP R3, 10">CMP R3, 10</button><button type="button" data-enc="JNE boshi">JNE boshi</button><button type="button" data-enc="MOV [5], R1">MOV [5], R1</button><button type="button" data-enc="HALT">HALT</button></span></div>
-  <div class="bitrow" id="bitrow"></div>
-  <div class="out" id="encOut"></div>
-  <figcaption><span><b>Kodlash.</b> Opkod qaysi oila ekanini, registr maydonlari qaysi cho'ntakni, oxirgi 8 bit sonni yoki manzilni aytadi. Haqiqiy x86 va ARM'da raqamlar boshqa, g'oya shu.</span></figcaption>
-</figure>
+<h2 id="mashqlar">Mashqlar</h2>
+<p>Har mashq uchun o'zingiz dastur yozing, yig'ing va natijani ekranda tekshiring.</p>
+<div class="tasks">
+  <div class="card"><h3>1. 10 dan 1 gacha sanash</h3><p>Ekranda 10, 9, 8, … 1 chiqsin. Sikl 1 dan keyin to'xtasin.</p>
+    <details><summary>Ko'rsatma</summary>R0 = 10 dan boshlang. Siklda avval <code>OUT R0</code>, keyin <code>DEC R0</code>; DEC nol natija bersa Z=1 bo'ladi — demak <code>JNE sikl</code> 0 ga yetguncha boshiga qaytaradi. Oxirida <code>HALT</code>.</details></div>
+  <div class="card"><h3>2. Sonni 3 ga ko'paytirish</h3><p>R0 dagi sonni 3 ga ko'paytiring (7 → 21). Ko'paytirish buyrug'i yo'q!</p>
+    <details><summary>Ko'rsatma</summary>Ikki yo'l: (a) 4-misoldagi kabi sikl bilan 3 marta qo'shish; (b) siklsiz — <code>MOV R1, R0</code>, so'ng <code>ADD R0, R1</code> ni ikki marta. Qaysi biri kam takt sarflaydi? Hisobchiga qarang.</details></div>
+  <div class="card"><h3>3. Ikki son farqining moduli</h3><p>|R0 − R1| ni chiqaring: 5 va 9 uchun 4, 9 va 5 uchun ham 4.</p>
+    <details><summary>Ko'rsatma</summary><code>CMP R0, R1</code> dan keyin <code>JL kichik</code>: R0 kichik bo'lsa R1 − R0, aks holda R0 − R1. Ikki tarmoqni <code>JMP tugadi</code> bilan birlashtiring (3-misoldagi if/else).</details></div>
+  <div class="card"><h3>4. Xotiradagi eng katta son</h3><p>[0]…[4] kataklariga 5 ta son yozing (katakni bosib) va eng kattasini toping.</p>
+    <details><summary>Ko'rsatma</summary>5-misolni asos qiling: R1 — indeks, <code>MOV R2, [R1]</code> navbatdagi sonni o'qiydi. R0 da hozircha eng kattasi tursin: <code>CMP R2, R0</code>, R2 katta bo'lsa (<code>JG</code>) R0 ← R2. Boshida R0 = [0].</details></div>
+</div>
 
-<details class="isa-table">
-<summary>To'liq jadval: 19 buyruq va ularning mashina kodi</summary>
-<p class="small muted">Flaglar faqat <code>ADD</code>, <code>SUB</code>, <code>INC</code>, <code>DEC</code> va <code>CMP</code> da yangilanadi. Izohlar <code>;</code> dan boshlanadi, yorliqlar <code>nom:</code> ko'rinishida, katta-kichik harf farqlanmaydi. Dastur xotirasi ma'lumot xotirasidan alohida.</p>
+<details class="isa-table" id="isa">
+<summary>Buyruqlar to'plami (ISA): 19 buyruq va ularning mashina kodi</summary>
+<p class="small muted">Flaglar faqat <code>ADD</code>, <code>SUB</code>, <code>INC</code>, <code>DEC</code> va <code>CMP</code> da yangilanadi. Izohlar <code>;</code> dan boshlanadi, yorliqlar <code>nom:</code> ko'rinishida, katta-kichik harf farqlanmaydi. Har buyruq 16 bit: <span class="enc">oooo</span> opkod, <span class="enc">dd</span>/<span class="enc">ss</span> registr raqamlari (R0=00 … R3=11), oxirgi 8 bit son yoki manzil; sakrashlarda registr maydonlari o'rnida shart kodi.</p>
 <div class="tbl">
 <table>
 <thead><tr><th>Buyruq</th><th>Ma'nosi</th><th>Opkod</th><th>Kodlash (16 bit)</th></tr></thead>
@@ -379,40 +333,25 @@ select{font:inherit;font-size:14px;font-weight:600;font-family:var(--display);pa
 <tr><td><code>MOV Rd, Rs</code></td><td>Rd ← Rs (nusxa)</td><td class="num">0010</td><td class="enc">0010 ddss 0000 0000</td></tr>
 <tr><td><code>MOV Rd, [a]</code></td><td>Rd ← xotira[a]</td><td class="num">0011</td><td class="enc">0011 dd00 aaaa aaaa</td></tr>
 <tr><td><code>MOV [a], Rs</code></td><td>xotira[a] ← Rs</td><td class="num">0100</td><td class="enc">0100 00ss aaaa aaaa</td></tr>
-<tr><td><code>MOV Rd, [Rs]</code></td><td>Rd ← xotira[Rs] — manzil registrda (indeks)</td><td class="num">0101</td><td class="enc">0101 ddss 0000 0000</td></tr>
+<tr><td><code>MOV Rd, [Rs]</code></td><td>Rd ← xotira[Rs] — manzil registrda</td><td class="num">0101</td><td class="enc">0101 ddss 0000 0000</td></tr>
 <tr><td><code>MOV [Rs], Rd</code></td><td>xotira[Rs] ← Rd — manzil registrda</td><td class="num">0110</td><td class="enc">0110 ssdd 0000 0000</td></tr>
 <tr><td><code>ADD Rd, Rs</code></td><td>Rd ← Rd + Rs; Z, N</td><td class="num">0111</td><td class="enc">0111 ddss 0000 0000</td></tr>
 <tr><td><code>ADD Rd, n</code></td><td>Rd ← Rd + n; Z, N</td><td class="num">1000</td><td class="enc">1000 dd00 nnnn nnnn</td></tr>
 <tr><td><code>SUB Rd, Rs</code></td><td>Rd ← Rd − Rs; Z, N</td><td class="num">1001</td><td class="enc">1001 ddss 0000 0000</td></tr>
 <tr><td><code>SUB Rd, n</code></td><td>Rd ← Rd − n; Z, N</td><td class="num">1010</td><td class="enc">1010 dd00 nnnn nnnn</td></tr>
-<tr><td><code>INC Rd</code> / <code>DEC Rd</code></td><td>Rd ± 1 — aslida <code>ADD Rd, 1</code> / <code>SUB Rd, 1</code> ning qisqa yozuvi</td><td class="num">1000 / 1010</td><td class="enc">1000 dd00 0000 0001</td></tr>
+<tr><td><code>INC Rd</code> / <code>DEC Rd</code></td><td>Rd ± 1 — <code>ADD Rd, 1</code> / <code>SUB Rd, 1</code> ning qisqa yozuvi</td><td class="num">1000 / 1010</td><td class="enc">1000 dd00 0000 0001</td></tr>
 <tr><td><code>CMP Rd, Rs</code></td><td>Rd − Rs hisoblanadi, faqat Z, N yangilanadi</td><td class="num">1011</td><td class="enc">1011 ddss 0000 0000</td></tr>
 <tr><td><code>CMP Rd, n</code></td><td>Rd − n hisoblanadi, faqat Z, N yangilanadi</td><td class="num">1100</td><td class="enc">1100 dd00 nnnn nnnn</td></tr>
 <tr><td><code>JMP yorliq</code></td><td>Shartsiz sakrash: PC ← manzil</td><td class="num">1101</td><td class="enc">1101 <b>0000</b> aaaa aaaa</td></tr>
-<tr><td><code>JE yorliq</code></td><td>Sakrash, agar Z=1 (teng bo'lsa)</td><td class="num">1101</td><td class="enc">1101 <b>0001</b> aaaa aaaa</td></tr>
-<tr><td><code>JNE yorliq</code></td><td>Sakrash, agar Z=0 (teng bo'lmasa)</td><td class="num">1101</td><td class="enc">1101 <b>0010</b> aaaa aaaa</td></tr>
-<tr><td><code>JL yorliq</code></td><td>Sakrash, agar N=1 (kichik bo'lsa)</td><td class="num">1101</td><td class="enc">1101 <b>0011</b> aaaa aaaa</td></tr>
-<tr><td><code>JG yorliq</code></td><td>Sakrash, agar Z=0 va N=0 (katta bo'lsa)</td><td class="num">1101</td><td class="enc">1101 <b>0100</b> aaaa aaaa</td></tr>
-<tr><td><code>OUT Rd</code></td><td>Rd qiymatini chiqish "ekraniga" yuborish</td><td class="num">1110</td><td class="enc">1110 dd00 0000 0000</td></tr>
+<tr><td><code>JE yorliq</code></td><td>Sakrash, agar Z=1 (teng)</td><td class="num">1101</td><td class="enc">1101 <b>0001</b> aaaa aaaa</td></tr>
+<tr><td><code>JNE yorliq</code></td><td>Sakrash, agar Z=0 (teng emas)</td><td class="num">1101</td><td class="enc">1101 <b>0010</b> aaaa aaaa</td></tr>
+<tr><td><code>JL yorliq</code></td><td>Sakrash, agar N=1 (kichik)</td><td class="num">1101</td><td class="enc">1101 <b>0011</b> aaaa aaaa</td></tr>
+<tr><td><code>JG yorliq</code></td><td>Sakrash, agar Z=0 va N=0 (katta)</td><td class="num">1101</td><td class="enc">1101 <b>0100</b> aaaa aaaa</td></tr>
+<tr><td><code>OUT Rd</code></td><td>Rd qiymatini ekranga yuborish</td><td class="num">1110</td><td class="enc">1110 dd00 0000 0000</td></tr>
 </tbody>
 </table>
 </div>
 </details>
-
-<h2 id="mashqlar">Mashqlar</h2>
-<p>Har bir mashq uchun tahririyatda o'zingiz dastur yozing, yig'ing va natijani OUT oynasida tekshiring. Ko'rsatma faqat yo'nalish beradi — kodni o'zingiz yozing.</p>
-<div class="tasks">
-  <div class="card"><h3>1. 10 dan 1 gacha sanash</h3><p>OUT oynasida 10, 9, 8, … 1 chiqsin. Sikl 1 dan keyin to'xtasin.</p>
-    <details><summary>Ko'rsatma</summary>R0 = 10 dan boshlang. Siklda avval <code>OUT R0</code>, keyin <code>DEC R0</code>; DEC nol natija bersa Z=1 bo'ladi — demak <code>JNE sikl</code> buyrug'i 0 ga yetguncha boshiga qaytaradi. Oxirida <code>HALT</code> unutilmasin.</details></div>
-  <div class="card"><h3>2. Sonni 3 ga ko'paytirish</h3><p>R0 dagi sonni 3 ga ko'paytiring (masalan, 7 → 21). Ko'paytirish buyrug'i yo'q!</p>
-    <details><summary>Ko'rsatma</summary>Ikki yo'l bor: (a) 4-misoldagi kabi sikl bilan 3 marta qo'shish; (b) siklsiz — <code>MOV R1, R0</code>, so'ng <code>ADD R0, R1</code> ni ikki marta yozish. Qaysi biri kam buyruq bajaradi? Listingdagi manzillar sonini va bajarilgan buyruqlar sonini solishtiring.</details></div>
-  <div class="card"><h3>3. Ikki son farqining moduli</h3><p>R0 va R1 dagi sonlar uchun |R0 − R1| ni chiqaring: 5 va 9 uchun 4, 9 va 5 uchun ham 4.</p>
-    <details><summary>Ko'rsatma</summary><code>CMP R0, R1</code> dan keyin <code>JL kichik</code>: R0 kichik bo'lsa R1 − R0 ni, aks holda R0 − R1 ni hisoblang. Ikki tarmoqni <code>JMP tugadi</code> bilan birlashtiring — bu 3-misoldagi if/else tuzilmasi.</details></div>
-  <div class="card"><h3>4. Xotiradagi eng katta son</h3><p>[0]…[4] kataklariga 5 ta son yozing (kataklarni bosib) va ulardan eng kattasini toping.</p>
-    <details><summary>Ko'rsatma</summary>5-misolni asos qilib oling: R1 — indeks, <code>MOV R2, [R1]</code> navbatdagi sonni o'qiydi. R0 da hozircha eng kattasi tursin: <code>CMP R2, R0</code>, agar R2 katta bo'lsa (<code>JG</code>) R0 ← R2. Boshida R0 = [0] deb oling.</details></div>
-</div>
-
-<div class="callout"><b>Asosiy g'oya:</b> simulyatorda ko'rgan hamma narsa — to'rt bosqichli sikl, opkod va operandlar, flaglar orqali shartli sakrash — haqiqiy protsessorda ham xuddi shunday, faqat registrlar 64 bitli, buyruqlar yuzlab va sikl sekundiga milliardlab marta aylanadi.</div>
 
 <nav class="pager">
   <a href="bob/07.html"><small>Nazariya</small>7-bob. Protsessor buyruqni qanday bajaradi</a>
@@ -423,19 +362,21 @@ select{font:inherit;font-size:14px;font-weight:600;font-family:var(--display);pa
 <script src="js/site.js"></script>
 <script>
 (function(){
-  var $=KQI.$, store=KQI.store;
-  var LIMIT=500;          /* avto rejimda shuncha buyruqdan keyin to'xtaydi */
-  var MEMN=16;
+  var $=KQI.$, store=KQI.store, reduce=KQI.reduce;
+  var LIMIT=500, MEMN=16;
   var OP={HALT:0,MOVI:1,MOVR:2,LD:3,ST:4,LDI:5,STI:6,ADDR:7,ADDI:8,SUBR:9,SUBI:10,CMPR:11,CMPI:12,J:13,OUT:14};
   var COND={JMP:0,JE:1,JNE:2,JL:3,JG:4};
   var CONDNAME=['JMP','JE','JNE','JL','JG'];
   var CONDEXPR=['har doim','Z=1','Z=0','N=1','Z=0 va N=0'];
   var MNEMONICS={MOV:1,ADD:1,SUB:1,INC:1,DEC:1,CMP:1,JMP:1,JE:1,JNE:1,JL:1,JG:1,OUT:1,HALT:1};
+  var SVGNS='http://www.w3.org/2000/svg';
 
   function bin(n,w){ var s=(n>>>0).toString(2); while(s.length<w) s='0'+s; return s; }
   function bits16(w){ return bin(w,16).replace(/(.{4})(?=.)/g,'$1 '); }
+  function hex4(w){ return '0x'+('0000'+w.toString(16).toUpperCase()).slice(-4); }
   function wrap8(v){ return ((v%256)+256)%256; }
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function el(tag,attrs,text){ var e=document.createElementNS(SVGNS,tag); for(var k in attrs) e.setAttribute(k,attrs[k]); if(text!==undefined) e.textContent=text; return e; }
 
   /* ---------- Misollar ---------- */
   var EXAMPLES=[
@@ -443,11 +384,11 @@ select{font:inherit;font-size:14px;font-weight:600;font-family:var(--display);pa
      src:"; Ikki sonni qo'shish\nMOV R0, 5       ; a = 5\nMOV R1, 7       ; b = 7\nADD R0, R1      ; R0 = a + b\nOUT R0          ; natija: 12\nHALT"},
     {name:'2. 1 dan 10 gacha yig\'indi',desc:'Sikl: R1 hisoblagich 1 dan 10 gacha o\'sadi, R0 ga qo\'shilib boradi. CMP + JL sikl shartini beradi (natija 55).',
      src:"; 1 + 2 + ... + 10\nMOV R0, 0       ; yig'indi\nMOV R1, 1       ; i = 1\nsikl:\nADD R0, R1      ; yig'indi += i\nINC R1          ; i = i + 1\nCMP R1, 11      ; i < 11 ?\nJL sikl         ; ha bo'lsa, siklga qayt\nOUT R0          ; 55\nHALT"},
-    {name:'3. Ikki sondan kattasini topish',desc:'if/else: CMP va JG bilan ikki tarmoqqa ajraladi, JMP ular ni yana birlashtiradi. R0 va R1 qiymatlarini o\'zgartirib ko\'ring.',
+    {name:'3. Ikki sondan kattasini topish',desc:'if/else: CMP va JG bilan ikki tarmoqqa ajraladi, JMP ularni yana birlashtiradi. R0 va R1 qiymatlarini o\'zgartirib ko\'ring.',
      src:"; Kattasini topish (if / else)\nMOV R0, 8\nMOV R1, 13\nCMP R0, R1      ; R0 - R1, flaglar\nJG r0_katta     ; R0 > R1 bo'lsa\nOUT R1          ; else: R1 katta\nJMP tugadi\nr0_katta:\nOUT R0          ; if: R0 katta\ntugadi:\nHALT"},
     {name:'4. Ko\'paytirish (takroriy qo\'shish)',desc:'Protsessorimizda MUL yo\'q: 6 × 4 ni 6 ni to\'rt marta qo\'shib hisoblaymiz. R1 hisoblagich 0 ga tushganda sikl tugaydi.',
      src:"; 6 x 4 = 6 + 6 + 6 + 6\nMOV R0, 6       ; a\nMOV R1, 4       ; b = necha marta\nMOV R2, 0       ; natija\nsikl:\nCMP R1, 0       ; hisoblagich tugadimi?\nJE tugadi\nADD R2, R0      ; natija += a\nDEC R1\nJMP sikl\ntugadi:\nOUT R2          ; 24\nHALT"},
-    {name:'5. Massiv yig\'indisi (xotira)',desc:'Xotira [0]..[4] da 5 ta son turadi (3, 8, 1, 12, 6). R1 indeks registri, MOV R2, [R1] navbatdagi elementni o\'qiydi. Natija [5] ga yoziladi va chiqariladi (30).',
+    {name:'5. Massiv yig\'indisi (xotira)',desc:'RAM [0]..[4] da 5 ta son turadi (3, 8, 1, 12, 6). R1 indeks registri, MOV R2, [R1] navbatdagi elementni o\'qiydi. Natija [5] ga yoziladi va chiqariladi (30).',
      mem:[3,8,1,12,6],
      src:"; Xotira [0]..[4] dagi 5 ta sonni qo'shish\nMOV R0, 0       ; yig'indi\nMOV R1, 0       ; indeks i = 0\nsikl:\nMOV R2, [R1]    ; R2 = xotira[i]\nADD R0, R2      ; yig'indi += R2\nINC R1          ; i = i + 1\nCMP R1, 5       ; i < 5 ?\nJL sikl\nMOV [5], R0     ; natijani [5] ga yoz\nOUT R0          ; 30\nHALT"},
     {name:'6. Cheksiz sikl (HALT yo\'q)',desc:'Bu dastur hech qachon tugamaydi: JMP doim boshiga qaytaradi. Avto rejim '+LIMIT+' ta buyruqdan keyin o\'zi to\'xtaydi. JMP qatorini o\'chirib ko\'ring: HALT bo\'lmasa protsessor dastur oxiridan o\'tib ketadi.',
@@ -548,214 +489,393 @@ select{font:inherit;font-size:14px;font-weight:600;font-family:var(--display);pa
     return {prog:prog,errors:errors.map(function(e){return e.msg;}),labelsAt:labelsAt};
   }
 
-  /* ---------- Protsessor ---------- */
-  var MEM=[], prog=null, labelsAt={}, S=null, timer=null, autoCount=0, stale=false;
+  /* ---------- Protsessor holati ---------- */
+  var MEM=[], prog=null, labelsAt={}, S=null, running=false, busy=false, autoCount=0, stale=false, cancelTok=0;
   for(var i=0;i<MEMN;i++) MEM.push(0);
+  function reset(){ S={R:[0,0,0,0],PC:0,Z:0,N:0,out:[],ph:0,halted:false,ir:null,tmp:null,count:0,started:false,ticks:0}; }
 
-  function reset(){
-    S={R:[0,0,0,0],PC:0,Z:0,N:0,out:[],ph:0,halted:false,ir:null,tmp:null,count:0,started:false};
+  function decodeShort(ins){
+    var r1='R'+ins.r1, r2='R'+ins.r2;
+    switch(ins.kind){
+      case 'HALT': return "to'xtash: takt generatoriga STOP";
+      case 'MOVI': return "son "+ins.imm+" → "+r1+" (ALU chetlab o'tiladi)";
+      case 'MOVR': return r2+" → "+r1+" (nusxa)";
+      case 'LD':   return "RAM ["+ins.imm+"] → "+r1+"  · RAM: RD";
+      case 'ST':   return r2+" → RAM ["+ins.imm+"]  · RAM: WR";
+      case 'LDI':  return "RAM ["+r2+"] → "+r1+"  · RAM: RD";
+      case 'STI':  return r2+" → RAM ["+r1+"]  · RAM: WR";
+      case 'ADDR': return "ALU: "+r1+" + "+r2+" → "+r1;
+      case 'ADDI': return "ALU: "+r1+" + "+ins.imm+" → "+r1;
+      case 'SUBR': return "ALU: "+r1+" − "+r2+" → "+r1;
+      case 'SUBI': return "ALU: "+r1+" − "+ins.imm+" → "+r1;
+      case 'CMPR': return "ALU: "+r1+" − "+r2+", faqat flaglar";
+      case 'CMPI': return "ALU: "+r1+" − "+ins.imm+", faqat flaglar";
+      case 'J':    return CONDNAME[ins.cond]+" → "+ins.imm+" agar "+CONDEXPR[ins.cond];
+      case 'OUT':  return r1+" → ekran";
+    }
+    return '';
   }
   function decodeText(ins){
     var o=bin(ins.op,4), r1='R'+ins.r1, r2='R'+ins.r2;
     switch(ins.kind){
-      case 'HALT': return "opkod "+o+" = HALT — operandlar yo'q, protsessor to'xtashga tayyorlanadi";
-      case 'MOVI': return "opkod "+o+" = MOV (registrga son), operandlar: "+r1+", son "+ins.imm+" ("+bin(ins.imm,8)+")";
-      case 'MOVR': return "opkod "+o+" = MOV (registrdan registrga), operandlar: "+r1+", "+r2;
-      case 'LD':   return "opkod "+o+" = MOV (xotiradan o'qish), operandlar: "+r1+", manzil ["+ins.imm+"]";
-      case 'ST':   return "opkod "+o+" = MOV (xotiraga yozish), operandlar: manzil ["+ins.imm+"], "+r2;
-      case 'LDI':  return "opkod "+o+" = MOV (xotiradan o'qish, manzil registrda), operandlar: "+r1+", ["+r2+"]";
-      case 'STI':  return "opkod "+o+" = MOV (xotiraga yozish, manzil registrda), operandlar: ["+r1+"], "+r2;
-      case 'ADDR': return "opkod "+o+" = ADD (registr bilan), operandlar: "+r1+", "+r2;
-      case 'ADDI': return "opkod "+o+" = ADD (son bilan), operandlar: "+r1+", "+ins.imm+(ins.mn==='INC'?" — INC aslida ADD "+r1+", 1":"");
-      case 'SUBR': return "opkod "+o+" = SUB (registr bilan), operandlar: "+r1+", "+r2;
-      case 'SUBI': return "opkod "+o+" = SUB (son bilan), operandlar: "+r1+", "+ins.imm+(ins.mn==='DEC'?" — DEC aslida SUB "+r1+", 1":"");
-      case 'CMPR': return "opkod "+o+" = CMP (registr bilan), operandlar: "+r1+", "+r2+" — natija saqlanmaydi";
-      case 'CMPI': return "opkod "+o+" = CMP (son bilan), operandlar: "+r1+", "+ins.imm+" — natija saqlanmaydi";
-      case 'J':    return "opkod "+o+" = Jcc (sakrash), shart "+bin(ins.cond,4)+" = "+CONDNAME[ins.cond]+" ("+CONDEXPR[ins.cond]+"), manzil "+ins.imm;
-      case 'OUT':  return "opkod "+o+" = OUT (chiqarish), operand: "+r1;
+      case 'HALT': return "opkod "+o+" = HALT — operandlar yo'q, CU takt generatorini to'xtatishga tayyorlanadi";
+      case 'MOVI': return "opkod "+o+" = MOV (registrga son), Rd = "+r1+", son = "+ins.imm+" ("+bin(ins.imm,8)+"). CU registr faylga 'yoz' signalini tayyorlaydi";
+      case 'MOVR': return "opkod "+o+" = MOV (registrdan registrga), Rd = "+r1+", Rs = "+r2;
+      case 'LD':   return "opkod "+o+" = MOV (RAM dan o'qish), Rd = "+r1+", manzil ["+ins.imm+"]. CU boshqaruv shinasiga RD (o'qi) beradi";
+      case 'ST':   return "opkod "+o+" = MOV (RAM ga yozish), manzil ["+ins.imm+"], Rs = "+r2+". CU boshqaruv shinasiga WR (yoz) beradi";
+      case 'LDI':  return "opkod "+o+" = MOV (RAM dan o'qish, manzil registrda), Rd = "+r1+", manzil "+r2+" ichida";
+      case 'STI':  return "opkod "+o+" = MOV (RAM ga yozish, manzil registrda), manzil "+r1+" ichida, Rs = "+r2;
+      case 'ADDR': return "opkod "+o+" = ADD (registr bilan), Rd = "+r1+", Rs = "+r2+". CU ALU ga '+' signalini beradi";
+      case 'ADDI': return "opkod "+o+" = ADD (son bilan), Rd = "+r1+", son = "+ins.imm+(ins.mn==='INC'?" — INC aslida ADD "+r1+", 1":"")+". CU ALU ga '+' signalini beradi";
+      case 'SUBR': return "opkod "+o+" = SUB (registr bilan), Rd = "+r1+", Rs = "+r2+". CU ALU ga '−' signalini beradi";
+      case 'SUBI': return "opkod "+o+" = SUB (son bilan), Rd = "+r1+", son = "+ins.imm+(ins.mn==='DEC'?" — DEC aslida SUB "+r1+", 1":"")+". CU ALU ga '−' signalini beradi";
+      case 'CMPR': return "opkod "+o+" = CMP (registr bilan), "+r1+" − "+r2+" — natija saqlanmaydi, faqat flaglar yangilanadi";
+      case 'CMPI': return "opkod "+o+" = CMP (son bilan), "+r1+" − "+ins.imm+" — natija saqlanmaydi, faqat flaglar yangilanadi";
+      case 'J':    return "opkod "+o+" = Jcc (sakrash), shart kodi "+bin(ins.cond,4)+" = "+CONDNAME[ins.cond]+" ("+CONDEXPR[ins.cond]+"), manzil "+ins.imm+". CU flaglarni so'raydi";
+      case 'OUT':  return "opkod "+o+" = OUT (chiqarish), Rs = "+r1+". CU ma'lumot shinasini ekranga ulaydi";
     }
     return '';
   }
-  function alu(a,b,op){
-    var raw=op==='+'?a+b:a-b, v=wrap8(raw);
-    return {raw:raw,v:v,flags:{Z:v===0?1:0,N:raw<0?1:0}};
-  }
+  function alu(a,b,op){ var raw=op==='+'?a+b:a-b, v=wrap8(raw); return {raw:raw,v:v,flags:{Z:v===0?1:0,N:raw<0?1:0}}; }
   function execute(ins){
-    var R=S.R, t={writes:[],flags:null,msg:'',nextPC:S.PC+1,jumped:false,halt:false,err:false};
+    var R=S.R, t={writes:[],flags:null,msg:'',nextPC:S.PC+1,jumped:false,halt:false,err:false,a:null,b:null,op:null,res:null};
     var a,b,res,val,addr;
     switch(ins.kind){
       case 'HALT': t.halt=true; t.nextPC=S.PC; t.msg="to'xtash signali — boshqaruv qurilmasi siklni to'xtatadi"; break;
-      case 'MOVI': t.writes.push({reg:ins.r1,val:ins.imm}); t.msg="son "+ins.imm+" R"+ins.r1+" registriga yozishga tayyor (ALU ishlamaydi)"; break;
-      case 'MOVR': val=R[ins.r2]; t.writes.push({reg:ins.r1,val:val}); t.msg="R"+ins.r2+" dagi "+val+" nusxalandi"; break;
-      case 'LD': val=MEM[ins.imm]; t.writes.push({reg:ins.r1,val:val}); t.msg="xotira ["+ins.imm+"] dan "+val+" o'qildi"; break;
-      case 'ST': val=R[ins.r2]; t.writes.push({mem:ins.imm,val:val}); t.msg="R"+ins.r2+" dagi "+val+" xotira ["+ins.imm+"] ga yozishga tayyor"; break;
+      case 'MOVI': t.writes.push({reg:ins.r1,val:ins.imm}); t.msg="son "+ins.imm+" IR dan ichki shinaga chiqdi, R"+ins.r1+" ga yozishga tayyor (ALU ishlamaydi)"; break;
+      case 'MOVR': val=R[ins.r2]; t.writes.push({reg:ins.r1,val:val}); t.msg="R"+ins.r2+" dagi "+val+" ichki shinaga chiqdi"; break;
+      case 'LD': val=MEM[ins.imm]; t.writes.push({reg:ins.r1,val:val}); t.addr=ins.imm; t.msg="manzil ["+ins.imm+"] manzil shinasiga, RAM ma'lumot shinasiga "+val+" ni qo'ydi"; break;
+      case 'ST': val=R[ins.r2]; t.writes.push({mem:ins.imm,val:val}); t.addr=ins.imm; t.msg="manzil ["+ins.imm+"] manzil shinasida, R"+ins.r2+" dagi "+val+" ma'lumot shinasida, RAM WR kutmoqda"; break;
       case 'LDI':
         addr=R[ins.r2];
-        if(addr>=MEMN){ t.halt=true; t.err=true; t.msg="R"+ins.r2+" = "+addr+" — bunday xotira manzili yo'q (0..15). Protsessor to'xtadi."; break; }
-        val=MEM[addr]; t.writes.push({reg:ins.r1,val:val}); t.msg="manzil R"+ins.r2+" = "+addr+", xotira ["+addr+"] dan "+val+" o'qildi"; break;
+        if(addr>=MEMN){ t.halt=true; t.err=true; t.msg="R"+ins.r2+" = "+addr+" — bunday RAM manzili yo'q (0..15). Protsessor to'xtadi."; break; }
+        val=MEM[addr]; t.addr=addr; t.writes.push({reg:ins.r1,val:val}); t.msg="manzil R"+ins.r2+" = "+addr+" manzil shinasiga, RAM ["+addr+"] dan "+val+" o'qildi"; break;
       case 'STI':
         addr=R[ins.r1];
-        if(addr>=MEMN){ t.halt=true; t.err=true; t.msg="R"+ins.r1+" = "+addr+" — bunday xotira manzili yo'q (0..15). Protsessor to'xtadi."; break; }
-        val=R[ins.r2]; t.writes.push({mem:addr,val:val}); t.msg="manzil R"+ins.r1+" = "+addr+", R"+ins.r2+" dagi "+val+" xotira ["+addr+"] ga yozishga tayyor"; break;
+        if(addr>=MEMN){ t.halt=true; t.err=true; t.msg="R"+ins.r1+" = "+addr+" — bunday RAM manzili yo'q (0..15). Protsessor to'xtadi."; break; }
+        val=R[ins.r2]; t.addr=addr; t.writes.push({mem:addr,val:val}); t.msg="manzil R"+ins.r1+" = "+addr+" manzil shinasiga, R"+ins.r2+" dagi "+val+" ma'lumot shinasiga"; break;
       case 'ADDR': case 'ADDI':
         a=R[ins.r1]; b=ins.kind==='ADDR'?R[ins.r2]:ins.imm; res=alu(a,b,'+');
-        t.writes.push({reg:ins.r1,val:res.v}); t.flags=res.flags;
+        t.a=a;t.b=b;t.op='+';t.res=res; t.writes.push({reg:ins.r1,val:res.v}); t.flags=res.flags;
         t.msg="ALU "+a+" + "+b+" = "+res.raw+(res.raw>255?" → 8 bitda "+res.v+" (toshib ketdi, 256 ayrildi)":""); break;
       case 'SUBR': case 'SUBI':
         a=R[ins.r1]; b=ins.kind==='SUBR'?R[ins.r2]:ins.imm; res=alu(a,b,'-');
-        t.writes.push({reg:ins.r1,val:res.v}); t.flags=res.flags;
+        t.a=a;t.b=b;t.op='−';t.res=res; t.writes.push({reg:ins.r1,val:res.v}); t.flags=res.flags;
         t.msg="ALU "+a+" − "+b+" = "+res.raw+(res.raw<0?" → 8 bitda "+res.v+" (qarz olindi, N=1)":""); break;
       case 'CMPR': case 'CMPI':
-        a=R[ins.r1]; b=ins.kind==='CMPR'?R[ins.r2]:ins.imm; res=alu(a,b,'-'); t.flags=res.flags;
-        t.msg="ALU "+a+" − "+b+" = "+res.raw+" — natija saqlanmaydi, faqat flaglar: Z="+res.flags.Z+" N="+res.flags.N; break;
+        a=R[ins.r1]; b=ins.kind==='CMPR'?R[ins.r2]:ins.imm; res=alu(a,b,'-'); t.a=a;t.b=b;t.op='−';t.res=res; t.flags=res.flags;
+        t.msg="ALU "+a+" − "+b+" = "+res.raw+" — natija tashlab yuboriladi, faqat flaglar: Z="+res.flags.Z+" N="+res.flags.N; break;
       case 'J':
         var c=ins.cond, take=c===0||(c===1&&S.Z===1)||(c===2&&S.Z===0)||(c===3&&S.N===1)||(c===4&&S.Z===0&&S.N===0);
-        if(take){ t.nextPC=ins.imm; t.jumped=true; }
+        t.take=take; if(take){ t.nextPC=ins.imm; t.jumped=true; }
         t.msg=c===0?"shartsiz sakrash: PC uchun "+ins.imm+" manzil tayyor":
-          "shart "+CONDNAME[c]+" ("+CONDEXPR[c]+") tekshirildi, hozir Z="+S.Z+" N="+S.N+" → "+(take?"bajariladi, PC uchun "+ins.imm+" tayyor":"bajarilmaydi, PC + 1");
+          "flaglar CU ga keldi: Z="+S.Z+" N="+S.N+". Shart "+CONDNAME[c]+" ("+CONDEXPR[c]+") → "+(take?"bajariladi, PC uchun "+ins.imm+" tayyor":"bajarilmaydi, PC + 1");
         break;
-      case 'OUT': t.out=R[ins.r1]; t.msg="R"+ins.r1+" dagi "+t.out+" chiqish qurilmasiga yuborildi"; break;
+      case 'OUT': t.out=R[ins.r1]; t.msg="R"+ins.r1+" dagi "+t.out+" ma'lumot shinasi orqali ekranga yuborildi"; break;
     }
     return t;
   }
-  function step(){
-    if(!prog||S.halted) return false;
-    S.started=true;
-    if(S.ph===0){
-      if(S.PC>=prog.length){
-        S.halted=true; stopAuto();
-        narr("Xato: PC="+S.PC+" — bu manzilda buyruq yo'q! Dastur HALT bilan tugamagan, protsessor bo'sh xotirani buyruq deb o'qishga urindi. Haqiqiy kompyuterda bu \"crash\" bo'lardi.",true);
-        draw(); return false;
-      }
-      S.ir=prog[S.PC];
-      narr("Fetch: PC="+S.PC+" manzildagi buyruq olindi: "+S.ir.text+"  →  IR = "+bits16(S.ir.word));
-      S.ph=1; draw(); return true;
+
+  /* ---------- Plata: chizish ---------- */
+  var REGY=[226,266,306,346];
+  function buildRegs(){
+    var g=$('#regRows'); g.innerHTML='';
+    for(var i=0;i<4;i++){
+      var y=REGY[i], grp=el('g',{'class':'reg','data-r':i});
+      grp.appendChild(el('rect',{x:46,y:y-16,width:218,height:32,rx:6,'class':'unit'}));
+      grp.appendChild(el('text',{x:56,y:y+4,'class':'val'},'R'+i));
+      grp.appendChild(el('text',{x:118,y:y+4,'text-anchor':'end','class':'val',id:'rv'+i},'0'));
+      for(var b=0;b<8;b++) grp.appendChild(el('circle',{cx:140+b*15,cy:y,r:4.5,'class':'led',id:'rb'+i+'_'+b}));
+      g.appendChild(grp);
     }
-    if(S.ph===1){ narr("Decode: "+decodeText(S.ir)); S.ph=2; draw(); return true; }
-    if(S.ph===2){ S.tmp=execute(S.ir); narr("Execute: "+S.tmp.msg,S.tmp.err); S.ph=3; draw(); return true; }
-    var t=S.tmp, parts=[];
-    if(t.err){ S.halted=true; S.ph=0; S.count++; stopAuto(); narr("Store: hech narsa yozilmadi — xato tufayli protsessor to'xtadi.",true); draw(); return false; }
-    t.writes.forEach(function(w){
-      if(w.reg!==undefined){ S.R[w.reg]=w.val; parts.push("R"+w.reg+" ← "+w.val); flashEl($('#rR'+w.reg).parentElement); }
-      else { MEM[w.mem]=w.val; parts.push("["+w.mem+"] ← "+w.val); flashEl($('#mem label[data-i="'+w.mem+'"]')); }
-    });
-    if(t.flags){ S.Z=t.flags.Z; S.N=t.flags.N; parts.push("Z="+S.Z+" N="+S.N); flashEl($('#rFL').parentElement); }
-    if(t.out!==undefined){ S.out.push(t.out); parts.push("OUT ← "+t.out); }
-    S.count++;
-    if(t.halt){
-      S.halted=true; S.ph=0; stopAuto();
-      parts.push("PC o'zgarmaydi");
-      narr("Store: "+parts.join(', ')+". Dastur tugadi — jami "+S.count+" ta buyruq bajarildi (har biri 4 bosqich).");
-      draw(); return false;
-    }
-    S.PC=t.nextPC; parts.push("PC ← "+S.PC+(t.jumped?" (sakrash!)":""));
-    flashEl($('#rPC').parentElement);
-    narr("Store: "+parts.join(', '));
-    S.ph=0; draw(); return true;
   }
-  function stepInstr(){
-    if(!prog||S.halted) return;
-    do { if(!step()) break; } while(S.ph!==0);
+  function buildIR(){
+    var g=$('#irBits'); g.innerHTML='';
+    var x=372, groups=[[4,'op'],[2,'f1'],[2,'f2'],[8,'im']], k=0;
+    groups.forEach(function(gr){
+      for(var i=0;i<gr[0];i++){
+        var grp=el('g',{'class':'irb off','data-g':gr[1],id:'irb'+k});
+        grp.appendChild(el('rect',{x:x,y:88,width:12,height:20,rx:3}));
+        grp.appendChild(el('text',{x:x+6,y:103,'text-anchor':'middle'},'0'));
+        g.appendChild(grp); x+=14; k++;
+      }
+      x+=6;
+    });
+  }
+  var ROMWIN=10, romStart=0;
+  function buildROM(){
+    var g=$('#romRows'); g.innerHTML='';
+    if(!prog){ g.appendChild(el('text',{x:840,y:200,'text-anchor':'middle','class':'mut'},"dastur yuklanmagan — chapda yig'ing")); $('#romInfo').textContent='bo\'sh'; return; }
+    $('#romInfo').textContent=prog.length+' buyruq · '+(prog.length*2)+' bayt';
+    if(prog.length<=ROMWIN) romStart=0; else romStart=Math.max(0,Math.min(S.PC-4,prog.length-ROMWIN));
+    for(var r=0;r<ROMWIN;r++){
+      var a=romStart+r; if(a>=prog.length) break;
+      var y=150+r*18, ins=prog[a];
+      var grp=el('g',{'data-a':a});
+      grp.appendChild(el('rect',{x:708,y:y-13,width:264,height:17,rx:3,'class':'rowhi',id:'rom'+a}));
+      grp.appendChild(el('text',{x:716,y:y,'class':'mut'},String(a)));
+      var lb=(labelsAt[a]||[]).map(function(n){return n+': ';}).join('');
+      var t=el('text',{x:740,y:y},'');
+      if(lb){ var ts=el('tspan',{style:'fill:var(--b-ctl)'},lb); t.appendChild(ts); }
+      t.appendChild(el('tspan',{},ins.text));
+      grp.appendChild(t);
+      grp.appendChild(el('text',{x:966,y:y,'text-anchor':'end','class':'mut'},hex4(ins.word)));
+      g.appendChild(grp);
+    }
+    if(prog.length>ROMWIN) g.appendChild(el('text',{x:840,y:336,'text-anchor':'middle','class':'mut',style:'font-size:9px'},'ko\'rsatilmoqda: '+romStart+'…'+Math.min(prog.length-1,romStart+ROMWIN-1)+' / '+(prog.length-1)));
+  }
+  function cellXY(i){ return [736+(i%8)*30,(i<8?398:446)]; }
+  function buildRAM(){
+    var g=$('#ramCells'); g.innerHTML='';
+    for(var i=0;i<MEMN;i++){
+      var p=cellXY(i), grp=el('g',{'data-i':i});
+      grp.appendChild(el('rect',{x:p[0],y:p[1],width:28,height:42,rx:4,'class':'cell',id:'cell'+i}));
+      grp.appendChild(el('text',{x:p[0]+14,y:p[1]+12,'text-anchor':'middle','class':'mut',style:'font-size:9px;pointer-events:none'},'['+i+']'));
+      grp.appendChild(el('text',{x:p[0]+14,y:p[1]+32,'text-anchor':'middle','class':'val',id:'mv'+i,style:'pointer-events:none'},String(MEM[i])));
+      (function(i){ grp.addEventListener('click',function(){ openRamEdit(i); }); })(i);
+      g.appendChild(grp);
+    }
+  }
+  var editIdx=null;
+  function openRamEdit(i){ editIdx=i; $('#reAddr').textContent='['+i+']'; $('#reVal').value=MEM[i]; $('#ramEdit').classList.add('on'); $('#reVal').focus(); $('#reVal').select(); }
+  function closeRamEdit(){ $('#ramEdit').classList.remove('on'); editIdx=null; }
+  $('#reOk').onclick=function(){ if(editIdx===null) return; var v=parseInt($('#reVal').value,10); if(isNaN(v)) v=0; MEM[editIdx]=wrap8(v); flashCell(editIdx); draw(); closeRamEdit(); };
+  $('#reCancel').onclick=closeRamEdit;
+  $('#reVal').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); $('#reOk').click(); } if(e.key==='Escape') closeRamEdit(); });
+
+  function setIR(ins,colored){
+    for(var k=0;k<16;k++){ var g=$('#irb'+k); g.querySelector('text').textContent=ins?bin(ins.word,16).charAt(k):'0'; g.setAttribute('class','irb '+(ins&&colored?g.dataset.g:'off')); }
+    $('#irTxt').textContent=ins?ins.text+'   '+hex4(ins.word):'—';
+  }
+  function setLed(id,on){ var e=$('#'+id); if(e) e.classList.toggle('on',!!on); }
+  function flashReg(i){ var g=document.querySelector('.reg[data-r="'+i+'"]'); if(!g) return; g.classList.remove('flash'); void g.getBBox(); g.classList.add('flash'); }
+  function flashCell(i){ var c=$('#cell'+i); if(!c) return; c.classList.remove('flash'); void c.getBBox(); c.classList.add('flash'); }
+  function lit(ids,on){ ids.forEach(function(id){ var e=$('#'+id); if(e) e.classList.toggle('lit',on!==false); }); }
+  function unlitAll(){ document.querySelectorAll('#wires .lit').forEach(function(e){e.classList.remove('lit');}); $('#alu').classList.remove('on'); $('#ramRW').textContent='RD/WR'; document.querySelectorAll('.cell.hi').forEach(function(c){c.classList.remove('hi');}); }
+  function draw(){
+    for(var i=0;i<4;i++){ $('#rv'+i).textContent=S.R[i]; var b=bin(S.R[i],8); for(var k=0;k<8;k++) setLed('rb'+i+'_'+k,b.charAt(k)==='1'); }
+    $('#pcVal').textContent=S.PC;
+    setLed('ledZ',S.Z); setLed('ledN',S.N);
+    for(var p=0;p<4;p++) setLed('ph'+p,!S.halted&&S.started&&S.ph===p);
+    for(var m=0;m<MEMN;m++) $('#mv'+m).textContent=MEM[m];
+    if(prog){ var need=prog.length>ROMWIN&&(S.PC<romStart||S.PC>=romStart+ROMWIN); if(need) buildROM(); }
+    document.querySelectorAll('.rowhi').forEach(function(r){ r.classList.toggle('on',!!prog&&!S.halted&&+r.id.slice(3)===S.PC); });
+    $('#stIns').textContent=S.count; $('#clkTxt').textContent='takt '+S.ticks;
+    $('#stState').textContent=S.halted?'to\'xtadi':running?'ishlamoqda':S.started?'kutmoqda':'tayyor';
+    $('#clkMode').textContent=running?'ishlayapti':S.halted?'to\'xtagan (HALT)':'kutmoqda';
+    $('#clkLed').classList.toggle('on',running); $('#clkLed').classList.toggle('clk',running);
+    var scr=$('#scr'); if(S.out.length){ var shown=S.out.slice(-7).join('  '); scr.textContent='▸ '+shown; scr.classList.remove('dim'); } else { scr.textContent='▸ _'; scr.classList.add('dim'); }
+    if(!S.ir){ setIR(null); $('#cuL1').textContent='—'; $('#cuL2').textContent=S.halted?'to\'xtagan':'buyruq kutilmoqda'; $('#aluA').textContent='';$('#aluB').textContent='';$('#aluOp').textContent='';$('#aluRes').textContent=''; }
   }
 
-  /* ---------- Avto ---------- */
-  function speed(){ return +$('#speed').value||1; }
-  function startAuto(){
-    if(!prog){ narr("Avval dasturni yig'ing.",true); return; }
-    if(S.halted) { reset(); draw(); }
-    stopAuto(); autoCount=0;
-    $('#autoBtn').classList.add('on');
-    var iv=Math.max(5,Math.round(1000/(speed()*4)));
-    timer=setInterval(function(){
-      var before=S.count;
-      step();
-      if(S.count!==before){
-        autoCount++;
-        if(!S.halted&&autoCount>=LIMIT){
-          stopAuto();
-          narr("Avto rejim to'xtatildi: "+LIMIT+" ta buyruq bajarildi, dastur hali ham tugamadi. Bu cheksiz sikl bo'lsa kerak — HALT ga olib boradigan shart bormi? (\"Avto\" yana bosilsa davom etadi.)",true);
-          draw();
+  /* ---------- Token animatsiyasi ---------- */
+  var SPEEDMS=[0,1800,1200,800,520,340,220,130,60,25,0];
+  function phaseMs(){ var s=+$('#speed').value||3; return SPEEDMS[s]; }
+  function delay(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+  function token(label,cls,pts,ms){
+    return new Promise(function(res){
+      if(reduce||ms<60){ res(); return; }
+      var my=cancelTok;
+      var g=el('g',{'class':'tok '+cls}), w=Math.max(26,label.length*7+10);
+      var rect=el('rect',{x:-w/2,y:-9,width:w,height:18}), txt=el('text',{x:0,y:4,'text-anchor':'middle'},label);
+      g.appendChild(rect); g.appendChild(txt); $('#tokens').appendChild(g);
+      var segs=[],total=0;
+      for(var i=1;i<pts.length;i++){ var d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]); segs.push(d); total+=d; }
+      var t0=null;
+      function frame(ts){
+        if(my!==cancelTok){ g.remove(); res(); return; }
+        if(t0===null) t0=ts;
+        var p=Math.min(1,(ts-t0)/ms), dist=p*total, i=0;
+        while(i<segs.length-1&&dist>segs[i]){ dist-=segs[i]; i++; }
+        var f=segs[i]?dist/segs[i]:1, a=pts[i], b=pts[i+1];
+        g.setAttribute('transform','translate('+(a[0]+(b[0]-a[0])*f)+','+(a[1]+(b[1]-a[1])*f)+')');
+        if(p<1) requestAnimationFrame(frame); else { g.remove(); res(); }
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+  /* nuqtalar */
+  var P={
+    pcOut:[610,312], irIn:[610,95], irImm:[600,150], busR:[630,400],
+    romAddr:[700,100], romData:[700,130], ramAddr:[700,420], ramData:[700,450], outPort:[700,580],
+    aluA:[350,215], aluB:[440,215], aluOut:[395,330], cuIn:[330,160], flagsOut:[555,190], pcIn:[610,312]
+  };
+  function regOut(i){ return [270,REGY[i]]; }
+  function regBus(i){ return [285,REGY[i]]; }
+  /* yo'llar */
+  function pFetchAddr(){ return [P.pcOut,[650,312],[650,100],P.romAddr]; }
+  function pFetchData(){ return [P.romData,[668,130],[668,95],P.irIn]; }
+  function pRegToA(i){ return [regOut(i),regBus(i),[285,200],[350,200],P.aluA]; }
+  function pRegToB(i){ return [regOut(i),regBus(i),[285,200],[440,200],P.aluB]; }
+  function pImmToB(){ return [[560,160],[560,178],[440,178],P.aluB]; }
+  function pAluToReg(i){ return [P.aluOut,[395,400],[285,400],regBus(i),regOut(i)]; }
+  function pImmToBus(){ return [P.irImm,[620,150],[620,400]]; }
+  function pBusToReg(from,i){ return [from,[285,400],regBus(i),regOut(i)]; }
+  function pRegToBus(i){ return [regOut(i),regBus(i),[285,400]]; }
+  function pImmToRamAddr(){ return [P.irImm,[650,150],[650,420],P.ramAddr]; }
+  function pRegToRamAddr(i){ return [regOut(i),regBus(i),[285,400],[650,400],[650,420],P.ramAddr]; }
+  function pRamToBus(){ return [P.ramData,[668,450],[668,400],[630,400]]; }
+  function pBusToRam(){ return [[285,400],[668,400],[668,450],P.ramData]; }
+  function pRegToOut(i){ return [regOut(i),regBus(i),[285,400],[668,400],[668,580],P.outPort]; }
+  function pFlagsToCu(){ return [P.flagsOut,[555,175],[330,175],P.cuIn]; }
+  function pImmToPc(){ return [P.irImm,[620,150],[620,312],P.pcIn]; }
+
+  /* ---------- Bosqichlar ---------- */
+  function narr(text,isErr){ var e=$('#narr'), i=text.indexOf(':'); e.classList.toggle('err',!!isErr); e.innerHTML=i>0&&i<12?'<b>'+esc(text.slice(0,i+1))+'</b>'+esc(text.slice(i+1)):esc(text); }
+  function cu(l1,l2){ $('#cuL1').textContent=l1; $('#cuL2').textContent=l2; }
+
+  async function step(){
+    if(!prog||S.halted||busy) return false;
+    busy=true; S.started=true;
+    var ms=phaseMs(), tk=Math.round(ms*0.75), cont=true;
+    try{
+      unlitAll();
+      if(S.ph===0){
+        if(S.PC>=prog.length){
+          S.halted=true; running=false;
+          narr("Xato: PC="+S.PC+" — bu manzilda buyruq yo'q! Dastur HALT bilan tugamagan, protsessor bo'sh xotirani buyruq deb o'qishga urindi. Haqiqiy kompyuterda bu \"crash\".",true);
+          cu('CRASH','PC dastur oxiridan o\'tib ketdi'); S.ir=null; draw(); return false;
+        }
+        S.ticks++; draw();
+        var ins=prog[S.PC]; S.ir=ins;
+        cu('FETCH','PC → manzil shinasi → ROM');
+        lit(['wPcOut','addrTrunk']);
+        await token('PC='+S.PC,'addr',pFetchAddr(),tk);
+        $('#rom'+S.PC).classList.add('on');
+        lit(['dataTrunk','wIrIn']);
+        await token(hex4(ins.word),'data',pFetchData(),tk);
+        setIR(ins,false);
+        narr("Fetch: PC="+S.PC+" manzil shinasi orqali ROM ga bordi, ROM ma'lumot shinasi orqali buyruqni qaytardi: "+ins.text+"  →  IR = "+bits16(ins.word));
+        S.ph=1; draw(); return true;
+      }
+      if(S.ph===1){
+        S.ticks++; draw();
+        var ins1=S.ir; setIR(ins1,true);
+        cu(ins1.text,decodeShort(ins1));
+        var k=ins1.kind;
+        if(/^(ADD|SUB|CMP)/.test(k)){ lit(['wCtlAlu','wCtlReg']); $('#alu').classList.add('on'); $('#aluOp').textContent=k.charAt(0)==='A'?'+':'−'; }
+        else if(k==='LD'||k==='LDI'){ lit(['wCtlTrunk','wCtlReg']); $('#ramRW').textContent='RD ◀'; }
+        else if(k==='ST'||k==='STI'){ lit(['wCtlTrunk','wCtlReg']); $('#ramRW').textContent='WR ◀'; }
+        else if(k==='J'){ lit(['wFlagCu']); }
+        else if(k==='OUT'){ lit(['wCtlReg','wBusOut']); }
+        else if(k==='MOVI'||k==='MOVR'){ lit(['wCtlReg']); }
+        await delay(Math.min(ms,600));
+        narr("Decode: "+decodeText(ins1));
+        S.ph=2; draw(); return true;
+      }
+      if(S.ph===2){
+        S.ticks++; draw();
+        var ins2=S.ir, t=execute(ins2); S.tmp=t; var k2=ins2.kind;
+        cu(ins2.text,'EXECUTE: '+decodeShort(ins2));
+        if(t.op){
+          $('#alu').classList.add('on'); lit(['wRegBus','wAluA']);
+          var second=/R$/.test(k2)?token(String(t.b),'data',pRegToB(ins2.r2),tk):token(String(t.b),'data',pImmToB(),tk);
+          if(/R$/.test(k2)) lit(['wAluB']); else lit(['wImmB']);
+          await Promise.all([token(String(t.a),'data',pRegToA(ins2.r1),tk),second]);
+          $('#aluA').textContent=t.a; $('#aluB').textContent=t.b; $('#aluOp').textContent=t.op;
+          await delay(Math.min(ms*0.4,300));
+          $('#aluRes').textContent='= '+t.res.raw+(t.res.v!==t.res.raw?' → '+t.res.v:'');
+        } else if(k2==='MOVI'){ lit(['wIrOut']); await token(String(ins2.imm),'data',pImmToBus(),tk); }
+        else if(k2==='MOVR'){ lit(['wRegBus','ibus']); await token(String(S.R[ins2.r2]),'data',pRegToBus(ins2.r2),tk); }
+        else if(k2==='LD'||k2==='LDI'){
+          if(!t.err){
+            lit(['wIrAddr','addrTrunk']);
+            if(k2==='LD') await token('['+t.addr+']','addr',pImmToRamAddr(),tk); else { lit(['wRegBus','ibus']); await token('['+t.addr+']','addr',pRegToRamAddr(ins2.r2),tk); }
+            $('#cell'+t.addr).classList.add('hi'); lit(['dataTrunk','wBusOut','ibus']);
+            await token(String(MEM[t.addr]),'data',pRamToBus(),tk);
+          }
+        } else if(k2==='ST'||k2==='STI'){
+          if(!t.err){
+            lit(['addrTrunk','wRegBus','ibus','wBusOut','dataTrunk']);
+            var addrTok=k2==='ST'?token('['+t.addr+']','addr',pImmToRamAddr(),tk):token('['+t.addr+']','addr',pRegToRamAddr(ins2.r1),tk);
+            if(k2==='ST') lit(['wIrAddr']);
+            await Promise.all([addrTok,token(String(S.R[ins2.r2]),'data',[regOut(ins2.r2),regBus(ins2.r2)].concat(pBusToRam()),tk)]);
+            $('#cell'+t.addr).classList.add('hi');
+          }
+        } else if(k2==='J'){
+          lit(['wFlagCu']); await token('Z='+S.Z+' N='+S.N,'ctl',pFlagsToCu(),tk);
+          cu(ins2.text,(t.take?'shart bajarildi → sakrash':'shart bajarilmadi → PC+1'));
+        } else if(k2==='OUT'){ lit(['wRegBus','ibus','wBusOut','dataTrunk']); await token(String(t.out),'data',pRegToOut(ins2.r1),tk); }
+        else if(k2==='HALT'){ cu('HALT','takt generatori to\'xtatiladi'); await delay(Math.min(ms,400)); }
+        narr("Execute: "+t.msg,t.err);
+        S.ph=3; draw(); return true;
+      }
+      /* STORE */
+      S.ticks++; draw();
+      var t3=S.tmp, ins3=S.ir, parts=[];
+      cu(ins3.text,'STORE: natijani yozish');
+      if(t3.err){ S.halted=true; S.ph=0; S.count++; running=false; narr("Store: hech narsa yozilmadi — xato tufayli protsessor to'xtadi.",true); cu('XATO',t3.msg.slice(0,40)); draw(); return false; }
+      for(var wi=0;wi<t3.writes.length;wi++){
+        var w=t3.writes[wi];
+        if(w.reg!==undefined){
+          var k3=ins3.kind;
+          if(t3.op){ lit(['wAluOut','ibus','wRegBus']); await token(String(w.val),'data',pAluToReg(w.reg),tk); }
+          else if(k3==='MOVI'){ lit(['ibus','wRegBus']); await token(String(w.val),'data',pBusToReg([620,400],w.reg),tk); }
+          else if(k3==='MOVR'){ lit(['ibus','wRegBus']); await token(String(w.val),'data',pBusToReg([285,400],w.reg),tk); }
+          else { lit(['ibus','wRegBus']); await token(String(w.val),'data',pBusToReg([630,400],w.reg),tk); }
+          S.R[w.reg]=w.val; parts.push("R"+w.reg+" ← "+w.val); flashReg(w.reg);
+        } else {
+          MEM[w.mem]=w.val; parts.push("["+w.mem+"] ← "+w.val); flashCell(w.mem);
         }
       }
-    },iv);
+      if(t3.flags){ S.Z=t3.flags.Z; S.N=t3.flags.N; parts.push("Z="+S.Z+" N="+S.N); }
+      if(t3.out!==undefined){ S.out.push(t3.out); parts.push("ekran ← "+t3.out); }
+      S.count++;
+      if(t3.halt){
+        S.halted=true; S.ph=0; running=false; parts.push("PC o'zgarmaydi");
+        narr("Store: "+parts.join(', ')+". Dastur tugadi — jami "+S.count+" ta buyruq, "+S.ticks+" takt.");
+        cu('HALT','dastur tugadi'); draw(); return false;
+      }
+      if(t3.jumped){ lit(['wIrOut']); await token('PC←'+t3.nextPC,'addr',pImmToPc(),tk); }
+      S.PC=t3.nextPC; parts.push("PC ← "+S.PC+(t3.jumped?" (sakrash!)":" (+1)"));
+      $('#pcVal').classList.remove('flash');
+      narr("Store: "+parts.join(', '));
+      S.ph=0; S.ir=null; draw(); cu('—','keyingi buyruq: PC = '+S.PC);
+      $('#aluA').textContent='';$('#aluB').textContent='';$('#aluOp').textContent='';$('#aluRes').textContent='';
+      return true;
+    } finally { busy=false; }
   }
-  function stopAuto(){ if(timer){ clearInterval(timer); timer=null; } $('#autoBtn').classList.remove('on'); }
+  async function stepInstr(){ do { var ok=await step(); if(!ok) break; } while(S.ph!==0); }
 
-  /* ---------- Chizish ---------- */
-  function flashEl(el){ if(!el) return; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
-  function narr(text,isErr){
-    var el=$('#narr'), i=text.indexOf(':');
-    el.classList.toggle('err',!!isErr);
-    el.innerHTML=i>0&&i<12?'<b>'+esc(text.slice(0,i+1))+'</b>'+esc(text.slice(i+1)):esc(text);
-  }
-  function buildListing(){
-    var l=$('#lst');
-    if(!prog){ l.innerHTML='<span class="empty">Dasturni yig\'ing — bu yerda manzil, buyruq va uning bitlari chiqadi.</span>'; return; }
-    var h='';
-    prog.forEach(function(ins,i){
-      var lb=(labelsAt[i]||[]).map(function(n){return '<span class="lb">'+esc(n)+':</span> ';}).join('');
-      h+='<div data-a="'+i+'"><span class="ad">'+i+'</span><span class="tx">'+lb+esc(ins.text)+'</span><code class="mc">'+bits16(ins.word)+'</code></div>';
-    });
-    l.innerHTML=h;
-  }
-  function buildMem(){
-    var m=$('#mem'), h='';
-    for(var i=0;i<MEMN;i++) h+='<label data-i="'+i+'">['+i+']<input type="number" min="0" max="255" value="'+MEM[i]+'" aria-label="Xotira ['+i+']"></label>';
-    m.innerHTML=h;
-    m.querySelectorAll('input').forEach(function(inp){
-      var i=+inp.parentElement.dataset.i;
-      inp.addEventListener('change',function(){ var v=parseInt(inp.value,10); if(isNaN(v)) v=0; v=wrap8(v); inp.value=v; MEM[i]=v; });
-      inp.addEventListener('focus',function(){ inp.select(); });
-    });
-  }
-  function draw(){
-    $('#lst').querySelectorAll('div[data-a]').forEach(function(d){ d.classList.toggle('pc',!S.halted&&+d.dataset.a===S.PC); });
-    for(var i=0;i<4;i++){
-      $('#rR'+i).textContent=S.R[i]; $('#bR'+i).textContent=bin(S.R[i],8);
-      $('#ph'+i).classList.toggle('on',!S.halted&&S.started&&S.ph===i);
+  /* ---------- Avto ---------- */
+  async function startAuto(){
+    if(!prog){ narr("Avval dasturni yig'ing.",true); return; }
+    if(S.halted){ reset(); draw(); }
+    running=true; autoCount=0; $('#autoBtn').classList.add('on'); draw();
+    while(running&&!S.halted){
+      var before=S.count;
+      var ok=await step();
+      if(!ok) break;
+      if(S.count!==before){ autoCount++; if(!S.halted&&autoCount>=LIMIT){ narr("Avto rejim to'xtatildi: "+LIMIT+" ta buyruq bajarildi, dastur hali ham tugamadi. Cheksiz sikl bo'lsa kerak — HALT ga olib boradigan shart bormi?",true); break; } }
+      var pm=phaseMs(); if(pm) await delay(Math.max(10,pm*0.15)); else if(S.count%20===0) await delay(0);
     }
-    $('#rPC').textContent=S.PC;
-    $('#rFL').textContent='Z='+S.Z+' N='+S.N;
-    $('#mem').querySelectorAll('input').forEach(function(inp){ var i=+inp.parentElement.dataset.i; if(document.activeElement!==inp&&+inp.value!==MEM[i]) inp.value=MEM[i]; });
-    var con=$('#con');
-    con.innerHTML=S.out.length?S.out.map(function(v){return esc(v);}).join('\n'):'<span class="ph">— hali hech narsa chiqmadi —</span>';
+    running=false; $('#autoBtn').classList.remove('on'); draw();
   }
+  function stopAuto(){ running=false; cancelTok++; $('#autoBtn').classList.remove('on'); }
 
-  /* ---------- Yig'ish tugmasi ---------- */
+  /* ---------- Yig'ish ---------- */
   function doAssemble(){
     stopAuto();
-    var r=assemble($('#src').value);
-    var e=$('#errs'), st=$('#status');
+    var r=assemble($('#src').value), e=$('#errs'), st=$('#status');
     if(r.errors.length){
-      prog=null; labelsAt={}; reset();
-      e.textContent=r.errors.join('\n');
-      st.textContent=''; st.classList.remove('stale');
-      buildListing(); draw();
-      narr("Yig'ishda "+r.errors.length+" ta xato. Tuzating va qayta yig'ing.",true);
-      return false;
+      prog=null; labelsAt={}; reset(); e.textContent=r.errors.join('\n'); st.textContent=''; st.classList.remove('stale');
+      buildROM(); draw(); unlitAll(); narr("Yig'ishda "+r.errors.length+" ta xato. Tuzating va qayta yig'ing.",true); return false;
     }
-    prog=r.prog; labelsAt=r.labelsAt; reset(); stale=false;
-    e.textContent='';
-    st.textContent="✓ Yig'ildi: "+prog.length+" ta buyruq, "+(prog.length*2)+" bayt mashina kodi. PC = 0.";
-    st.classList.remove('stale');
-    buildListing(); draw();
-    narr('Tayyor: PC = 0. "Qadam" — bitta bosqich, "Buyruq" — to\'liq bitta buyruq, "Avto" — dasturni yuritish.');
+    prog=r.prog; labelsAt=r.labelsAt; reset(); stale=false; e.textContent='';
+    st.textContent="✓ Yig'ildi: "+prog.length+" ta buyruq, "+(prog.length*2)+" bayt ROM ga yozildi. PC = 0.";
+    st.classList.remove('stale'); buildROM(); draw(); unlitAll();
+    narr('Tayyor: dastur ROM da, PC = 0. "Qadam" — bitta bosqich, "Buyruq" — to\'liq bitta buyruq, "Avto" — oxirigacha.');
     return true;
   }
-  function markStale(){
-    if(prog&&!stale){ stale=true; var st=$('#status'); st.textContent="Matn o'zgardi — qayta yig'ing (Ctrl+Enter)."; st.classList.add('stale'); }
-  }
+  function markStale(){ if(prog&&!stale){ stale=true; var st=$('#status'); st.textContent="Matn o'zgardi — qayta yig'ing (Ctrl+Enter)."; st.classList.add('stale'); } }
 
   /* ---------- Misollar ---------- */
   var sel=$('#exSel');
   sel.innerHTML='<option value="">— o\'z dasturingiz —</option>'+EXAMPLES.map(function(e,i){return '<option value="'+i+'">'+esc(e.name)+'</option>';}).join('');
   function loadExample(i){
     var e=EXAMPLES[i]; if(!e) return;
-    stopAuto();
-    $('#src').value=e.src; store.set('kqi-sim-src',e.src);
-    $('#exDesc').textContent=e.desc;
+    stopAuto(); sel.value=String(i); $('#src').value=e.src; store.set('kqi-sim-src',e.src); $('#exDesc').textContent=e.desc;
     for(var k=0;k<MEMN;k++) MEM[k]=e.mem&&e.mem[k]!==undefined?e.mem[k]:0;
-    buildMem();
     doAssemble();
   }
   sel.addEventListener('change',function(){ if(sel.value!=='') loadExample(+sel.value); else $('#exDesc').textContent="O'z dasturingiz. Matn brauzerda saqlanadi."; });
@@ -764,16 +884,15 @@ select{font:inherit;font-size:14px;font-weight:600;font-family:var(--display);pa
   $('#asmBtn').onclick=doAssemble;
   $('#src').addEventListener('input',function(){ store.set('kqi-sim-src',$('#src').value); markStale(); if(sel.value!==''){ sel.value=''; $('#exDesc').textContent="O'zgartirilgan misol. Matn brauzerda saqlanadi."; } });
   $('#src').addEventListener('keydown',function(ev){ if((ev.ctrlKey||ev.metaKey)&&ev.key==='Enter'){ ev.preventDefault(); doAssemble(); } });
-  $('#stepBtn').onclick=function(){ if(!prog){ narr("Avval dasturni yig'ing.",true); return; } stopAuto(); if(S.halted){ reset(); draw(); } step(); };
-  $('#instrBtn').onclick=function(){ if(!prog){ narr("Avval dasturni yig'ing.",true); return; } stopAuto(); if(S.halted){ reset(); draw(); } stepInstr(); };
-  $('#autoBtn').onclick=function(){ if(timer) stopAuto(); else startAuto(); };
-  $('#stopBtn').onclick=function(){ stopAuto(); if(prog&&!S.halted) narr("To'xtatildi: PC="+S.PC+", bosqich "+['Fetch','Decode','Execute','Store'][S.ph]+". \"Qadam\" bilan davom etish mumkin."); };
-  $('#resetBtn').onclick=function(){ stopAuto(); reset(); draw(); narr(prog?'Qayta: registrlar, flaglar va PC tozalandi (xotira saqlanib qoldi). PC = 0.':"Avval dasturni yig'ing.",!prog); };
-  $('#memClr').onclick=function(){ for(var k=0;k<MEMN;k++) MEM[k]=0; draw(); };
-  $('#speed').addEventListener('input',function(){ $('#speedVal').textContent=speed()+' buyruq/s'; if(timer) startAuto(); });
+  $('#stepBtn').onclick=function(){ if(!prog){ narr("Avval dasturni yig'ing.",true); return; } if(running) stopAuto(); if(busy) return; if(S.halted){ reset(); draw(); unlitAll(); } step(); };
+  $('#instrBtn').onclick=function(){ if(!prog){ narr("Avval dasturni yig'ing.",true); return; } if(running) stopAuto(); if(busy) return; if(S.halted){ reset(); draw(); unlitAll(); } stepInstr(); };
+  $('#autoBtn').onclick=function(){ if(running) stopAuto(); else if(!busy) startAuto(); };
+  $('#stopBtn').onclick=function(){ stopAuto(); draw(); if(prog&&!S.halted) narr("To'xtatildi: PC="+S.PC+", bosqich "+['Fetch','Decode','Execute','Store'][S.ph]+". \"Qadam\" bilan davom etish mumkin."); };
+  $('#resetBtn').onclick=function(){ stopAuto(); reset(); draw(); unlitAll(); cu('—','buyruq kutilmoqda'); narr(prog?'Qayta: registrlar, flaglar va PC tozalandi (RAM saqlanib qoldi). PC = 0.':"Avval dasturni yig'ing.",!prog); };
+  $('#speed').addEventListener('input',function(){ $('#speedVal').textContent=$('#speed').value; $('#clkRate').textContent='tezlik: '+$('#speed').value; });
 
   /* ---------- Boshlanish ---------- */
-  reset(); buildMem();
+  buildRegs(); buildIR(); buildRAM(); reset(); buildROM(); draw();
   var saved=store.get('kqi-sim-src',null);
   if(typeof saved==='string'&&saved.trim()){
     $('#src').value=saved;
@@ -782,115 +901,7 @@ select{font:inherit;font-size:14px;font-weight:600;font-family:var(--display);pa
     else { sel.value=''; $('#exDesc').textContent="Saqlangan dasturingiz tiklandi."; doAssemble(); }
   } else { sel.value='0'; loadExample(0); }
 
-  /* test va tajribalar uchun */
-  window.KQISim={assemble:assemble,step:step,stepInstr:stepInstr,state:function(){return S;},mem:MEM,running:function(){return !!timer;},loadExample:loadExample,examples:EXAMPLES};
-})();
-</script>
-<script>
-(function(){
-  var $=function(s,r){return (r||document).querySelector(s);};
-  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
-  var reduce=window.KQI&&KQI.reduce;
-
-  /* ---------- Tanishuv: qismlar ---------- */
-  var PARTS={
-    reg:{e:'Registrlar R0–R3',t:"Protsessorning to'rtta cho'ntagi",p:"Har cho'ntakka 0 dan 255 gacha bitta son sig'adi. Protsessor faqat cho'ntagidagi sonlar bilan hisoblaydi: qo'shish, ayirish, solishtirish. Xotiradagi son bilan to'g'ridan-to'g'ri hisoblab bo'lmaydi, avval cho'ntakka olib kelinadi.",h:"<code>MOV R0, 5</code> — R0 cho'ntagiga 5 ni sol"},
-    alu:{e:'ALU',t:"Hisob-kitob stoli",p:"Arifmetik-mantiqiy qurilma (6.1-bo'lim). ADD va SUB shu yerda bajariladi, CMP ham: u ayiradi-yu, natijani stolda qoldirmaydi, faqat chiroqlarni yoqadi. 4-bobdagi yig'uvchi sxemasi aynan shu blokning ichida.",h:"<code>ADD R0, R1</code> — R0 va R1 ni qo'shib, natijani R0 ga yoz"},
-    pc:{e:'PC — Program Counter',t:"Qatorni ko'rsatib turadigan barmoq",p:"Kitob o'qiyotganda barmoq bilan qatorni ko'rsatganingizdek, PC hozir qaysi buyruq bajarilayotganini ko'rsatadi. Har buyruqdan keyin bir qator pastga tushadi. Sakrash buyrug'i esa barmoqni istalgan qatorga ko'chiradi: shundan sikl va shart paydo bo'ladi.",h:"<code>JMP sikl</code> — barmoqni 'sikl:' yorlig'iga ko'chir"},
-    flags:{e:'Flaglar Z va N',t:"Oxirgi hisobning ikki chirog'i",p:"Har ADD, SUB yoki CMP dan keyin ikkita chiroq yangilanadi. Z (zero): natija nol chiqdi. N (negative): natija manfiy chiqdi, ya'ni ayirishda qarz olindi. Shartli sakrashlar 'katta' yoki 'teng' so'zini bilmaydi, ular faqat shu chiroqlarga qaraydi.",h:"<code>CMP R0, 10</code> keyin <code>JE teng</code> — R0 = 10 bo'lsa Z yonadi va sakrash bo'ladi"},
-    mem:{e:'Xotira [0]–[15]',t:"16 ta tokcha",p:"Cho'ntakka sig'maganini tokchaga qo'yasiz. Har tokchaning raqami bor: [0] dan [15] gacha. Massiv aynan shunday saqlanadi: ketma-ket tokchalar. Raqamni registrda ushlab, <code>MOV R2, [R1]</code> desangiz, R1 qaysi tokchani ko'rsatsa, o'shani o'qiydi. Simulyatorda tokchani bosib, sonni o'zingiz ham yozishingiz mumkin.",h:"<code>MOV [3], R0</code> — R0 dagi sonni 3-tokchaga qo'y"},
-    out:{e:'OUT',t:"Ekran",p:"Registrdagi sonni tashqariga chiqaradigan yagona yo'l. Haqiqiy kompyuterda bu 10-bobdagi kirish-chiqish qurilmasi: monitor, printer, tarmoq. Simulyatorda OUT oynasi.",h:"<code>OUT R0</code> — R0 ni ekranga chiqar; <code>HALT</code> — to'xta"}
-  };
-  var order=['reg','alu','pc','flags','mem','out'];
-  var cells=$('#tourCells');
-  if(cells){var h='',vals=[3,8,1,12,6,0,0,0,0,0,0,0,0,0,0,0];
-    for(var i=0;i<16;i++){var cx=388+(i%4)*40,cy=56+Math.floor(i/4)*38;
-      h+='<rect x="'+cx+'" y="'+cy+'" width="36" height="32" rx="5"/><text x="'+(cx+4)+'" y="'+(cy+10)+'">['+i+']</text><text x="'+(cx+18)+'" y="'+(cy+26)+'" text-anchor="middle" class="v">'+vals[i]+'</text>';}
-    cells.innerHTML=h;}
-  var auto=null,idx=0;
-  function showPart(k,user){
-    var d=PARTS[k]; if(!d) return;
-    $$('#cpuTour .part').forEach(function(g){g.classList.toggle('on',g.dataset.part===k);});
-    $$('#tourTabs button').forEach(function(b){b.classList.toggle('on',b.dataset.part===k);});
-    var card=$('#tourCard'); card.style.animation='none'; void card.offsetWidth; card.style.animation='';
-    $('#tourEyebrow').textContent=d.e; $('#tourTitle').textContent=d.t; $('#tourText').innerHTML=d.p; $('#tourHint').innerHTML=d.h;
-    idx=order.indexOf(k);
-    if(user&&auto){clearInterval(auto);auto=null;}
-  }
-  $$('#cpuTour .part').forEach(function(g){
-    g.addEventListener('click',function(){showPart(g.dataset.part,true);});
-    g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();showPart(g.dataset.part,true);}});
-  });
-  $$('#tourTabs button').forEach(function(b){b.onclick=function(){showPart(b.dataset.part,true);};});
-  function startAuto(){ if(auto||reduce) return; auto=setInterval(function(){idx=(idx+1)%order.length;showPart(order[idx]);},3200); }
-  var tourFig=$('#cpuTour');
-  if(tourFig){
-    if('IntersectionObserver' in window){ new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting) startAuto(); else if(auto){clearInterval(auto);auto=null;} });},{threshold:.4}).observe(tourFig); }
-    tourFig.addEventListener('replay',function(){idx=-1;showPart('reg');startAuto();});
-  }
-
-  /* ---------- Oilalar: sinab ko'r ---------- */
-  var DEMOS=[
-    {d:"Ko'chirish: 5 ni R0 ga, R0 ni 3-tokchaga, tokchadan R1 ga.",s:"; Ko'chirish oilasi\nMOV R0, 5       ; R0 cho'ntagiga 5\nMOV [3], R0     ; 3-tokchaga qo'y\nMOV R1, [3]     ; tokchadan R1 ga ol\nOUT R1          ; ekranda 5\nHALT"},
-    {d:"Arifmetika: 250 + 10 = 260, lekin 8 bitda 4 chiqadi.",s:"; Arifmetika oilasi\nMOV R0, 250\nADD R0, 10      ; 260 sig'maydi -> 4\nOUT R0          ; 4\nMOV R1, 3\nSUB R1, 5       ; -2 -> 254, N=1\nOUT R1          ; 254\nHALT"},
-    {d:"Taqqoslash: CMP faqat chiroqlarni yoqadi, registrlar o'zgarmaydi.",s:"; Taqqoslash oilasi\nMOV R0, 7\nMOV R1, 7\nCMP R0, R1      ; 7-7=0 -> Z=1\nJE teng\nMOV R2, 0       ; teng emas\nJMP tugadi\nteng:\nMOV R2, 1       ; teng!\ntugadi:\nOUT R2          ; 1\nHALT"},
-    {d:"Sakrash: 3 dan 1 gacha sanaydigan sikl.",s:"; Sakrash oilasi: sikl\nMOV R0, 3\nsikl:\nOUT R0          ; 3, 2, 1\nDEC R0          ; R0 - 1, nol bo'lsa Z=1\nJNE sikl        ; Z=0 ekan, yana\nHALT"},
-    {d:"Chiqish va to'xtash: HALT ni o'chirib ko'ring, nima bo'ladi?",s:"; OUT va HALT\nMOV R0, 42\nOUT R0\nHALT            ; buni o'chirib, Avto bosing"}
-  ];
-  $$('[data-try]').forEach(function(b){
-    b.onclick=function(){
-      var e=DEMOS[+b.dataset.try]; if(!e) return;
-      var ta=$('#src'); ta.value=e.s; ta.dispatchEvent(new Event('input',{bubbles:true}));
-      $('#exDesc').textContent=e.d;
-      $('#asmBtn').click();
-      $('.sim').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
-    };
-  });
-
-  /* ---------- Chiroqlar laboratoriyasi ---------- */
-  var JUMPS=[['JE','teng bo\'lsa','Z=1',function(Z,N){return Z===1;}],['JNE','teng bo\'lmasa','Z=0',function(Z,N){return Z===0;}],['JL','kichik bo\'lsa','N=1',function(Z,N){return N===1;}],['JG','katta bo\'lsa','Z=0, N=0',function(Z,N){return Z===0&&N===0;}]];
-  function flagRun(){
-    var a=Math.max(0,Math.min(255,+$('#fa').value||0)),b=Math.max(0,Math.min(255,+$('#fb').value||0));
-    $('#fa').value=a;$('#fb').value=b;
-    var raw=a-b,v=(raw+256)&255,Z=v===0?1:0,N=raw<0?1:0;
-    $('#flagCalc').innerHTML='CMP '+a+', '+b+'  →  '+a+' − '+b+' = <b>'+raw+'</b>'+(raw<0?' (8 bitda '+v+')':'')+'<br>natija tashlab yuboriladi, faqat chiroqlar qoladi:<br>Z = <b>'+Z+'</b> ('+(Z?'nol chiqdi':'nol emas')+'), N = <b>'+N+'</b> ('+(N?'manfiy, qarz olindi':'manfiy emas')+')';
-    $('#lampZ').classList.toggle('on',!!Z);$('#lampN').classList.toggle('on',!!N);
-    $('#jumps').innerHTML=JUMPS.map(function(j){var go=j[3](Z,N);return '<div class="jump '+(go?'go':'no')+'"><b>'+j[0]+'</b>'+(go?'sakraydi':'o\'tib ketadi')+'<small>'+j[1]+' · '+j[2]+'</small></div>';}).join('');
-  }
-  if($('#fbtn')){$('#fbtn').onclick=flagRun;$('#fa').addEventListener('input',flagRun);$('#fb').addEventListener('input',flagRun);flagRun();}
-
-  /* ---------- Bit kodlovchi ---------- */
-  var OPNAME={0:'HALT',1:'MOV Rd, n',2:'MOV Rd, Rs',3:'MOV Rd, [a]',4:'MOV [a], Rs',5:'MOV Rd, [Rs]',6:'MOV [Rs], Rd',7:'ADD Rd, Rs',8:'ADD Rd, n',9:'SUB Rd, Rs',10:'SUB Rd, n',11:'CMP Rd, Rs',12:'CMP Rd, n',13:'sakrash',14:'OUT Rd'};
-  var CN=['JMP','JE','JNE','JL','JG'];
-  function encode(){
-    var line=($('#encIn').value||'').trim(); var out=$('#encOut'),row=$('#bitrow');
-    if(!window.KQISim){out.textContent='Simulyator yuklanmadi.';return;}
-    var r=KQISim.assemble('boshi:\n'+line+'\n');
-    if(r.errors.length||!r.prog.length){row.innerHTML='';out.innerHTML='<span style="color:var(--copper)">'+r.errors.join('; ').replace(/^2-qator: /,'')+'</span>';return;}
-    var ins=r.prog[0],w=ins.word,bits=('0000000000000000'+w.toString(2)).slice(-16);
-    var op=bits.slice(0,4),f1=bits.slice(4,6),f2=bits.slice(6,8),im=bits.slice(8);
-    var l1,l2,l3,e2,e3;
-    var opTxt='opkod '+op+' = '+ins.op+' → <b>'+(ins.op===13?CN[ins.cond]+' (sakrash)':OPNAME[ins.op])+'</b>';
-    if(ins.op===13){l1='shart';l2='kodi';l3='manzil';e2='shart kodi '+f1+f2+' = '+ins.cond+' → '+CN[ins.cond];e3='manzil '+im+' = '+(ins.imm&255);}
-    else if(ins.op===0){l1='—';l2='—';l3='—';e2='qolgan bitlar bo\'sh';e3='';}
-    else if(ins.op===4){l1='—';l2='Rs';l3='manzil';e2='ss = '+f2+' → R'+ins.r2;e3='manzil '+im+' = ['+(ins.imm&255)+']';}
-    else if(ins.op===6){l1='Rs';l2='Rd';l3='—';e2='ss = '+f1+' → R'+ins.r1+' (manzil), dd = '+f2+' → R'+ins.r2;e3='';}
-    else{
-      l1='Rd';e2='dd = '+f1+' → R'+ins.r1;
-      var hasRs=[2,5,7,9,11].indexOf(ins.op)>=0;
-      l2=hasRs?'Rs':'—'; if(hasRs) e2+=', ss = '+f2+' → R'+ins.r2;
-      var isMem=ins.op===3,isImm=[1,8,10,12].indexOf(ins.op)>=0;
-      l3=isMem?'manzil':isImm?'son':'—';
-      e3=isMem?'manzil '+im+' = ['+(ins.imm&255)+']':isImm?'son '+im+' = '+(ins.imm&255):'';
-    }
-    var k=0;
-    function grp(cls,b,lbl){return '<div class="bitg '+cls+'">'+b.split('').map(function(c){return '<span class="bit-cell" style="--i:'+(k++)+'">'+c+'</span>';}).join('')+'<small>'+lbl+'</small></div>';}
-    row.innerHTML=grp('op',op,'opkod')+grp('f1',f1,l1)+grp('f2',f2,l2)+grp('im',im,l3);
-    out.innerHTML='<code>'+line.replace(/</g,'&lt;')+'</code> → '+bits.replace(/(.{4})/g,'$1 ').trim()+' (0x'+('0000'+w.toString(16).toUpperCase()).slice(-4)+')<br>'+opTxt+(e2?'<br>'+e2:'')+(e3?'<br>'+e3:'');
-  }
-  if($('#encBtn')){$('#encBtn').onclick=encode;$('#encIn').addEventListener('keydown',function(e){if(e.key==='Enter')encode();});
-    $$('[data-enc]').forEach(function(b){b.onclick=function(){$('#encIn').value=b.dataset.enc;encode();};});
-    encode();}
+  window.KQISim={assemble:assemble,step:step,stepInstr:stepInstr,state:function(){return S;},mem:MEM,running:function(){return running;},loadExample:loadExample,examples:EXAMPLES,startAuto:startAuto,stopAuto:stopAuto};
 })();
 </script>
 </body>
