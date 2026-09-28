@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>2-bob. Ma'lumot qanday ifodalanadi · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Ikkilik sanoq tizimi, bit va bayt, ASCII va Unicode, piksellar, tovush va video — hammasi sonlar.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 2-rasm: bitlar */
+.bits.stagger>*{animation:rise .5s both;animation-delay:calc(var(--i) * .12s)}
+.bit sup{font-size:9px}
+.sum{font-family:var(--mono);font-size:15px;margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sum span{padding:2px 8px;border-radius:6px;background:var(--code);color:var(--muted)}
+.sum span.t{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.sum b{color:var(--ink);font-size:17px}
+/* o'nlikdan ikkilikka */
+.divs{display:grid;gap:6px;margin-top:8px;max-width:520px}
+.divs div{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-family:var(--mono);font-size:14px;opacity:.45;transition:all .3s}
+.divs div.lit{opacity:1;border-color:var(--accent)}
+.divs div.now{background:var(--accent-soft)}
+.divs div i{font-style:normal;font-weight:600;color:var(--copper);border:1px solid var(--copper);border-radius:6px;padding:0 8px}
+.divs .res{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600;grid-template-columns:1fr}
+/* 3-rasm: ASCII */
+.ascii{display:grid;gap:6px;margin-top:6px}
+.ascii .row{display:grid;grid-template-columns:44px 92px 1fr;gap:8px;align-items:center;font-family:var(--mono);font-size:14px;animation:rise .5s both;animation-delay:calc(var(--i) * .35s)}
+.ascii .ch{font-size:22px;font-weight:600;color:var(--copper);text-align:center;border:1px solid var(--copper);border-radius:8px;padding:2px 0;background:var(--copper-soft)}
+.ascii .code{color:var(--ink);text-align:center}
+.ascii .bb{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;max-width:260px}
+.ascii .bb span{border:1px solid var(--line);border-radius:5px;text-align:center;font-size:13px;color:var(--muted);background:var(--surface);animation:rise .3s both;animation-delay:calc(var(--i) * .35s + var(--j) * .05s + .25s)}
+.ascii .bb span.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.ascii .foot{font-family:var(--display);font-size:13px;color:var(--muted);margin-top:8px;animation:rise .5s both;animation-delay:calc(var(--n) * .35s + .4s)}
+@media (max-width:420px){.ascii .row{grid-template-columns:36px 76px 1fr;font-size:12px}.ascii .ch{font-size:18px}}
+/* 4-rasm: piksellar */
+.px .p{animation:rise .35s both;animation-delay:calc(var(--i) * .018s)}
+.px .sel{stroke:var(--ink);stroke-width:2;fill:none;animation:selp 1.4s ease-in-out infinite;animation-delay:2s}
+@keyframes selp{0%,100%{opacity:.4}50%{opacity:1}}
+.px .link{stroke:var(--ink);stroke-width:1.5;fill:none;stroke-dasharray:400;stroke-dashoffset:400;animation:drawln 1s ease-out both;animation-delay:2s}
+@keyframes drawln{to{stroke-dashoffset:0}}
+.px .big{animation:rise .5s both;animation-delay:2.4s}
+.px .chan{animation:rise .5s both;animation-delay:calc(2.9s + var(--i) * .35s)}
+.px .chan .b{animation:rise .3s both;animation-delay:calc(3.1s + var(--i) * .35s + var(--j) * .05s)}
+.px .note{animation:rise .5s both;animation-delay:4.4s}
+/* 5-rasm: tovush */
+.snd .wave{stroke:var(--blue);stroke-width:2.5;fill:none;stroke-dasharray:1400;stroke-dashoffset:1400;animation:drawwave 1.6s linear both}
+@keyframes drawwave{to{stroke-dashoffset:0}}
+.snd .s{animation:rise .3s both;animation-delay:calc(1.6s + var(--i) * var(--st,.07s))}
+.snd .stem{stroke:var(--copper);stroke-width:1.5;opacity:.6}
+.snd .smp{fill:var(--copper)}
+.snd .cur{stroke:var(--copper);stroke-width:1.5;stroke-dasharray:3 3;animation:cursorx var(--tot,4s) linear both;animation-delay:1.6s}
+@keyframes cursorx{from{transform:translateX(0)}to{transform:translateX(560px)}}
+.snd .stair{stroke:var(--copper);stroke-width:1.5;fill:none;opacity:0;animation:fadein .6s both;animation-delay:calc(1.8s + var(--tot,4s))}
+@keyframes fadein{to{opacity:.7}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">2-bob</div>
+  <h1>Ma'lumot qanday ifodalanadi</h1>
+  <p class="lede">Matn, rasm, tovush, video, dastur kodi — kompyuter ichida hammasi sonlar, sonlar esa 0 va 1 lar ketma-ketligi.</p>
+</div>
+
+<p>Kompyuter ichida harflar, rasmlar yoki tovushlar yo'q. U yerda faqat elektr signallari bor va ular ikki holatdan birida bo'ladi: yuqori kuchlanish (masalan, ~1 volt) yoki past kuchlanish (~0 volt). Biz ularni 1 va 0 deb belgilaymiz. Bu ikki holatli tizim <strong>ikkilik (binar) tizim</strong> deyiladi, bitta 0 yoki 1 esa <strong>bit</strong> (binary digit) deb ataladi.</p>
+<p>Nega aynan ikki holat? Chunki elektronikada ikki holatni bir-biridan ajratish juda oson va ishonchli. Agar o'n holat (0 dan 9 gacha) ishlatilganda, kuchlanishdagi kichik shovqin 5 ni 6 ga aylantirib yuborishi mumkin edi. Ikki holat bilan esa "tok bor yoki yo'q" degan savolga javob berish kifoya — xato ehtimoli juda kichik.</p>
+
+<h2 id="2-1">2.1. Ikkilik sanoq tizimi</h2>
+<p>Biz odatda o'nlik tizimda sanaymiz: har bir xona o'ng tomondagisidan 10 barobar katta (birlar, o'nlar, yuzlar...). Ikkilik tizimda esa har bir xona 2 barobar katta: 1, 2, 4, 8, 16, 32, 64, 128 va hokazo. Ikkilik sonni o'nlikka o'girish uchun 1 turgan xonalarning qiymatlarini qo'shib chiqamiz.</p>
+
+<figure class="fig" id="bitsFig">
+  <div class="controls"><label for="decIn" class="small">O'nlik son:</label><input type="number" id="decIn" min="0" max="255" value="181"><span class="small muted">0–255 (1 bayt) · bitlarni bosib o'zgartiring</span></div>
+  <div class="small muted" style="margin-bottom:6px">Bit:</div>
+  <div class="bits stagger" id="bits" data-replay="1"></div>
+  <div class="sum" id="bitsSum"></div>
+  <div class="out" id="bitsOut"></div>
+  <figcaption><span><b>2-rasm.</b> 10110101 ikkilik sonini o'nlik tizimga o'girish</span></figcaption>
+</figure>
+
+<p>Teskari yo'nalish — o'nlik sonni ikkilikka o'girish uchun sonni ketma-ket 2 ga bo'lib, qoldiqlarni yozib boramiz, keyin ularni pastdan yuqoriga o'qiymiz. Masalan, 13: 13/2 = 6 (qoldiq 1), 6/2 = 3 (0), 3/2 = 1 (1), 1/2 = 0 (1). Pastdan o'qisak: 1101. Tekshiramiz: 8 + 4 + 0 + 1 = 13.</p>
+
+<figure class="fig" id="divFig">
+  <div class="controls"><label for="divIn" class="small">O'nlik son:</label><input type="number" id="divIn" min="0" max="255" value="13"><button class="primary" type="button" id="divBtn">2 ga bo'lib ko'rsat</button></div>
+  <div class="divs" id="divs"></div>
+  <figcaption><span><b>O'nlikdan ikkilikka.</b> Har qadamda 2 ga bo'lamiz, qoldiq (0 yoki 1) — navbatdagi bit. Qoldiqlar pastdan yuqoriga o'qiladi.</span></figcaption>
+</figure>
+
+<div class="tbl">
+<table>
+<caption>2-jadval. Sanoq tizimlari o'rtasidagi moslik</caption>
+<thead><tr><th class="num">O'nlik</th><th class="num">Ikkilik</th><th class="num">O'n oltilik (hex)</th></tr></thead>
+<tbody>
+<tr><td class="num">0</td><td class="num">0000</td><td class="num">0</td></tr>
+<tr><td class="num">1</td><td class="num">0001</td><td class="num">1</td></tr>
+<tr><td class="num">5</td><td class="num">0101</td><td class="num">5</td></tr>
+<tr><td class="num">9</td><td class="num">1001</td><td class="num">9</td></tr>
+<tr><td class="num">10</td><td class="num">1010</td><td class="num">A</td></tr>
+<tr><td class="num">13</td><td class="num">1101</td><td class="num">D</td></tr>
+<tr><td class="num">15</td><td class="num">1111</td><td class="num">F</td></tr>
+<tr><td class="num">255</td><td class="num">1111 1111</td><td class="num">FF</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Dasturchilar ko'pincha <strong>o'n oltilik (hexadecimal)</strong> tizimdan foydalanadi, chunki 4 bit aynan bitta hex raqamga to'g'ri keladi va uzun ikkilik sonlarni qisqa yozish mumkin bo'ladi. CSS'dagi <code>#FF5733</code> rang kodi yoki xotira manzili <code>0x7FFE</code> — bular hex yozuvi.</p>
+
+<h2 id="2-2">2.2. Bit, bayt va o'lchov birliklari</h2>
+<p>8 bit birlashib <strong>bayt</strong>ni tashkil qiladi. Bir bayt 2<sup>8</sup> = 256 xil qiymatni (0 dan 255 gacha) ifodalay oladi. Undan kattaroq birliklar:</p>
+
+<div class="tbl">
+<table>
+<caption>3-jadval. Ma'lumot hajmi birliklari</caption>
+<thead><tr><th>Birlik</th><th>Hajmi</th><th>Misol</th></tr></thead>
+<tbody>
+<tr><td>1 bayt (B)</td><td>8 bit</td><td>bitta lotin harfi</td></tr>
+<tr><td>1 kilobayt (KB)</td><td>1024 bayt</td><td>qisqa matn xabari</td></tr>
+<tr><td>1 megabayt (MB)</td><td>1024 KB</td><td>bitta sifatli rasm (~3 MB)</td></tr>
+<tr><td>1 gigabayt (GB)</td><td>1024 MB</td><td>bitta HD film (~2-4 GB)</td></tr>
+<tr><td>1 terabayt (TB)</td><td>1024 GB</td><td>~250 000 ta rasm</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><strong>Diqqat:</strong> internet tezligi odatda bitda (Mbit/s), fayl hajmi esa baytda (MB) o'lchanadi. 100 Mbit/s tezlikda sekundiga taxminan 12.5 MB yuklab olinadi (100 / 8).</p>
+
+<h2 id="2-3">2.3. Matn: ASCII va Unicode</h2>
+<p>Harflarni saqlash uchun har bir belgiga son biriktiriladi. 1963-yilda yaratilgan <strong>ASCII</strong> standartida 128 ta belgi bor: lotin harflari, raqamlar va tinish belgilari. Masalan, katta 'A' = 65, kichik 'a' = 97, '0' raqami = 48. Kompyuter "Salom" so'zini aslida beshta son sifatida saqlaydi.</p>
+
+<figure class="fig" id="asciiFig">
+  <div class="controls"><label for="wordIn" class="small">So'z (lotin harflari):</label><input type="text" id="wordIn" value="Salom" maxlength="8" style="width:140px" autocomplete="off" spellcheck="false"></div>
+  <div class="ascii" id="ascii" data-replay="1"></div>
+  <figcaption><span><b>3-rasm.</b> "Salom" so'zining kompyuter xotirasidagi ko'rinishi</span></figcaption>
+</figure>
+
+<p>ASCII faqat ingliz alifbosi uchun yetarli edi. Kirill, arab, xitoy yozuvlari va emojilar uchun <strong>Unicode</strong> standarti yaratildi — unda 150 000 dan ortiq belgi bor. Unicode belgilarini xotirada saqlashning eng keng tarqalgan usuli <strong>UTF-8</strong>: lotin harflari 1 bayt, kirill harflari 2 bayt, xitoy ieroglifi 3 bayt, emoji esa 4 bayt egallaydi. Shu sababli JavaScript'da <code>'😀'.length</code> natijasi 2 ga teng chiqadi — bu dasturchilar tez-tez duch keladigan tuzoq.</p>
+
+<h2 id="2-4">2.4. Rasm: piksellar</h2>
+<p>Raqamli rasm — bu kichik kvadratchalar, ya'ni <strong>piksellar</strong> to'ri. Har bir piksel rangi uchta son bilan beriladi: qizil (R), yashil (G) va ko'k (B) komponentlar. Har bir komponent 0 dan 255 gacha bo'ladi, ya'ni 1 bayt. Demak bitta piksel 3 bayt, 1920x1080 o'lchamdagi siqilmagan rasm esa 1920 × 1080 × 3 ≈ 6.2 MB joy egallaydi. JPEG, PNG, WebP kabi formatlar maxsus algoritmlar yordamida bu hajmni 10-20 barobar kamaytiradi.</p>
+
+<figure class="fig" id="pxFig">
+  <svg class="sv px" viewBox="0 0 680 250" role="img" aria-label="10 x 10 piksellik rasm; bitta piksel uchta rang kanali — R, G, B — har biri 8 bit">
+    <g id="pxGrid"></g>
+    <rect id="pxSel" class="sel" x="0" y="0" width="18" height="18" rx="2"/>
+    <text x="110" y="228" text-anchor="middle" class="lbl">10 x 10 piksellik rasm</text>
+    <path class="link" id="pxLink1" d=""/>
+    <path class="link" id="pxLink2" d=""/>
+    <g class="big">
+      <rect x="250" y="70" width="70" height="70" rx="6" fill="var(--copper)" stroke="var(--ink)" stroke-width="2"/>
+      <text x="285" y="160" text-anchor="middle" class="lbl">1 piksel</text>
+      <path d="M320 105 H 350" stroke="var(--wire)" stroke-width="2" fill="none"/>
+      <path d="M344 99 L 352 105 L 344 111 Z" fill="var(--wire)"/>
+    </g>
+    <text x="500" y="30" text-anchor="middle" class="ttl chan" style="--i:-1">3 ta rang kanali</text>
+    <g class="chan" style="--i:0" id="chR"></g>
+    <g class="chan" style="--i:1" id="chG"></g>
+    <g class="chan" style="--i:2" id="chB"></g>
+    <text x="500" y="228" text-anchor="middle" class="note">Har kanal 0..255 = 8 bit = 1 bayt</text>
+  </svg>
+  <figcaption><span><b>4-rasm.</b> Rasm — piksellar to'ri, har bir piksel — uchta son</span></figcaption>
+</figure>
+
+<h2 id="2-5">2.5. Tovush va video</h2>
+<p>Tovush — havo bosimining uzluksiz o'zgarishi, ya'ni to'lqin. Mikrofon uni elektr signaliga aylantiradi, so'ng <strong>analog-raqamli o'zgartirgich (ADC)</strong> bu to'lqinni juda tez-tez o'lchaydi. CD sifatida sekundiga 44 100 marta o'lchov olinadi va har bir o'lchov 16 bitli son sifatida saqlanadi. Ijro etishda teskari jarayon — <strong>DAC</strong> sonlarni yana to'lqinga aylantiradi.</p>
+
+<figure class="fig" id="sndFig">
+  <div class="controls"><label for="rateIn" class="small">O'lchovlar zichligi:</label><input type="range" id="rateIn" min="6" max="48" value="24"><span class="small muted" id="rateTxt"></span></div>
+  <svg class="sv snd" viewBox="0 0 640 230" role="img" aria-label="Uzluksiz tovush to'lqini va undan olingan o'lchovlar">
+    <line x1="40" y1="110" x2="620" y2="110" stroke="var(--line)" stroke-width="1.5"/>
+    <line x1="40" y1="20" x2="40" y2="200" stroke="var(--line)" stroke-width="1.5"/>
+    <text x="46" y="28">+32767</text><text x="46" y="200">−32768</text><text x="600" y="126" text-anchor="end">vaqt →</text>
+    <path class="wave" id="wavePath" d=""/>
+    <g id="samples"></g>
+    <path class="stair" id="stair" d=""/>
+    <line class="cur" id="cur" x1="40" y1="20" x2="40" y2="200"/>
+    <text x="330" y="222" text-anchor="middle" class="lbl">Uzluksiz to'lqin (ko'k) → har 1/44100 soniyada o'lchov (qizil nuqtalar)</text>
+  </svg>
+  <div class="out" id="sndOut"></div>
+  <figcaption><span><b>5-rasm.</b> Tovushni raqamlashtirish (diskretizatsiya)</span></figcaption>
+</figure>
+
+<p>Video esa sekundiga 24-60 marta almashadigan rasmlar ketma-ketligi va ularga biriktirilgan tovush. Siqilmagan Full HD video sekundiga ~370 MB bo'lar edi, shuning uchun H.264, H.265, AV1 kabi <strong>kodeklar</strong> faqat kadrlar orasidagi farqni saqlaydi va hajmni yuzlab marta kamaytiradi.</p>
+
+<div class="callout"><b>Xulosa:</b> matn, rasm, tovush, video, dastur kodi — hammasi oxir-oqibat sonlar, sonlar esa bitlar ketma-ketligi. Kompyuter ma'lumot turini "bilmaydi"; uni qanday talqin qilishni dastur hal qiladi.</div>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="2">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s2">2-savol</a>, <a href="../savollar.html#s3">3-savol</a></span></div>
+
+<nav class="pager">
+  <a href="01.html"><small>Oldingi</small>1-bob. Kompyuter nima?</a>
+  <a class="next" href="03.html"><small>Keyingi</small>3-bob. Elektronika asoslari va tranzistor</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+(function(){
+  const $=KQI.$, reduce=KQI.reduce;
+  /* animatsiyani qayta boshlash */
+  const rerun=el=>{const all=el.querySelectorAll('*');all.forEach(e=>{e.style.animation='none';});void el.offsetWidth;all.forEach(e=>{e.style.animation='';});};
+
+  /* ---------- 2-rasm: ikkilik -> o'nlik ---------- */
+  const bitsEl=$('#bits'),bitsOut=$('#bitsOut'),bitsSum=$('#bitsSum'),decIn=$('#decIn');
+  let bits=[1,0,1,1,0,1,0,1];
+  const btns=[];
+  bits.forEach((v,i)=>{
+    const d=document.createElement('button');d.type='button';d.className='bit';d.style.setProperty('--i',i);d.setAttribute('aria-label','bit '+(7-i));
+    d.innerHTML=`<small>2<sup>${7-i}</sup></small><b>${v}</b><small>${1<<(7-i)}</small>`;
+    d.onclick=()=>{bits[i]=bits[i]?0:1;drawBits();};
+    bitsEl.appendChild(d);btns.push(d);
+  });
+  function drawBits(){
+    bits.forEach((v,i)=>{btns[i].classList.toggle('on',!!v);btns[i].querySelector('b').textContent=v;});
+    const terms=bits.map((v,i)=>v?(1<<(7-i)):0).filter(Boolean);
+    const n=terms.reduce((a,b)=>a+b,0);
+    decIn.value=n;
+    bitsSum.innerHTML=bits.map((v,i)=>`<span class="${v?'t':''}">${v?(1<<(7-i)):0}</span>`).join('<i class="muted">+</i>')+`<i class="muted">=</i><b>${n}</b>`;
+    bitsOut.innerHTML=`${terms.length?terms.join(' + '):'0'} = <b>${n}</b> &nbsp;·&nbsp; hex <b>0x${n.toString(16).toUpperCase().padStart(2,'0')}</b> &nbsp;·&nbsp; ASCII ${n>=32&&n<127?'"<b>'+String.fromCharCode(n)+'</b>"':'—'}`;
+    bitsOut.classList.remove('flash');void bitsOut.offsetWidth;bitsOut.classList.add('flash');
+  }
+  decIn.addEventListener('input',()=>{let n=Math.max(0,Math.min(255,parseInt(decIn.value)||0));bits=n.toString(2).padStart(8,'0').split('').map(Number);drawBits();});
+  drawBits();
+  $('#bitsFig').addEventListener('replay',()=>rerun(bitsEl));
+
+  /* ---------- O'nlikdan ikkilikka: 2 ga bo'lish ---------- */
+  const divs=$('#divs'),divIn=$('#divIn');
+  let divTimers=[];
+  function showDiv(animate){
+    divTimers.forEach(clearTimeout);divTimers=[];
+    let n=Math.max(0,Math.min(255,parseInt(divIn.value)||0));divIn.value=n;
+    const steps=[];let x=n;
+    if(x===0)steps.push([0,0,0]);
+    while(x>0){steps.push([x,Math.floor(x/2),x%2]);x=Math.floor(x/2);}
+    divs.innerHTML=steps.map(s=>`<div><span>${s[0]} / 2 = ${s[1]}</span><span>qoldiq <i>${s[2]}</i></span></div>`).join('')+
+      `<div class="res">Pastdan yuqoriga o'qiymiz: ${steps.map(s=>s[2]).reverse().join('')}<sub>2</sub> = ${n}</div>`;
+    const rows=[...divs.children];
+    if(!animate){rows.forEach(r=>r.classList.add('lit'));return;}
+    rows.forEach((r,i)=>divTimers.push(setTimeout(()=>{rows.forEach(x=>x.classList.remove('now'));r.classList.add('lit','now');if(i===rows.length-1)divTimers.push(setTimeout(()=>r.classList.remove('now'),600));},reduce?0:i*550)));
+  }
+  $('#divBtn').onclick=()=>showDiv(true);
+  divIn.addEventListener('input',()=>showDiv(false));
+  $('#divFig').addEventListener('replay',()=>showDiv(true));
+  showDiv(false);
+
+  /* ---------- 3-rasm: ASCII ---------- */
+  const asciiEl=$('#ascii'),wordIn=$('#wordIn');
+  function drawAscii(){
+    let w=wordIn.value.replace(/[^\x20-\x7E]/g,'');
+    if(!w)w=' ';
+    asciiEl.innerHTML=[...w].map((c,i)=>{
+      const code=c.charCodeAt(0),b=code.toString(2).padStart(8,'0');
+      return `<div class="row" style="--i:${i}"><span class="ch">${c===' '?'␣':c.replace('<','&lt;').replace('&','&amp;')}</span><span class="code">'${c===' '?' ':c.replace('<','&lt;').replace('&','&amp;')}' = ${code}</span><span class="bb">${[...b].map((x,j)=>`<span class="${x==='1'?'on':''}" style="--i:${i};--j:${j}">${x}</span>`).join('')}</span></div>`;
+    }).join('')+`<div class="foot" style="--n:${w.length}">Har bir harf — bitta son, har bir son — 8 bit &nbsp;·&nbsp; jami ${w.length} bayt = ${w.length*8} bit</div>`;
+  }
+  wordIn.addEventListener('input',drawAscii);
+  $('#asciiFig').addEventListener('replay',()=>rerun(asciiEl));
+  drawAscii();
+
+  /* ---------- 4-rasm: piksellar ---------- */
+  const pic=['bbbbbbbbbb','bbbyyyybbb','bbyyyyyybb','byykyykyyb','byyyyyyyyb','bykyyyykyb','byykkkkyyb','bbyyyyyybb','bbbyyyybbb','bbbbbbbbbb'];
+  const col={b:'var(--blue-soft)',y:'var(--copper)',k:'var(--ink)'};
+  const SEL=[4,6];
+  const grid=$('#pxGrid');const cs=18,ox=20,oy=20;
+  let html='';
+  pic.forEach((row,r)=>[...row].forEach((c,q)=>{html+=`<rect class="p" style="--i:${r*10+q}" x="${ox+q*cs}" y="${oy+r*cs}" width="${cs-1}" height="${cs-1}" rx="1.5" fill="${col[c]}"/>`;}));
+  grid.innerHTML=html;
+  const sx=ox+SEL[1]*cs,sy=oy+SEL[0]*cs;
+  const sel=$('#pxSel');sel.setAttribute('x',sx-1);sel.setAttribute('y',sy-1);sel.setAttribute('width',cs+1);sel.setAttribute('height',cs+1);
+  $('#pxLink1').setAttribute('d',`M${sx+cs} ${sy} L 250 70`);
+  $('#pxLink2').setAttribute('d',`M${sx+cs} ${sy+cs} L 250 140`);
+  const chans=[['chR','R (qizil)',242,'var(--copper)','var(--copper-soft)'],['chG','G (yashil)',201,'var(--accent)','var(--accent-soft)'],['chB','B (ko\'k)',76,'var(--blue)','var(--blue-soft)']];
+  chans.forEach((c,i)=>{
+    const y=50+i*56,b=c[2].toString(2).padStart(8,'0');
+    let s=`<rect x="370" y="${y}" width="270" height="44" rx="8" fill="${c[4]}" stroke="${c[3]}" stroke-width="1.5"/>`;
+    s+=`<text x="380" y="${y+18}" class="lbl">${c[1]} = ${c[2]} = ${b}</text>`;
+    [...b].forEach((x,j)=>{s+=`<rect class="b" style="--i:${i};--j:${j}" x="${380+j*23}" y="${y+24}" width="19" height="14" rx="3" fill="${x==='1'?c[3]:'var(--surface)'}" stroke="${c[3]}" stroke-width="1"/>`;
+      s+=`<text class="b" style="--i:${i};--j:${j}" x="${389.5+j*23}" y="${y+35}" text-anchor="middle" font-size="10" fill="${x==='1'?'var(--surface)':'var(--muted)'}">${x}</text>`;});
+    $('#'+c[0]).innerHTML=s;
+  });
+  $('#pxFig').addEventListener('replay',()=>rerun($('#pxFig svg')));
+
+  /* ---------- 5-rasm: tovush ---------- */
+  const rateIn=$('#rateIn'),rateTxt=$('#rateTxt'),samples=$('#samples'),sndOut=$('#sndOut'),sndSvg=$('#sndFig svg');
+  const X0=40,X1=600,YM=110,AMP=80;
+  const f=t=>0.6*Math.sin(t*2*Math.PI*2.2)+0.3*Math.sin(t*2*Math.PI*5.3+1)+0.1*Math.sin(t*2*Math.PI*11+2); /* -1..1 */
+  let d='';for(let i=0;i<=280;i++){const t=i/280,x=X0+t*(X1-X0),y=YM-f(t)*AMP;d+=(i?' L':'M')+x.toFixed(1)+' '+y.toFixed(1);}
+  $('#wavePath').setAttribute('d',d);
+  function drawSamples(){
+    const n=+rateIn.value;
+    rateTxt.textContent=`${n} ta o'lchov ko'rsatilmoqda (CD: 44 100 ta / soniya)`;
+    const step=Math.max(.02,Math.min(.12,2.8/n));
+    sndSvg.style.setProperty('--tot',(n*step+.2)+'s');
+    let s='',st='',vals=[];
+    for(let i=0;i<n;i++){const t=(i+.5)/n,x=X0+t*(X1-X0),v=f(t),y=YM-v*AMP;const iv=Math.round(v*32767);vals.push(iv);
+      s+=`<g class="s" style="--i:${i};--st:${step}s"><line class="stem" x1="${x.toFixed(1)}" y1="${YM}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/><circle class="smp" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5"/></g>`;
+      st+=(i?' L':'M')+(X0+i/n*(X1-X0)).toFixed(1)+' '+y.toFixed(1)+' L '+(X0+(i+1)/n*(X1-X0)).toFixed(1)+' '+y.toFixed(1);}
+    samples.innerHTML=s;$('#stair').setAttribute('d',st);
+    sndOut.innerHTML=`16 bitli o'lchovlar: <b>${vals.slice(0,8).join(', ')}</b>${n>8?', …':''} &nbsp;<span class="muted">(har biri −32768..32767 oralig'ida)</span>`;
+    rerun(sndSvg);
+  }
+  rateIn.addEventListener('input',drawSamples);
+  $('#sndFig').addEventListener('replay',()=>rerun(sndSvg));
+  drawSamples();
+})();
+</script>
+</body>
+</html>

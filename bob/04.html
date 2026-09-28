@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>4-bob. Mantiqiy ventillar · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="AND, OR, NOT, NAND, XOR, NOR ventillari va haqiqat jadvallari; yarim va to'liq yig'uvchi; 4 bitli qo'shish; flip-flop va registr.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.sv .flow{transition:opacity .3s}
+/* 7-rasm: ventillar */
+.gates{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+.gates .g{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--surface);animation:rise .5s both;animation-delay:calc(var(--i) * .15s)}
+.gates .g h4{font-family:var(--display);font-size:13px;margin:0 0 4px;text-align:center;color:var(--ink)}
+.gates .g svg{width:100%;height:auto}
+.gates .g .sym{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.gates .g .bub{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.gates table{font-family:var(--mono);font-size:12.5px;border:0;background:none;width:100%;margin-top:4px;border-radius:0}
+.gates th{padding:2px 4px;font-size:11px;background:none;text-align:center;letter-spacing:0;border-bottom:1px solid var(--line)}
+.gates td{padding:2px 4px;text-align:center;border-bottom:0;transition:background .25s}
+.gates tr.cur td{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.gates tr.cur td:first-child{border-radius:6px 0 0 6px}
+.gates tr.cur td:last-child{border-radius:0 6px 6px 0}
+.gates .q{font-family:var(--mono);font-size:12px;text-align:center;color:var(--muted);margin-top:4px}
+.gates .q b{color:var(--accent);font-size:16px}
+/* 8-rasm: yarim yig'uvchi */
+.ha{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start}
+@media (max-width:560px){.ha{grid-template-columns:1fr}}
+.ha table{font-family:var(--mono);font-size:13px;width:auto;min-width:200px}
+.ha td,.ha th{text-align:center;padding:5px 10px}
+.ha tr.cur td{background:var(--accent-soft);color:var(--accent);font-weight:600}
+/* 9-rasm: 4 bitli yig'uvchi */
+.nib{display:grid;grid-template-columns:auto repeat(4,52px) auto;gap:6px;align-items:center;margin-bottom:8px;font-family:var(--mono);font-size:14px}
+.nib .bit{padding:4px 2px}
+.nib .bit b{font-size:18px}
+.nib .bit small{font-size:10px}
+.add4 .fa{transition:all .3s}
+.add4 .fa.on{stroke:var(--accent);fill:var(--accent-soft)}
+.add4 .fa.now{stroke:var(--copper);stroke-width:2.5}
+.add4 .sval{fill:var(--accent);font-weight:700;font-size:16px;opacity:0;transition:opacity .3s}
+.add4 .sval.on{opacity:1}
+.add4 .cval{fill:var(--copper);font-weight:600;opacity:0;transition:opacity .3s}
+.add4 .cval.on{opacity:1}
+.add4 .flow.copper{stroke-width:3.5}
+/* 10-rasm: flip-flop */
+.ff .clkwave{stroke:var(--ink);stroke-width:2;fill:none}
+.ff .edge{stroke:var(--copper);stroke-width:3;fill:none;opacity:0;transition:opacity .2s}
+.ff .edge.on{opacity:1}
+.ff .snap{fill:var(--copper-soft);stroke:var(--copper);stroke-width:1.5;opacity:0}
+.ff .snap.go{animation:snap .7s ease-out both}
+@keyframes snap{0%{opacity:0;transform:translateX(0)}30%{opacity:1}100%{opacity:0;transform:translateX(170px)}}
+.reg{display:grid;grid-template-columns:auto repeat(8,1fr);gap:5px;align-items:center;max-width:560px;margin-top:10px;font-family:var(--mono);font-size:12px}
+.reg .lab{color:var(--muted);padding-right:6px;white-space:nowrap}
+.reg .bit{padding:3px 0}
+.reg .bit b{font-size:17px}
+.reg .q{border:1px solid var(--line);border-radius:8px;text-align:center;padding:3px 0;font-size:17px;font-weight:600;color:var(--muted);background:var(--code);transition:all .3s}
+.reg .q.on{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+@media (max-width:480px){.reg{gap:3px;font-size:11px}.reg .bit b,.reg .q{font-size:14px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">4-bob</div>
+  <h1>Mantiqiy ventillar</h1>
+  <p class="lede">Bir nechta tranzistor — bitta ventil. Ventillardan yig'uvchi (hisoblaydi) va flip-flop (eslaydi) quriladi; qolgan hamma narsa shu ikki g'ishtdan.</p>
+</div>
+
+<p>Bitta tranzistor — oddiy kalit. Lekin bir nechta tranzistorni ma'lum tartibda ulasak, <strong>mantiqiy ventil</strong> (logic gate) hosil bo'ladi. Ventil bir yoki bir nechta kirish bitini qabul qilib, aniq qoida bo'yicha bitta chiqish biti beradi. Bu qoidalar 1854-yilda Jorj Bul tomonidan ishlab chiqilgan <strong>Bul algebrasi</strong>ga asoslanadi. Ventilning ishlashi <strong>haqiqat jadvali</strong> bilan to'liq tavsiflanadi — unda barcha kirish kombinatsiyalari va ularga mos chiqish ko'rsatiladi.</p>
+
+<figure class="fig" id="gatesFig">
+  <div class="controls"><button type="button" id="gA">A = 0</button><button type="button" id="gB">B = 0</button><span class="small muted">Kirishlarni almashtiring — har jadvalda mos qator yonadi</span></div>
+  <div class="gates" id="gates" data-replay="1"></div>
+  <figcaption><span><b>7-rasm.</b> Asosiy mantiqiy ventillar va ularning haqiqat jadvallari (Q — chiqish)</span></figcaption>
+</figure>
+
+<p><strong>AND (VA)</strong> — ikkala kirish ham 1 bo'lsagina chiqish 1. Elektr sxemasida ketma-ket ulangan ikkita kalitga o'xshaydi: chiroq yonishi uchun ikkalasi ham yopiq bo'lishi kerak. <strong>OR (YOKI)</strong> — kamida bitta kirish 1 bo'lsa, chiqish 1; bu parallel ulangan kalitlar. <strong>NOT (EMAS)</strong> — kirishni teskarisiga aylantiradi. <strong>NAND</strong> va <strong>NOR</strong> — AND va OR ning teskarisi. <strong>XOR</strong> (istisno qiluvchi YOKI) — kirishlar har xil bo'lsagina 1 beradi.</p>
+
+<div class="callout copper"><b>Qiziq fakt:</b> NAND ventili universal. Faqat NAND ventillaridan foydalanib, boshqa barcha ventillarni va demak butun kompyuterni yasash mumkin. Masalan, NOT = NAND(A, A). Zamonaviy flesh xotira ham NAND tuzilmasiga asoslangani uchun "NAND flash" deb ataladi.</div>
+
+<p>Dasturlashda ham shu amallarni ishlatasiz: JavaScript'dagi <code>&amp;&amp;</code> — AND, <code>||</code> — OR, <code>!</code> — NOT. Bitli amallar esa <code>&amp;</code>, <code>|</code>, <code>^</code> (XOR), <code>~</code> (NOT). Siz <code>if (user &amp;&amp; user.isAdmin)</code> yozganingizda, protsessor ichida haqiqatan ham AND ventillari ishlaydi.</p>
+
+<h2 id="4-1">4.1. Ventillardan hisoblashgacha: yarim yig'uvchi</h2>
+<p>Endi eng qiziq qismi: ventillar yordamida qanday qilib sonlarni qo'shish mumkin? Ikkilik tizimda bir xonali qo'shish qoidalari: 0+0=0, 0+1=1, 1+0=1, 1+1=10 (ya'ni natija 0, keyingi xonaga 1 ko'chadi). E'tibor bering: yig'indi biti (S) aynan XOR jadvaliga, ko'chirish biti (C) esa aynan AND jadvaliga mos keladi! Demak bitta XOR va bitta AND ventilini ulasak, bir bitli sonlarni qo'shadigan <strong>yarim yig'uvchi</strong> (half adder) hosil bo'ladi.</p>
+
+<figure class="fig" id="haFig">
+  <div class="controls"><button type="button" id="btnA">A = 1</button><button type="button" id="btnB">B = 1</button></div>
+  <div class="ha">
+    <div>
+      <svg class="sv" viewBox="0 0 420 130" role="img" aria-label="Yarim yig'uvchi sxemasi: XOR yig'indini, AND ko'chirishni hisoblaydi">
+        <text x="10" y="34" class="lbl">A</text><text x="10" y="104" class="lbl">B</text>
+        <path class="wire" id="wa1" d="M25 30 H 120 V 45 H 160"/><path class="wire" id="wb1" d="M25 100 H 120 V 55 H 160"/>
+        <path class="wire" id="wa2" d="M90 30 V 85 H 160"/><path class="wire" id="wb2" d="M100 100 V 95 H 160"/>
+        <path class="flow off" id="fa" d="M25 30 H 120 V 45 H 160 M90 30 V 85 H 160"/>
+        <path class="flow off" id="fb" d="M25 100 H 120 V 55 H 160 M100 100 V 95 H 160"/>
+        <circle cx="90" cy="30" r="3.5" class="dot"/><circle cx="100" cy="100" r="3.5" class="dot"/>
+        <rect x="160" y="32" width="70" height="36" rx="8" class="box" id="bxor"/><text x="195" y="55" text-anchor="middle" class="lbl">XOR</text>
+        <rect x="160" y="72" width="70" height="36" rx="8" class="box" id="band"/><text x="195" y="95" text-anchor="middle" class="lbl">AND</text>
+        <path class="wire" id="ws" d="M230 50 H 300"/><path class="wire" id="wc" d="M230 90 H 300"/>
+        <path class="flow off" id="fs" d="M230 50 H 300"/><path class="flow copper off" id="fc" d="M230 90 H 300"/>
+        <text x="310" y="54" class="lbl" id="tS">S = 0</text><text x="310" y="94" class="lbl" id="tC">C = 1</text>
+        <text x="310" y="70">S (yig'indi)</text><text x="310" y="110">C (ko'chirish)</text>
+      </svg>
+      <div class="out" id="haOut"></div>
+    </div>
+    <div class="tbl" style="margin:0">
+      <table id="haTbl">
+        <thead><tr><th>A</th><th>B</th><th>S</th><th>C</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+          <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <figcaption><span><b>8-rasm.</b> Yarim yig'uvchi: XOR yig'indini, AND ko'chirishni hisoblaydi</span></figcaption>
+</figure>
+
+<h2 id="4-2">4.2. To'liq yig'uvchi va ko'p bitli qo'shish</h2>
+<p>Ko'p xonali sonlarni qo'shganda har bir xona oldingi xonadan kelgan ko'chirishni ham hisobga olishi kerak. Buning uchun ikkita yarim yig'uvchi va bitta OR ventilidan <strong>to'liq yig'uvchi</strong> (full adder) yasaladi — u uchta kirishni (A, B va ko'chirish) qabul qiladi. To'liq yig'uvchilarni zanjir qilib ulasak, istalgan uzunlikdagi sonlarni qo'shish mumkin. 64 ta to'liq yig'uvchi — 64 bitli protsessordagi qo'shish bloki.</p>
+
+<figure class="fig" id="add4Fig">
+  <div class="nib" id="nibA"><span>A =</span></div>
+  <div class="nib" id="nibB"><span>B =</span></div>
+  <div class="controls"><button class="primary" type="button" id="addBtn">Qo'sh</button><span class="small muted" id="addTxt">A va B bitlarini bosib o'zgartiring, so'ng "Qo'sh"</span></div>
+  <svg class="sv add4" viewBox="0 0 780 300" role="img" aria-label="To'rtta to'liq yig'uvchi zanjiri: ko'chirish biti o'ngdan chapga uzatiladi">
+    <g id="add4g"></g>
+  </svg>
+  <div class="out" id="addOut"></div>
+  <figcaption><span><b>9-rasm.</b> 4 bitli yig'uvchi: ko'chirish (C) o'ngdan chapga uzatiladi</span></figcaption>
+</figure>
+
+<p>Ayirish qo'shish orqali bajariladi: sonning <strong>qo'shimcha kodi</strong> (barcha bitlarni teskari qilib, 1 qo'shish) olinadi va qo'shiladi. Ko'paytirish — ko'p marta surish va qo'shish. Bo'lish — ko'p marta ayirish va solishtirish. Shunday qilib, barcha arifmetika bir necha turdagi ventillardan qurilgan sxemalarga keltiriladi.</p>
+
+<h2 id="4-3">4.3. Xotira elementi: flip-flop</h2>
+<p>Hisoblash — ishning yarmi. Kompyuter natijalarni eslab qolishi ham kerak. Agar ventilning chiqishini qaytadan uning kirishiga ulasak (<strong>teskari aloqa</strong>), sxema o'z holatini "ushlab turadi". Ikki NOR yoki ikki NAND ventilini kesishgan holda ulash natijasida <strong>SR-latch</strong> hosil bo'ladi — u bitta bitni saqlaydi. Uning takomillashgan varianti <strong>D flip-flop</strong> — takt signalining har bir chetida kirishdagi qiymatni "suratga olib", keyingi taktgacha saqlaydi.</p>
+
+<figure class="fig" id="ffFig">
+  <div class="controls"><button type="button" id="dBtn">D = 0</button><button class="primary" type="button" id="clkBtn">Takt ber (CLK ↑)</button></div>
+  <svg class="sv ff" viewBox="0 20 560 170" role="img" aria-label="D flip-flop: D kirishi, CLK takt kirishi, Q chiqishi; takt signali chetida D qiymati Q ga ko'chadi">
+    <rect x="200" y="40" width="170" height="110" rx="10" class="box" id="ffBox"/>
+    <text x="285" y="72" text-anchor="middle" class="ttl">D Flip-Flop</text>
+    <text x="285" y="90" text-anchor="middle">1 bitni saqlaydi</text>
+    <path class="wire" id="dW" d="M100 100 H 200"/>
+    <path class="flow off" id="dF" d="M100 100 H 200"/>
+    <text x="12" y="92" class="lbl" id="dLbl">D = 0</text><text x="12" y="108">D (ma'lumot)</text>
+    <path class="wire" d="M100 130 H 200"/>
+    <path d="M200 122 L 212 130 L 200 138 Z" fill="var(--wire)"/>
+    <text x="12" y="126" class="lbl">CLK</text><text x="12" y="142">CLK (takt)</text>
+    <rect class="snap" id="snap" x="150" y="86" width="40" height="28" rx="6"/>
+    <text id="snapT" x="170" y="105" text-anchor="middle" class="snap lbl" style="fill:var(--copper)">0</text>
+    <path class="wire" id="qW" d="M370 100 H 500"/>
+    <path class="flow off" id="qF" d="M370 100 H 500"/>
+    <text x="440" y="92" text-anchor="middle" class="lbl" id="qLbl">Q = 0</text><text x="440" y="118" text-anchor="middle">Q (saqlangan)</text>
+    <path class="clkwave" id="clkwave" d="M60 175 H 90 V 160 H 120 V 175 H 150 V 160 H 180 V 175 H 210 V 160 H 240 V 175 H 260"/>
+    <path class="edge" id="edge" d="M90 175 V 160"/>
+    <text x="270" y="172">takt signali: 0-1-0-1...</text>
+  </svg>
+  <div class="out" id="ffOut">Q = <b>0</b> &nbsp; <span class="muted">Q faqat takt kelganda D ni "suratga oladi"</span></div>
+  <div class="small muted" style="margin-top:12px">8 ta flip-flop = 1 bayt registr (yuqoridagi flip-flop — 7-bit; har taktda 8 ta D birga Q ga ko'chadi)</div>
+  <div class="reg" id="reg"></div>
+  <figcaption><span><b>10-rasm.</b> D flip-flop: takt signali kelganda D qiymatini eslab qoladi</span></figcaption>
+</figure>
+
+<p>Bir nechta flip-flop birlashsa <strong>registr</strong> hosil bo'ladi: 8 ta — 8 bitli registr, 64 ta — 64 bitli registr. Registrlar protsessor ichidagi eng tez xotira. Shunday qilib, biz tranzistordan boshlab kompyuterning ikki asosiy qobiliyatiga — hisoblash (yig'uvchi) va eslash (flip-flop) ga yetib keldik. Qolgan hamma narsa shu ikki g'ishtdan qurilgan.</p>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="4">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s5">5-savol</a>, <a href="../savollar.html#s6">6-savol</a></span></div>
+
+<nav class="pager">
+  <a href="03.html"><small>Oldingi</small>3-bob. Elektronika asoslari va tranzistor</a>
+  <a class="next" href="05.html"><small>Keyingi</small>5-bob. Kompyuter arxitekturasi</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+(function(){
+  const $=KQI.$, reduce=KQI.reduce;
+  const rerun=el=>{const all=el.querySelectorAll('*');all.forEach(e=>{e.style.animation='none';});void el.offsetWidth;all.forEach(e=>{e.style.animation='';});};
+
+  /* ---------- 7-rasm: ventillar ---------- */
+  const GATES=[
+    {n:'AND',u:'VA',f:(a,b)=>a&b,sym:'<path class="sym" d="M30 10 H 58 A 20 20 0 0 1 58 50 H 30 Z"/>',ox:78},
+    {n:'OR',u:'YOKI',f:(a,b)=>a|b,sym:'<path class="sym" d="M28 10 Q 44 30 28 50 Q 60 50 84 30 Q 60 10 28 10 Z"/>',ox:84},
+    {n:'NOT',u:'EMAS',f:a=>1-a,one:true,sym:'<path class="sym" d="M32 10 L 74 30 L 32 50 Z"/><circle class="bub" cx="79" cy="30" r="4.5"/>',ox:84},
+    {n:'NAND',u:'VA-EMAS',f:(a,b)=>1-(a&b),sym:'<path class="sym" d="M30 10 H 58 A 20 20 0 0 1 58 50 H 30 Z"/><circle class="bub" cx="83" cy="30" r="4.5"/>',ox:88},
+    {n:'XOR',u:'FAQAT BITTASI',f:(a,b)=>a^b,sym:'<path class="sym" d="M28 10 Q 44 30 28 50 Q 60 50 84 30 Q 60 10 28 10 Z"/><path d="M21 10 Q 37 30 21 50" fill="none" stroke="var(--ink)" stroke-width="2"/>',ox:84},
+    {n:'NOR',u:'YOKI-EMAS',f:(a,b)=>1-(a|b),sym:'<path class="sym" d="M28 10 Q 44 30 28 50 Q 60 50 84 30 Q 60 10 28 10 Z"/><circle class="bub" cx="89" cy="30" r="4.5"/>',ox:94}
+  ];
+  let gA=0,gB=0;
+  const gatesEl=$('#gates');
+  gatesEl.innerHTML=GATES.map((g,i)=>{
+    const rows=g.one?[[0],[1]]:[[0,0],[0,1],[1,0],[1,1]];
+    const inWires=g.one?`<path class="wire" data-in="a" d="M6 30 H 32"/>`:`<path class="wire" data-in="a" d="M6 20 H 30"/><path class="wire" data-in="b" d="M6 40 H 30"/>`;
+    const inLbl=g.one?`<text x="8" y="26" class="lbl">A</text>`:`<text x="8" y="16" class="lbl">A</text><text x="8" y="53" class="lbl">B</text>`;
+    return `<div class="g" style="--i:${i}" data-g="${i}"><h4>${g.n} (${g.u})</h4>
+      <svg viewBox="0 0 120 60" class="sv" aria-hidden="true">${inWires}${inLbl}${g.sym}<path class="wire" data-out="1" d="M${g.ox} 30 H 114"/><text x="104" y="26" class="lbl">Q</text></svg>
+      <table><thead><tr>${g.one?'<th>A</th>':'<th>A</th><th>B</th>'}<th>Q</th></tr></thead><tbody>${rows.map(r=>`<tr data-k="${r.join('')}">${r.map(v=>`<td>${v}</td>`).join('')}<td>${g.f(...r)}</td></tr>`).join('')}</tbody></table>
+      <div class="q">Q = <b>0</b></div></div>`;
+  }).join('');
+  function drawGates(){
+    $('#gA').textContent='A = '+gA;$('#gA').classList.toggle('on',!!gA);
+    $('#gB').textContent='B = '+gB;$('#gB').classList.toggle('on',!!gB);
+    GATES.forEach((g,i)=>{
+      const el=gatesEl.querySelector(`[data-g="${i}"]`);
+      const q=g.one?g.f(gA):g.f(gA,gB);
+      const key=g.one?String(gA):''+gA+gB;
+      el.querySelectorAll('tr[data-k]').forEach(tr=>tr.classList.toggle('cur',tr.dataset.k===key));
+      el.querySelector('.q b').textContent=q;
+      el.querySelector('[data-in="a"]').classList.toggle('on',!!gA);
+      const wb=el.querySelector('[data-in="b"]');if(wb)wb.classList.toggle('on',!!gB);
+      el.querySelector('[data-out]').classList.toggle('on',!!q);
+    });
+  }
+  $('#gA').onclick=()=>{gA=1-gA;drawGates();};
+  $('#gB').onclick=()=>{gB=1-gB;drawGates();};
+  $('#gatesFig').addEventListener('replay',()=>rerun(gatesEl));
+  drawGates();
+
+  /* ---------- 8-rasm: yarim yig'uvchi ---------- */
+  let A=1,B=1;
+  function drawHA(){
+    $('#btnA').textContent='A = '+A;$('#btnA').classList.toggle('on',!!A);
+    $('#btnB').textContent='B = '+B;$('#btnB').classList.toggle('on',!!B);
+    const S=A^B,C=A&B;
+    ['#wa1','#wa2'].forEach(s=>$(s).classList.toggle('on',!!A));
+    ['#wb1','#wb2'].forEach(s=>$(s).classList.toggle('on',!!B));
+    $('#fa').classList.toggle('off',!A);$('#fb').classList.toggle('off',!B);
+    $('#ws').classList.toggle('on',!!S);$('#wc').classList.toggle('on',!!C);
+    $('#fs').classList.toggle('off',!S);$('#fc').classList.toggle('off',!C);
+    $('#bxor').classList.toggle('on',!!S);$('#band').classList.toggle('copper',!!C);
+    $('#tS').textContent='S = '+S;$('#tC').textContent='C = '+C;
+    $('#haTbl').querySelectorAll('tbody tr').forEach((tr,i)=>tr.classList.toggle('cur',i===A*2+B));
+    $('#haOut').innerHTML=`${A} + ${B} = <b>${C}${S}</b> (ikkilikda) = <b>${A+B}</b> (o'nlikda)${A&&B?' &nbsp;·&nbsp; 1 + 1 = 10 (ikkilikda)':''}`;
+  }
+  $('#btnA').onclick=()=>{A=1-A;drawHA();};
+  $('#btnB').onclick=()=>{B=1-B;drawHA();};
+  drawHA();
+
+  /* ---------- 9-rasm: 4 bitli yig'uvchi ---------- */
+  let nA=[1,0,1,1],nB=[0,1,1,0]; /* indeks 0 = bit 3 (chap) */
+  function nib(id,arr,name){
+    const el=$('#'+id);
+    arr.forEach((v,i)=>{const b=document.createElement('button');b.type='button';b.className='bit';b.setAttribute('aria-label',name+(3-i));
+      b.innerHTML=`<small>${name}${3-i}</small><b>${v}</b>`;b.onclick=()=>{arr[i]=1-arr[i];b.querySelector('b').textContent=arr[i];b.classList.toggle('on',!!arr[i]);resetAdd();};
+      b.classList.toggle('on',!!v);el.appendChild(b);});
+    const s=document.createElement('span');s.className='muted';el.appendChild(s);
+  }
+  nib('nibA',nA,'A');nib('nibB',nB,'B');
+  const val=arr=>arr.reduce((a,v)=>a*2+v,0);
+  /* sxema */
+  const X=[60,230,400,570]; /* bit3..bit0 chapdan o'ngga */
+  let g='';
+  for(let k=0;k<4;k++){
+    const bit=3-k,x=X[k];
+    g+=`<text x="${x+40}" y="42" text-anchor="middle" class="lbl" id="la${bit}">A${bit}</text><text x="${x+90}" y="42" text-anchor="middle" class="lbl" id="lb${bit}">B${bit}</text>`;
+    g+=`<path class="wire" id="wa${bit}" d="M${x+40} 50 V 110"/><path class="wire" id="wb${bit}" d="M${x+90} 50 V 110"/>`;
+    g+=`<rect class="box fa" id="fa${bit}" x="${x}" y="110" width="130" height="70" rx="10"/>`;
+    g+=`<text x="${x+65}" y="140" text-anchor="middle" class="ttl">To'liq yig'uvchi</text><text x="${x+65}" y="160" text-anchor="middle">bit ${bit}</text>`;
+    g+=`<path class="wire" id="wsw${bit}" d="M${x+65} 180 V 235"/><path class="flow off" id="fsw${bit}" d="M${x+65} 180 V 235"/>`;
+    g+=`<text x="${x+65}" y="256" text-anchor="middle" class="lbl">S${bit}</text><text class="sval" id="sv${bit}" x="${x+65}" y="280" text-anchor="middle">0</text>`;
+    /* ko'chirish: o'ngdagi bloklardan shu blokka */
+    const cx0=k<3?X[k+1]:X[3]+130+32;
+    g+=`<path class="wire" id="wc${bit}" d="M${cx0} 145 H ${x+130}"/><path class="flow copper off" id="fc${bit}" d="M${cx0} 145 H ${x+130}"/>`;
+    g+=`<path d="M${x+142} 139 L ${x+130} 145 L ${x+142} 151 Z" class="arrow" id="ar${bit}"/>`;
+    g+=`<text class="cval" id="cv${bit}" x="${(cx0+x+130)/2}" y="138" text-anchor="middle">C=0</text>`;
+  }
+  g+=`<text x="${X[3]+130+38}" y="140" class="lbl">C</text><text x="${X[3]+130+38}" y="158" class="lbl">0</text>`;
+  g+=`<path class="wire" id="wc4" d="M60 145 H 24"/><path class="flow copper off" id="fc4" d="M60 145 H 24"/><text class="cval" id="cv4" x="42" y="138" text-anchor="middle">C=0</text><text x="2" y="149" class="lbl">C4</text>`;
+  $('#add4g').innerHTML=g;
+  let addTimers=[];
+  function resetAdd(){
+    addTimers.forEach(clearTimeout);addTimers=[];
+    for(let b=0;b<=4;b++){const e=$('#fc'+b);if(e)e.classList.add('off');const c=$('#cv'+b);if(c){c.classList.toggle('on',b===0);c.textContent='C=0';}}
+    for(let b=0;b<4;b++){$('#fa'+b).classList.remove('on','now');$('#sv'+b).classList.remove('on');$('#fsw'+b).classList.add('off');
+      $('#wa'+b).classList.toggle('on',!!nA[3-b]);$('#wb'+b).classList.toggle('on',!!nB[3-b]);
+      $('#la'+b).textContent='A'+b+'='+nA[3-b];$('#lb'+b).textContent='B'+b+'='+nB[3-b];}
+    $('#addOut').innerHTML=`A = ${nA.join('')} (${val(nA)}), B = ${nB.join('')} (${val(nB)})`;
+    $('#addTxt').textContent='A va B bitlarini bosib o\'zgartiring, so\'ng "Qo\'sh"';
+  }
+  function runAdd(){
+    resetAdd();
+    let c=0;const S=[];
+    for(let b=0;b<4;b++){
+      const a=nA[3-b],bb=nB[3-b],s=a^bb^c,co=(a&bb)|(a&c)|(bb&c);
+      S[b]=s;
+      const cin=c;
+      addTimers.push(setTimeout(()=>{
+        for(let j=0;j<4;j++)$('#fa'+j).classList.remove('now');
+        $('#fa'+b).classList.add('on','now');
+        $('#sv'+b).textContent=s;$('#sv'+b).classList.add('on');$('#fsw'+b).classList.toggle('off',!s);
+        $('#addTxt').textContent=`bit ${b}: ${a} + ${bb} + C(${cin}) = ${co}${s} → S${b} = ${s}, ko'chirish ${co}`;
+      },reduce?0:b*900+100));
+      addTimers.push(setTimeout(()=>{
+        $('#cv'+(b+1)).textContent='C='+co;$('#cv'+(b+1)).classList.add('on');$('#fc'+(b+1)).classList.toggle('off',!co);
+      },reduce?0:b*900+550));
+      c=co;
+    }
+    const cout=c;
+    addTimers.push(setTimeout(()=>{
+      for(let j=0;j<4;j++)$('#fa'+j).classList.remove('now');
+      const sum=val(nA)+val(nB);
+      $('#addOut').innerHTML=`${nA.join('')} + ${nB.join('')} = <b>${cout}${S.slice().reverse().join('')}</b> &nbsp;·&nbsp; ${val(nA)} + ${val(nB)} = <b>${sum}</b>${cout?' &nbsp;·&nbsp; C4 = 1: natija 4 bitga sig\'madi (5-bit)':''}`;
+      $('#addTxt').textContent='Tayyor. Bitlarni o\'zgartirib yana qo\'shing.';
+    },reduce?0:4*900));
+  }
+  $('#addBtn').onclick=runAdd;
+  const add4Fig=$('#add4Fig');let addAuto=false;
+  new MutationObserver(()=>{if(add4Fig.classList.contains('play')&&!addAuto){addAuto=true;runAdd();}}).observe(add4Fig,{attributes:true,attributeFilter:['class']});
+  add4Fig.addEventListener('replay',runAdd);
+  resetAdd();
+
+  /* ---------- 10-rasm: D flip-flop va registr ---------- */
+  let regD=[0,0,0,0,0,0,0,0],regQ=[0,0,0,0,0,0,0,0];
+  const reg=$('#reg');
+  reg.innerHTML='<span class="lab">D:</span>'+regD.map((v,i)=>`<button type="button" class="bit" data-i="${i}" aria-label="D bit ${7-i}"><small>D${7-i}</small><b>0</b></button>`).join('')+
+    '<span class="lab">Q:</span>'+regQ.map((v,i)=>`<div class="q" data-q="${i}">0</div>`).join('');
+  function paintFF(msg){
+    const D=regD[0],Q=regQ[0];
+    $('#dBtn').textContent='D = '+D;$('#dBtn').classList.toggle('on',!!D);
+    $('#dLbl').textContent='D = '+D;$('#dW').classList.toggle('on',!!D);$('#dF').classList.toggle('off',!D);
+    $('#qLbl').textContent='Q = '+Q;$('#qW').classList.toggle('on',!!Q);$('#qF').classList.toggle('off',!Q);$('#ffBox').classList.toggle('on',!!Q);
+    reg.querySelectorAll('.bit').forEach((b,i)=>{b.querySelector('b').textContent=regD[i];b.classList.toggle('on',!!regD[i]);});
+    reg.querySelectorAll('.q').forEach((q,i)=>{q.textContent=regQ[i];q.classList.toggle('on',!!regQ[i]);});
+    $('#ffOut').innerHTML=`Q = <b>${Q}</b> &nbsp; <span class="muted">${msg}</span>`;
+  }
+  reg.querySelectorAll('.bit').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;regD[i]=1-regD[i];paintFF(`D o'zgardi, lekin Q hali ${regQ[0]}: takt kutilmoqda`);});
+  $('#dBtn').onclick=()=>{regD[0]=1-regD[0];paintFF(`D o'zgardi, lekin Q hali ${regQ[0]}: takt kutilmoqda`);};
+  $('#clkBtn').onclick=()=>{
+    const e=$('#edge'),s=$('#snap'),t=$('#snapT');
+    e.classList.add('on');t.textContent=regD[0];
+    [s,t].forEach(x=>{x.classList.remove('go');void x.getBoundingClientRect();x.classList.add('go');});
+    setTimeout(()=>{regQ=regD.slice();paintFF('takt keldi, Q = D ni eslab qoldi');$('#ffOut').classList.remove('flash');void $('#ffOut').offsetWidth;$('#ffOut').classList.add('flash');e.classList.remove('on');},reduce?0:450);
+  };
+  paintFF('Q faqat takt kelganda D ni "suratga oladi"');
+})();
+</script>
+</body>
+</html>
