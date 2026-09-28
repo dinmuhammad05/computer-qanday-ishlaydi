@@ -199,3 +199,26 @@ svg{max-width:100%;height:auto;display:block}
 
 .foot{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* bob testi */
+.quiz{margin-top:48px;border-top:2px solid var(--ink);padding-top:16px}
+.quiz-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.quiz-title{margin:4px 0 0}
+.quiz-prev{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.quiz-prev b{color:var(--accent)}
+.quiz-list{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:12px;counter-reset:qz}
+.quiz-list li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+.quiz-list li.ok{border-color:var(--accent)}
+.quiz-list li.bad{border-color:var(--copper)}
+.quiz-q{font-weight:600;margin:0 0 10px;max-width:none}
+.quiz-q::before{counter-increment:qz;content:counter(qz) ". ";color:var(--accent);font-family:var(--mono)}
+.quiz-opts{display:grid;gap:6px}
+.quiz-opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:15px;line-height:1.45}
+.quiz-opt:hover{border-color:var(--accent)}
+.quiz-opt input{accent-color:var(--accent);margin-top:3px;flex:none}
+.quiz-opt.right{background:var(--accent-soft);border-color:var(--accent)}
+.quiz-opt.wrong{background:var(--copper-soft);border-color:var(--copper)}
+.quiz-exp{margin-top:10px;font-size:14.5px;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
+.quiz-exp b{color:var(--ink)}
+.quiz-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;font-size:15px}
+.quiz-score b{color:var(--accent);font-size:18px;font-family:var(--display)}

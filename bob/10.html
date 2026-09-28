@@ -63,7 +63,7 @@
 <body>
 <header class="top"><div class="in">
   <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
-  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../simulyator.html">Simulyator</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
   <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
 </div></header>
 
@@ -206,7 +206,9 @@
   <figcaption><span><b>DMA — to'g'ridan-to'g'ri xotiraga murojaat.</b> Buyruq → qurilma o'zi ko'chiradi → uzilish bilan xabar beradi.</span></figcaption>
 </figure>
 
-<div class="done-row"><button type="button" id="doneBtn" data-chapter="10">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s15">15-savol</a></span></div>
+<section class="quiz" data-chapter="10"></section>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="10">Bobni o'qidim</button><span>Tekshirish: yuqoridagi test va <a href="../savollar.html#s15">15-savol</a></span></div>
 
 <nav class="pager">
   <a href="09.html"><small>Oldingi</small>9-bob. Ona plata, shinalar va quvvat</a>
@@ -215,6 +217,8 @@
 </main>
 
 <script src="../js/site.js"></script>
+<script src="../js/quiz-data.js"></script>
+<script src="../js/quiz.js"></script>
 <script>
 /* "↻ qayta": figuradagi CSS animatsiyalarini boshidan boshlash */
 document.querySelectorAll('.fig').forEach(f=>f.addEventListener('replay',()=>{const all=f.querySelectorAll('*');all.forEach(e=>{e.style.animationName='none';});void f.offsetWidth;all.forEach(e=>{e.style.animationName='';});}));
