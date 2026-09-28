@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>14-bob. Hammasi birgalikda · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Klaviaturada 'A' harfini bosishdan ekranda harf paydo bo'lishigacha: tranzistordan ilovagacha barcha qatlamlar bitta misolda.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 32-rasm: tugma → ekran sahnasi */
+.scene .keycap{transition:transform .2s}
+.scene .keycap.down{transform:translateY(6px)}
+.scene .flow.off{opacity:0}
+.scene .letter{opacity:0;transition:opacity .5s;font-family:var(--display);font-size:44px;font-weight:700;fill:var(--accent)}
+.scene .letter.show{opacity:1}
+.scene .caret{fill:var(--muted)}
+.scene .stage{transition:all .3s}
+.chain div b{font-weight:600}
+/* 8 qadam ro'yxati */
+.steps{padding-left:22px;max-width:70ch}
+.steps li{margin-bottom:8px}
+.steps li::marker{font-family:var(--mono);color:var(--accent);font-weight:600}
+/* 14.1: abstraksiya narvoni */
+.ladder{display:flex;flex-direction:column-reverse;gap:4px;font-family:var(--mono);font-size:13px;max-width:520px}
+.ladder div{border:1px solid var(--line);border-radius:6px;padding:6px 12px;background:var(--surface);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;animation:climb 5.4s infinite;animation-delay:calc(var(--i) * .55s)}
+.ladder b{font-weight:600;color:var(--ink)}
+.ladder span{color:var(--muted)}
+@keyframes climb{0%,12%{background:var(--accent-soft);border-color:var(--accent)}20%,100%{background:var(--surface);border-color:var(--line)}}
+.ladder-wrap{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:stretch}
+.ladder-wrap .axis{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;border-right:2px solid var(--line);padding:0 6px}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">14-bob</div>
+  <h1>Hammasi birgalikda</h1>
+  <p class="lede">Bitta tugma bosilishini boshidan oxirigacha kuzatsangiz, kitobning barcha qatlamlari 10–30 millisekund ichida birin-ketin ishga tushganini ko'rasiz.</p>
+</div>
+
+<p>Endi o'rgangan barcha bilimlarni birlashtirib, oddiy bir harakat — klaviaturada 'A' harfini bosish — paytida kompyuter ichida nima sodir bo'lishini boshidan oxirigacha kuzatamiz. Bu jarayonda tranzistordan tortib operatsion tizim va ilovagacha deyarli barcha qatlamlar ishtirok etadi.</p>
+
+<figure class="fig" id="keyFig">
+  <div class="controls"><button class="primary" type="button" id="keyBtn" data-chain="key">Tugmani bos</button><span class="small muted" id="keyTxt">8 bosqich, taxminan 10–30 ms</span></div>
+  <svg class="sv scene" viewBox="0 0 640 130" role="img" aria-label="Tugma bosilishi: klaviatura, USB, CPU, drayver va kernel, ilova, GPU, monitor">
+    <path class="wire" d="M100 70 H 150 M230 70 H 280 M360 70 H 410 M490 70 H 520"/>
+    <path class="flow off" id="kf1" d="M100 70 H 150"/>
+    <path class="flow off" id="kf2" d="M230 70 H 280"/>
+    <path class="flow off" id="kf3" d="M360 70 H 410"/>
+    <path class="flow off" id="kf4" d="M490 70 H 520"/>
+    <g class="keycap" id="keycap"><rect x="30" y="40" width="70" height="60" rx="10" class="box stage" id="ks0"/><text x="65" y="78" text-anchor="middle" class="ttl" style="font-size:26px">A</text></g>
+    <text x="65" y="118" text-anchor="middle">klaviatura</text>
+    <rect x="150" y="45" width="80" height="50" rx="8" class="box stage" id="ks1"/><text x="190" y="66" text-anchor="middle" class="ttl">USB</text><text x="190" y="84" text-anchor="middle">0x1E</text>
+    <rect x="280" y="45" width="80" height="50" rx="8" class="box stage" id="ks2"/><text x="320" y="66" text-anchor="middle" class="ttl">CPU</text><text x="320" y="84" text-anchor="middle">IRQ · kernel</text>
+    <rect x="410" y="45" width="80" height="50" rx="8" class="box stage" id="ks3"/><text x="450" y="66" text-anchor="middle" class="ttl">GPU</text><text x="450" y="84" text-anchor="middle">kadr buferi</text>
+    <rect x="520" y="10" width="110" height="110" rx="8" class="box soft stage" id="ks4"/><rect x="530" y="20" width="90" height="80" rx="4" class="box"/>
+    <text x="575" y="80" text-anchor="middle" class="letter" id="scrA">A</text>
+    <rect x="597" y="52" width="2" height="30" class="caret blink" id="caret"/>
+    <text x="575" y="114" text-anchor="middle">monitor</text>
+  </svg>
+  <div class="chain" id="key">
+    <div><span><b>Tugma bosildi</b><small>kontakt ulanadi</small></span></div>
+    <div><span><b>Klaviatura kontrolleri</b><small>skan-kod: 0x1E</small></span></div>
+    <div><span><b>USB kontroller</b><small>paket yuboradi</small></span></div>
+    <div><span><b>CPU uzilish (IRQ)</b><small>joriy ishni to'xtatadi</small></span></div>
+    <div><span><b>Drayver + Kernel</b><small>kod → 'A' hodisasi</small></span></div>
+    <div><span><b>Telegram ilovasi</b><small>matnga qo'shadi</small></span></div>
+    <div><span><b>GPU</b><small>yangi kadr chizadi</small></span></div>
+    <div><span><b>Monitor</b><small>'A' ko'rinadi</small></span></div>
+  </div>
+  <figcaption><span><b>32-rasm.</b> Tugma bosilishidan ekranda harf paydo bo'lishigacha</span></figcaption>
+</figure>
+
+<ol class="steps">
+  <li>Tugma bosilganda klaviatura matritsasidagi ikki o'tkazgich tutashadi.</li>
+  <li>Klaviatura mikrokontrolleri buni aniqlaydi va 'A' tugmasining skan-kodini (0x04 USB HID standartida) hosil qiladi.</li>
+  <li>Kompyuterning USB kontrolleri bu paketni qabul qiladi va protsessorga uzilish yuboradi.</li>
+  <li>Protsessor joriy ishini to'xtatib, holatini saqlaydi va yadrodagi uzilish ishlovchisiga o'tadi.</li>
+  <li>USB va klaviatura drayverlari skan-kodni "A tugmasi bosildi" hodisasiga aylantiradi; OS klaviatura tartibini (lotin, kirill) hisobga olib, uni 'A' belgisiga (Unicode U+0041) o'giradi va hozir faol oynaga ega ilovaga — masalan, Telegram'ga — uzatadi.</li>
+  <li>Telegram ilovasi hodisani oladi va xabar matni saqlanadigan xotira sohasiga 65 sonini (01000001) qo'shadi.</li>
+  <li>Ilova interfeysni qayta chizish kerakligini bildiradi; grafik tizim shriftdan 'A' harfining shaklini olib, GPU yordamida uni piksellarga aylantiradi va kadr buferiga yozadi.</li>
+  <li>Monitor navbatdagi yangilanishda (1/60 soniyadan keyin) yangi kadrni ko'rsatadi.</li>
+</ol>
+
+<p>Bu barcha bosqichlar taxminan 10-30 millisekund ichida bajariladi. Shu vaqt ichida protsessor o'nlab million buyruqni bajaradi, milliardlab tranzistorlar esa ulanib-uziladi. Va bularning barchasi — kuchlanish bor yoki yo'q degan oddiy g'oyaga asoslangan.</p>
+
+<h2 id="14-1">14.1. Yakuniy xulosa</h2>
+<p>Kompyuterni tushunishning kaliti — <strong>abstraksiya</strong>. Pastki darajada faqat elektronlar va kremniy bor. Ulardan tranzistor — boshqariladigan kalit yasaladi. Tranzistorlardan mantiqiy ventillar, ventillardan yig'uvchilar va xotira elementlari quriladi. Ulardan protsessor va xotira hosil bo'ladi. Protsessor faqat oddiy buyruqlarni bajaradi, lekin juda tez. Operatsion tizim apparatni boshqaradi va dasturlarga qulay interfeys beradi. Dasturlash tillari esa odamga o'z fikrini mashinaga tushunarli qilib ifodalash imkonini beradi. Har bir qatlam o'zidan pastdagisini yashiradi — shuning uchun siz tranzistorlar haqida o'ylamasdan, Telegram bot yoza olasiz.</p>
+
+<figure class="fig">
+  <div class="ladder-wrap">
+    <div class="axis">pastdan yuqoriga: har qatlam pastdagisini yashiradi</div>
+    <div class="ladder" aria-label="Abstraksiya qatlamlari: fizikadan ilovagacha">
+      <div style="--i:0"><b>Fizika</b><span>elektronlar, kremniy</span></div>
+      <div style="--i:1"><b>Tranzistor</b><span>boshqariladigan kalit</span></div>
+      <div style="--i:2"><b>Ventillar</b><span>AND, OR, NOT</span></div>
+      <div style="--i:3"><b>Sxemalar</b><span>yig'uvchi, xotira elementi</span></div>
+      <div style="--i:4"><b>Mikroarxitektura</b><span>konveyer, kesh</span></div>
+      <div style="--i:5"><b>ISA</b><span>oddiy buyruqlar, juda tez</span></div>
+      <div style="--i:6"><b>OS</b><span>apparatni boshqaradi</span></div>
+      <div style="--i:7"><b>Til</b><span>JS, Python</span></div>
+      <div style="--i:8"><b>Ilova</b><span>Telegram bot</span></div>
+    </div>
+  </div>
+  <figcaption><span><b>Abstraksiya qatlamlari.</b> Elektronlardan Telegram botgacha: har bir qatlam faqat o'zidan bir pog'ona pastdagisiga tayanadi.</span></figcaption>
+</figure>
+
+<div class="callout blue"><b>Dasturchi uchun amaliy foyda:</b> bu bilimlar tufayli siz nega ba'zi kodlar sekin ishlashini (kesh, xotira, tarmoq kechikishi), nega server xotirasi to'lib qolishini (heap, xotira oqishi), nega bitta oqimli Node.js ko'p foydalanuvchiga xizmat qila olishini (asinxron I/O) va nega HTTPS zarurligini tushunasiz. Yaxshi dasturchi abstraksiyadan foydalanadi, lekin uning ostida nima borligini ham biladi.</div>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="14">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html">barcha savollar</a></span></div>
+
+<nav class="pager">
+  <a href="13.html"><small>Oldingi</small>13-bob. Tarmoq va internet</a>
+  <a class="next" href="../lugat.html"><small>Keyingi</small>Atamalar lug'ati</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+(function(){
+  const $=KQI.$;
+  /* 32-rasm: sahna zanjir bilan birga ishlaydi (zanjirni site.js yoqadi) */
+  const stages=['ks0','ks1','ks2','ks3','ks4'];
+  const map=[[0,null],[0,null],[1,'kf1'],[2,'kf2'],[2,null],[2,null],[3,'kf3'],[4,'kf4']];
+  let timers=[];
+  function play(){
+    timers.forEach(clearTimeout);timers=[];
+    stages.forEach(id=>$('#'+id).classList.remove('on'));
+    ['kf1','kf2','kf3','kf4'].forEach(id=>$('#'+id).classList.add('off'));
+    $('#scrA').classList.remove('show');$('#keycap').classList.add('down');
+    map.forEach((m,i)=>timers.push(setTimeout(()=>{
+      $('#'+stages[m[0]]).classList.add('on');
+      if(m[1])$('#'+m[1]).classList.remove('off');
+      if(i===1)$('#keycap').classList.remove('down');
+      if(i===7){$('#scrA').classList.add('show');$('#keyTxt').textContent='Ekranda \'A\' paydo bo\'ldi: 8 bosqich, ~10–30 ms.';}
+      else $('#keyTxt').textContent=(i+1)+'/8 · '+$('#key').children[i].querySelector('b').textContent;
+    },KQI.reduce?0:i*550)));
+  }
+  $('#keyBtn').addEventListener('click',play);
+  $('#keyFig').addEventListener('replay',()=>{const b=$('#keyBtn');if(b.onclick)b.onclick();play();});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>12-bob. Dasturlash tilidan mashina kodigacha · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Kompilyator, interpretator va JIT, stek va uyum: manba kod qanday qilib tranzistorlargacha yetib boradi.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 29-rasm: manba koddan tranzistorlargacha */
+.cdisp{font-family:var(--mono);font-size:16px;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:10px;min-height:2.6em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cdisp b{color:var(--accent);font-weight:600}
+.cdisp.morph{animation:morph .5s}
+@keyframes morph{0%{opacity:.2;transform:translateY(-4px)}100%{opacity:1;transform:none}}
+.cdisp .tag{font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+/* 12.1: kompilyator bosqichlari */
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:4px}
+.stages div{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--code);font-size:13px}
+.stages div b{display:block;font-family:var(--display);font-size:13px;margin-bottom:4px}
+.stages div pre{margin:4px 0 0;padding:6px 8px;background:var(--surface);font-size:12px;line-height:1.4}
+.stages div small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+/* 12.3: stek va uyum */
+.memlay{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;align-items:start}
+@media (max-width:640px){.memlay{grid-template-columns:1fr}}
+.memlay pre{margin:0}
+.memlay .ln{border-radius:4px;transition:background .3s}
+.memlay .ln.hl{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.areas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.area{border:1px dashed var(--line);border-radius:10px;padding:8px;min-height:190px;display:flex;flex-direction:column}
+.area .ttl{font-family:var(--display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.stack{display:flex;flex-direction:column-reverse;gap:6px;flex:1;justify-content:flex-start}
+.frame{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-family:var(--mono);font-size:12px;background:var(--surface);animation:pushin .35s both}
+.frame b{display:block;font-weight:600;color:var(--ink);margin-bottom:2px}
+.frame span{display:block;color:var(--muted)}
+.frame span.on{color:var(--accent)}
+.frame.on{border-color:var(--accent);background:var(--accent-soft)}
+.frame.out{animation:popout .4s both}
+@keyframes pushin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes popout{to{opacity:0;transform:translateY(12px)}}
+.heap{flex:1;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start}
+.obj{border:1px solid var(--copper);background:var(--copper-soft);border-radius:8px;padding:6px 8px;font-family:var(--mono);font-size:12px;animation:pushin .35s both;transition:opacity .6s}
+.obj small{display:block;color:var(--muted);font-size:11px}
+.obj.gc{opacity:.15}
+.gclbl{font-family:var(--mono);font-size:11px;color:var(--copper);margin-top:auto;min-height:1.2em}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">12-bob</div>
+  <h1>Dasturlash tilidan mashina kodigacha</h1>
+  <p class="lede">Siz yozgan bitta satr kod kompilyator yoki interpretator orqali nol va birlarga, so'ng tranzistorlardagi signallarga aylanadi.</p>
+</div>
+
+<p>Protsessor faqat mashina kodini — nol va birlardan iborat buyruqlarni tushunadi. Odamlar uchun esa bunday kod yozish juda qiyin. Shuning uchun dasturlash tillari yaratilgan. Ular darajalarga bo'linadi. <strong>Mashina kodi</strong> — protsessorning ona tili. <strong>Assembler</strong> — mashina kodining odam o'qiy oladigan ko'rinishi (ADD, MOV). <strong>Past darajali tillar</strong> (C, Rust) — apparatga yaqin, xotirani qo'lda boshqarish mumkin. <strong>Yuqori darajali tillar</strong> (Python, JavaScript, Java) — apparat tafsilotlarini to'liq yashiradi.</p>
+
+<figure class="fig" id="compFig">
+  <div class="controls"><button class="primary" type="button" id="compBtn">Kompilyatsiya qil</button><button type="button" id="interpBtn">Interpretatsiya qil</button><span class="small muted" id="compTxt">Manba koddan tranzistorlargacha bosqichma-bosqich.</span></div>
+  <div class="cdisp" id="cDisp"><span class="tag">Manba kod</span><b>a = b + 5</b></div>
+  <svg class="sv" viewBox="0 0 640 440" role="img" aria-label="Manba kod kompilyator, assembler kod, mashina kodi, CPU dekoderi, ALU va tranzistorlargacha; interpretator kodni satrma-satr bajaradi yoki JIT qiladi">
+    <path class="wire" d="M160 56 V 70 M160 118 V 132 M160 180 V 194 M160 242 V 256 M160 304 V 318 M160 366 V 380"/>
+    <path class="wire" d="M300 32 H 490 V 132"/>
+    <path class="wire" d="M490 202 V 280 H 300"/>
+    <path class="wire thin" stroke-dasharray="4 4" d="M350 190 H 325 V 218 H 300"/>
+    <path class="flow off" id="f0" d="M160 56 V 70"/>
+    <path class="flow off" id="f1" d="M160 118 V 132"/>
+    <path class="flow off" id="f2" d="M160 180 V 194"/>
+    <path class="flow off" id="f3" d="M160 242 V 256"/>
+    <path class="flow off" id="f4" d="M160 304 V 318"/>
+    <path class="flow off" id="f5" d="M160 366 V 380"/>
+    <path class="flow blue off" id="fI1" d="M300 32 H 490 V 132"/>
+    <path class="flow blue off" id="fI2" d="M490 202 V 280 H 300"/>
+    <path class="flow copper off" id="fI3" d="M350 190 H 325 V 218 H 300"/>
+    <g id="b0"><rect x="20" y="8" width="280" height="48" rx="10" class="box"/><text x="160" y="28" text-anchor="middle" class="ttl">Manba kod</text><text x="160" y="46" text-anchor="middle">a = b + 5</text></g>
+    <g id="b1"><rect x="20" y="70" width="280" height="48" rx="10" class="box"/><text x="160" y="90" text-anchor="middle" class="ttl">Kompilyator</text><text x="160" y="108" text-anchor="middle">gcc, rustc, V8 JIT</text></g>
+    <g id="b2"><rect x="20" y="132" width="280" height="48" rx="10" class="box"/><text x="160" y="152" text-anchor="middle" class="ttl">Assembler kod</text><text x="160" y="170" text-anchor="middle">ADD R1, R2, 5</text></g>
+    <g id="b3"><rect x="20" y="194" width="280" height="48" rx="10" class="box"/><text x="160" y="214" text-anchor="middle" class="ttl">Mashina kodi</text><text x="160" y="232" text-anchor="middle">0100 0001 0010 0101</text></g>
+    <g id="b4"><rect x="20" y="256" width="280" height="48" rx="10" class="box"/><text x="160" y="276" text-anchor="middle" class="ttl">CPU dekoderi</text><text x="160" y="294" text-anchor="middle">signallar</text></g>
+    <g id="b5"><rect x="20" y="318" width="280" height="48" rx="10" class="box"/><text x="160" y="338" text-anchor="middle" class="ttl">ALU</text><text x="160" y="356" text-anchor="middle">R1 ← R2 + 5</text></g>
+    <g id="b6"><rect x="20" y="380" width="280" height="48" rx="10" class="box"/><text x="160" y="400" text-anchor="middle" class="ttl">tranzistorlar</text><text x="160" y="418" text-anchor="middle">milliardlab kalit ulanib-uziladi</text></g>
+    <g id="bI"><rect x="350" y="132" width="280" height="70" rx="10" class="box"/><text x="490" y="154" text-anchor="middle" class="ttl">Interpretator (Python, JS)</text><text x="490" y="174" text-anchor="middle">kodni satrma-satr o'qib,</text><text x="490" y="190" text-anchor="middle">o'zi bajaradi yoki JIT qiladi</text></g>
+    <text x="336" y="212" text-anchor="middle" class="lbl">JIT</text>
+    <text x="400" y="296" text-anchor="middle">o'zi bajaradi</text>
+  </svg>
+  <figcaption><span><b>29-rasm.</b> Manba koddan tranzistorlargacha</span></figcaption>
+</figure>
+
+<h2 id="12-1">12.1. Kompilyator</h2>
+<p><strong>Kompilyator</strong> butun manba kodni oldindan mashina kodiga tarjima qiladi va bajariladigan fayl (Windows'da .exe) hosil qiladi. Bu jarayon bir necha bosqichdan iborat: (1) <strong>leksik tahlil</strong> — kod so'zlarga (tokenlarga) ajratiladi; (2) <strong>sintaktik tahlil</strong> — tokenlardan daraxtsimon tuzilma (AST) quriladi va grammatik xatolar tekshiriladi; (3) <strong>semantik tahlil</strong> — turlar va o'zgaruvchilar tekshiriladi; (4) <strong>optimallashtirish</strong> — kod tezroq ishlashi uchun qayta tuziladi (masalan, 2 * 8 oldindan 16 ga almashtiriladi); (5) <strong>kod generatsiyasi</strong> — aniq ISA uchun mashina buyruqlari hosil qilinadi. C, C++, Rust, Go kompilyatsiya qilinadigan tillar.</p>
+
+<figure class="fig">
+  <div class="stages stagger">
+    <div style="--i:0"><b>1. Leksik tahlil</b><pre>[a] [=] [b] [+] [5]</pre><small>kod tokenlarga ajratiladi</small></div>
+    <div style="--i:1"><b>2. Sintaktik tahlil</b><pre>    =
+   / \
+  a   +
+     / \
+    b   5</pre><small>AST daraxti, grammatika tekshiruvi</small></div>
+    <div style="--i:2"><b>3. Semantik tahlil</b><pre>a: int  ✓
+b: int  ✓
+5: int  ✓</pre><small>turlar va o'zgaruvchilar</small></div>
+    <div style="--i:3"><b>4. Optimallashtirish</b><pre>2 * 8  →  16
+x * 1  →  x</pre><small>oldindan hisoblash, qayta tuzish</small></div>
+    <div style="--i:4"><b>5. Kod generatsiyasi</b><pre>ADD R1, R2, 5
+0100 0001 0010 0101</pre><small>aniq ISA uchun buyruqlar</small></div>
+  </div>
+  <figcaption><span><b>Kompilyatorning besh bosqichi.</b> Har bosqich oldingisining natijasini oladi va keyingisiga uzatadi.</span></figcaption>
+</figure>
+
+<h2 id="12-2">12.2. Interpretator va JIT</h2>
+<p><strong>Interpretator</strong> kodni oldindan tarjima qilmaydi — u uni satrma-satr o'qib, darhol bajaradi. Bu qulay (kodni o'zgartirib, darhol ishga tushirish mumkin), lekin sekinroq. Python (CPython) avval kodni oraliq <strong>baytkodga</strong> aylantiradi, so'ng virtual mashina uni interpretatsiya qiladi.</p>
+<p>JavaScript'ni ishlatadigan V8 dvigateli (Chrome va Node.js ichida) yanada aqlli usul — <strong>JIT (Just-In-Time)</strong> kompilyatsiyadan foydalanadi. Kod avval tezda interpretatsiya qilinadi. Qaysi funksiyalar ko'p chaqirilayotgani kuzatiladi va bunday "issiq" funksiyalar ish vaqtida optimallashtirilgan mashina kodiga kompilyatsiya qilinadi. Shuning uchun zamonaviy JavaScript juda tez ishlaydi. Agar funksiyaga har safar turli turdagi ma'lumot berilsa (goh son, goh satr), optimallashtirish bekor qilinadi — TypeScript'dagi aniq turlar bilvosita shu masalada ham yordam beradi.</p>
+
+<h2 id="12-3">12.3. Xotirani boshqarish: stek va uyum</h2>
+<p>Dastur ishlaganda uning xotirasi bir nechta sohaga bo'linadi. <strong>Kod sohasi</strong> — mashina buyruqlari. <strong>Stek (stack)</strong> — funksiya chaqiriqlari va lokal o'zgaruvchilar uchun; funksiya chaqirilganda stekka yangi "ramka" qo'shiladi, tugaganda olib tashlanadi. Cheksiz rekursiya stekni to'ldirib yuboradi — bu mashhur <strong>stack overflow</strong> xatosi. <strong>Uyum (heap)</strong> — dinamik yaratiladigan obyektlar uchun (JavaScript'dagi har bir {} yoki []). C tilida heap'dagi xotirani dasturchi o'zi bo'shatishi kerak, JavaScript va Python'da esa buni <strong>axlat yig'uvchi (garbage collector)</strong> avtomatik bajaradi: u hech qayerdan havola qilinmagan obyektlarni topib, xotirasini bo'shatadi.</p>
+
+<figure class="fig" id="memFig">
+  <div class="controls"><button class="primary" type="button" id="memStep">Qadam</button><button type="button" id="memReset">Qayta</button><span class="small muted" id="memTxt">"Qadam" tugmasini bosing: kvadrat(4) chaqiriladi.</span></div>
+  <div class="memlay">
+    <pre id="memCode"><code><span class="ln" id="l1">function kvadrat(x) {      // chaqirilganda stekka ramka qo'shiladi</span>
+<span class="ln" id="l2">  const natija = x * x;    // 'natija' — stekda</span>
+<span class="ln" id="l3">  return natija;</span>
+<span class="ln" id="l4">}                          // ramka stekdan olib tashlanadi</span>
+<span class="ln" id="l5">const user = { id: 1 };    // obyekt — heap'da, 'user' havolasi — stekda</span></code></pre>
+    <div class="areas">
+      <div class="area"><div class="ttl">Stek (stack)</div><div class="stack" id="stk"></div></div>
+      <div class="area"><div class="ttl">Uyum (heap)</div><div class="heap" id="hp"></div><div class="gclbl" id="gcLbl"></div></div>
+    </div>
+  </div>
+  <figcaption><span><b>Stek va uyum.</b> Funksiya chaqirig'i stekka ramka qo'shadi va olib tashlaydi; obyekt heap'da yashaydi, unga havola esa stekda.</span></figcaption>
+</figure>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="12">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s19">19-savol</a>, <a href="../savollar.html#s20">20-savol</a></span></div>
+
+<nav class="pager">
+  <a href="11.html"><small>Oldingi</small>11-bob. Operatsion tizim</a>
+  <a class="next" href="13.html"><small>Keyingi</small>13-bob. Tarmoq va internet</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+(function(){
+  const $=KQI.$;
+  /* ---------- 29-rasm ---------- */
+  const fig=$('#compFig'),disp=$('#cDisp'),txt=$('#compTxt');
+  const boxes=['b0','b1','b2','b3','b4','b5','b6','bI'];
+  const flows=['f0','f1','f2','f3','f4','f5','fI1','fI2','fI3'];
+  let timers=[];
+  const compile=[
+    {box:'b0',tag:'Manba kod',code:'a = b + 5',t:'Dasturchi yuqori yoki past darajali tilda yozadi.'},
+    {box:'b1',flow:'f0',tag:'Kompilyator',code:'gcc / rustc / V8 JIT: tahlil va tarjima…',t:'Butun kod oldindan tarjima qilinadi.'},
+    {box:'b2',flow:'f1',tag:'Assembler kod',code:'ADD R1, R2, 5',t:'Odam o\'qiy oladigan mashina buyrug\'i.'},
+    {box:'b3',flow:'f2',tag:'Mashina kodi',code:'0100 0001 0010 0101',t:'Protsessorning ona tili: nol va birlar.'},
+    {box:'b4',flow:'f3',tag:'CPU dekoderi',code:'opkod 0100 = ADD → boshqaruv signallari',t:'Dekoder bitlardan signallar hosil qiladi.'},
+    {box:'b5',flow:'f4',tag:'ALU',code:'R1 ← R2 + 5',t:'Arifmetik-mantiqiy qurilma qo\'shadi.'},
+    {box:'b6',flow:'f5',tag:'tranzistorlar',code:'milliardlab kalit ulanib-uziladi',t:'Hammasi kuchlanish bor yoki yo\'q degan g\'oyaga tayanadi.'}
+  ];
+  const interp=[
+    {box:'b0',tag:'Manba kod',code:'a = b + 5',t:'Oldindan tarjima yo\'q.'},
+    {box:'bI',flow:'fI1',tag:'Interpretator',code:'satr o\'qildi: a = b + 5 → darhol bajariladi',t:'Python (CPython) avval baytkodga aylantiradi.'},
+    {box:'b3',flow:'fI3',tag:'JIT',code:'"issiq" funksiya → 0100 0001 0010 0101',t:'V8 ko\'p chaqiriladigan kodni ish vaqtida mashina kodiga aylantiradi.'},
+    {box:'b4',flow:'fI2',tag:'CPU dekoderi',code:'interpretatorning o\'z buyruqlari bajariladi',t:'Interpretatorning o\'zi ham mashina kodi.'},
+    {box:'b5',flow:'f4',tag:'ALU',code:'R1 ← R2 + 5',t:'Natija bir xil, yo\'l boshqacha.'},
+    {box:'b6',flow:'f5',tag:'tranzistorlar',code:'milliardlab kalit ulanib-uziladi',t:'Oxir-oqibat hamma narsa tranzistorda tugaydi.'}
+  ];
+  function reset(){timers.forEach(clearTimeout);timers=[];
+    boxes.forEach(id=>$('#'+id+' rect').classList.remove('on','blue'));
+    flows.forEach(id=>$('#'+id).classList.add('off'));}
+  function run(steps,cls){reset();
+    steps.forEach((s,i)=>{timers.push(setTimeout(()=>{
+      const r=$('#'+s.box+' rect');r.classList.add(cls);
+      if(s.flow)$('#'+s.flow).classList.remove('off');
+      disp.innerHTML='<span class="tag"></span><b></b>';
+      disp.querySelector('.tag').textContent=s.tag;disp.querySelector('b').textContent=s.code;
+      disp.classList.remove('morph');void disp.offsetWidth;disp.classList.add('morph');
+      txt.textContent=(i+1)+'/'+steps.length+' · '+s.t;
+    },KQI.reduce?0:i*1000));});}
+  $('#compBtn').onclick=()=>run(compile,'on');
+  $('#interpBtn').onclick=()=>run(interp,'blue');
+  fig.addEventListener('replay',()=>run(compile,'on'));
+
+  /* ---------- 12.3 stek va uyum ---------- */
+  const stk=$('#stk'),hp=$('#hp'),mtxt=$('#memTxt'),gcl=$('#gcLbl');
+  let step=0,frame=null,obj=null;
+  const hl=n=>{for(let i=1;i<=5;i++)$('#l'+i).classList.toggle('hl',i===n);};
+  function memReset(){step=0;frame=null;obj=null;hl(0);gcl.textContent='';
+    stk.innerHTML='<div class="frame"><b>main (dastur)</b><span id="mainUser">user = ?</span></div>';
+    hp.innerHTML='';mtxt.textContent='"Qadam" tugmasini bosing: kvadrat(4) chaqiriladi.';}
+  const steps=[
+    ()=>{hl(1);frame=document.createElement('div');frame.className='frame on';frame.innerHTML='<b>kvadrat(4)</b><span class="on">x = 4</span><span id="natSpan">natija = ?</span>';stk.appendChild(frame);
+      mtxt.textContent='kvadrat(4) chaqirildi → stekka yangi ramka qo\'shildi, unda x = 4.';},
+    ()=>{hl(2);const n=$('#natSpan');n.textContent='natija = 16';n.classList.add('on');
+      mtxt.textContent='natija = x * x hisoblandi → 16 lokal o\'zgaruvchi sifatida stekda turibdi.';},
+    ()=>{hl(3);mtxt.textContent='return natija → 16 chaqiruvchiga qaytariladi.';},
+    ()=>{hl(4);if(frame){frame.classList.add('out');setTimeout(()=>frame&&frame.remove(),KQI.reduce?0:400);}
+      mtxt.textContent='Funksiya tugadi → ramka stekdan olib tashlandi, x va natija yo\'q bo\'ldi.';},
+    ()=>{hl(5);obj=document.createElement('div');obj.className='obj';obj.innerHTML='{ id: 1 }<small>manzil: 0x7f3a…</small>';hp.appendChild(obj);
+      const u=$('#mainUser');u.textContent='user → 0x7f3a… (heap)';u.classList.add('on');
+      mtxt.textContent='Obyekt heap\'da yaratildi, \'user\' havolasi esa stekda — u obyektning manzilini saqlaydi.';},
+    ()=>{const u=$('#mainUser');u.textContent='user = null';u.classList.remove('on');if(obj)obj.classList.add('gc');gcl.textContent='axlat yig\'uvchi: havola yo\'q → xotira bo\'shatildi';
+      mtxt.textContent='Havola yo\'qolsa, obyektga hech kim yetib bora olmaydi → axlat yig\'uvchi uni topib, xotirasini bo\'shatadi.';}
+  ];
+  $('#memStep').onclick=()=>{if(step>=steps.length){memReset();}steps[step]();step++;if(step>=steps.length)mtxt.textContent+=' Yana bossangiz — boshidan.';};
+  $('#memReset').onclick=memReset;
+  $('#memFig').addEventListener('replay',memReset);
+  memReset();
+})();
+</script>
+</body>
+</html>

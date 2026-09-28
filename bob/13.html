@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>13-bob. Tarmoq va internet · Kompyuter qanday ishlaydi</title>
+<meta name="description" content="Tarmoq qatlamlari, paket tuzilishi, DNS, HTTPS va mijoz-server modeli: Telegram xabari serverga qanday yetib boradi.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* 30-rasm: paket yo'li */
+.net .pkt-dot{offset-path:path("M60 108 V 132 H 620 V 108");animation:travel 4s linear infinite}
+.net .layers>*{animation:seq 4s infinite;animation-delay:calc(var(--i) * .5s)}
+.net .dnsq{animation:dnsq 4s infinite}
+@keyframes dnsq{0%,20%{opacity:1}30%,100%{opacity:.25}}
+/* 31-rasm: paketni o'rash (index.html dagi demo) */
+.pktbox{display:flex;align-items:center;justify-content:center;margin-top:8px;min-height:120px;overflow-x:auto}
+.env{border:2px solid var(--line);border-radius:8px;padding:10px;font-family:var(--mono);font-size:12px;display:flex;gap:8px;align-items:center;transition:all .35s;transform-origin:center}
+.env.eth{border-color:var(--copper)}.env.ip{border-color:var(--muted)}.env.tcp{border-color:var(--accent)}
+.env>span{color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;letter-spacing:.06em;white-space:nowrap}
+.env.eth>span{color:var(--copper)}.env.tcp>span{color:var(--accent)}
+.env.hide{border-color:transparent;padding:0;gap:0}
+.env.hide>span{display:none}
+.env .crc{color:var(--copper);border-left:2px dashed var(--copper);padding-left:6px;transform:none;writing-mode:vertical-rl}
+.pdata{background:var(--accent-soft);color:var(--accent);padding:10px 14px;border-radius:6px;font-weight:600;white-space:nowrap}
+.pop{animation:pop .4s}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.pktcap{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+/* TLS qo'l berish */
+.tls .msg{animation:seq 7s infinite;animation-delay:calc(var(--i) * 1s)}
+.tls .key{animation:keyin 7s infinite;animation-delay:4s}
+@keyframes keyin{0%,5%{opacity:.15}20%,100%{opacity:1}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="../index.html">Kompyuter <span>qanday ishlaydi</span></a>
+  <nav><a href="../index.html">Mundarija</a><a href="../reja.html">O'quv rejasi</a><a href="../lugat.html">Lug'at</a><a href="../savollar.html">Savollar</a></nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mavzu">☾</button>
+</div></header>
+
+<main class="wrap">
+<div class="chapter-head">
+  <div class="eyebrow">13-bob</div>
+  <h1>Tarmoq va internet</h1>
+  <p class="lede">Telegram'dagi bitta xabar telefondan routerga, provayderga, magistralga va serverga yetguncha to'rt qatlamdan o'tadi va har qatlam unga o'z konvertini kiydiradi.</p>
+</div>
+
+<p>Bugungi kompyuter deyarli har doim tarmoqqa ulangan. <strong>Internet</strong> — bu millionlab tarmoqlarning bir-biriga ulangan global tarmog'i. Ma'lumotlar uzatilishi uchun barcha qurilmalar umumiy qoidalarga — <strong>protokollarga</strong> amal qiladi. Protokollar qatlamlarga ajratilgan va har bir qatlam o'z vazifasini bajaradi.</p>
+
+<figure class="fig">
+  <svg class="sv net" viewBox="0 0 680 330" role="img" aria-label="Telegram xabarining yo'li: telefon, Wi-Fi router, provayder, internet magistral, Telegram serverlari; DNS nomni IP ga o'giradi; to'rt qatlam: ilova, transport, tarmoq, kanal">
+    <path class="wire" d="M60 108 V 132 H 620 V 108"/>
+    <path class="wire" d="M110 80 H 150 M250 80 H 290 M390 80 H 430 M530 80 H 570"/>
+    <path class="flow" d="M110 80 H 150 M250 80 H 290 M390 80 H 430 M530 80 H 570"/>
+    <path class="wire thin" stroke-dasharray="4 4" d="M60 52 V 20 H 140"/>
+    <path class="flow blue dnsq" d="M60 52 V 20 H 140"/>
+    <rect x="10" y="52" width="100" height="56" rx="10" class="box on"/><text x="60" y="74" text-anchor="middle" class="ttl">Telefoningiz</text><text x="60" y="94" text-anchor="middle">Telegram</text>
+    <rect x="150" y="52" width="100" height="56" rx="10" class="box"/><text x="200" y="74" text-anchor="middle" class="ttl">Wi-Fi</text><text x="200" y="94" text-anchor="middle">router</text>
+    <rect x="290" y="52" width="100" height="56" rx="10" class="box"/><text x="340" y="74" text-anchor="middle" class="ttl">Provayder</text><text x="340" y="94" text-anchor="middle">ISP</text>
+    <rect x="430" y="52" width="100" height="56" rx="10" class="box"/><text x="480" y="74" text-anchor="middle" class="ttl">Internet</text><text x="480" y="94" text-anchor="middle">magistral</text>
+    <rect x="570" y="52" width="100" height="56" rx="10" class="box copper"/><text x="620" y="74" text-anchor="middle" class="ttl">Telegram</text><text x="620" y="94" text-anchor="middle">serverlari</text>
+    <rect x="140" y="4" width="120" height="34" rx="8" class="box blue"/><text x="200" y="18" text-anchor="middle" class="ttl">DNS</text><text x="200" y="32" text-anchor="middle">nom → IP</text>
+    <circle class="dot pkt-dot" r="6"/>
+    <text x="340" y="150" text-anchor="middle">paket: telefon → server · jo'natishda qatlamlardan pastga, qabul qilishda yuqoriga</text>
+    <g class="layers" style="--i:0">
+      <g style="--i:0"><rect x="10" y="160" width="660" height="34" rx="8" class="box on"/><text x="24" y="182" class="ttl">Ilova</text><text x="656" y="182" text-anchor="end" class="lbl">HTTP/MTProto</text></g>
+      <g style="--i:1"><rect x="10" y="200" width="660" height="34" rx="8" class="box on"/><text x="24" y="222" class="ttl">Transport</text><text x="656" y="222" text-anchor="end" class="lbl">TCP/UDP</text></g>
+      <g style="--i:2"><rect x="10" y="240" width="660" height="34" rx="8" class="box on"/><text x="24" y="262" class="ttl">Tarmoq</text><text x="656" y="262" text-anchor="end" class="lbl">IP manzil</text></g>
+      <g style="--i:3"><rect x="10" y="280" width="660" height="34" rx="8" class="box on"/><text x="24" y="302" class="ttl">Kanal</text><text x="656" y="302" text-anchor="end" class="lbl">Wi-Fi/Ethernet</text></g>
+    </g>
+  </svg>
+  <figcaption><span><b>30-rasm.</b> Telegram xabarining serverga yo'li va tarmoq qatlamlari</span></figcaption>
+</figure>
+
+<h2 id="13-1">13.1. Tarmoq qatlamlari</h2>
+<p><strong>Kanal qatlami</strong> (Wi-Fi, Ethernet) — bitlarni bitta fizik ulanish orqali, masalan, telefondan routergacha uzatadi. Har bir tarmoq kartasining noyob <strong>MAC manzili</strong> bor. <strong>Tarmoq qatlami</strong> (IP) — paketni butun internet bo'ylab manzilga yetkazadi. Har bir qurilmaning <strong>IP manzili</strong> bor (masalan, 185.199.108.153). Routerlar paket manzilini ko'rib, uni keyingi routerga uzatadi — xuddi pochta bo'limlari xatni shahardan shaharga uzatgandek. <strong>Transport qatlami</strong> — TCP ma'lumotning to'liq va to'g'ri tartibda yetib borishini kafolatlaydi (yo'qolgan paketlar qayta yuboriladi); UDP esa kafolatsiz, lekin tezroq (video qo'ng'iroqlar, o'yinlar). Shuningdek bu qatlamda <strong>port raqamlari</strong> ishlatiladi — bitta kompyuterdagi turli dasturlarni ajratish uchun (HTTPS — 443, PostgreSQL — 5432). <strong>Ilova qatlami</strong> — HTTP, HTTPS, WebSocket, Telegram'ning MTProto protokoli kabi aniq dasturlar tushunadigan formatlar.</p>
+
+<figure class="fig" id="pktFig" data-replay>
+  <div class="controls"><button class="primary" type="button" id="wrapBtn">Qatlam qo'sh</button><button type="button" id="unwrapBtn">Qatlamni ol</button><span class="small muted" id="pktTxt">Ilova qatlami: "Salom!"</span></div>
+  <div class="pktbox">
+    <div class="env eth hide" id="envEth"><span>Ethernet sarlavha · MAC</span>
+      <div class="env ip hide" id="envIp"><span>IP sarlavha · 185.199.108.153</span>
+        <div class="env tcp hide" id="envTcp"><span>TCP sarlavha · port 443</span>
+          <div class="pdata" id="envData">Ma'lumot: "Salom!"</div>
+        </div>
+      </div>
+      <span class="crc">CRC</span>
+    </div>
+  </div>
+  <div class="pktcap">Paket — konvertga solingan konvert</div>
+  <figcaption><span><b>31-rasm.</b> Tarmoq paketining tuzilishi: har bir qatlam o'z sarlavhasini qo'shadi</span></figcaption>
+</figure>
+
+<h2 id="13-2">13.2. DNS</h2>
+<p>Odamlar uchun api.telegram.org kabi nomlarni eslab qolish oson, kompyuterlar esa IP manzillar bilan ishlaydi. <strong>DNS (domen nomlari tizimi)</strong> — internetning "telefon kitobi". Brauzerda sayt nomini yozganingizda, kompyuter avval DNS serveridan uning IP manzilini so'raydi, keyin shu manzilga ulanadi. Siz bot uchun domen sotib olib, uni server IP manziliga yo'naltirganingizda aynan DNS yozuvini (<strong>A record</strong>) sozlaysiz.</p>
+
+<h2 id="13-3">13.3. HTTPS va shifrlash</h2>
+<p>Internetdagi ma'lumot ko'plab routerlar orqali o'tadi va ularning har birida uni o'qish mumkin. Shuning uchun maxfiy ma'lumotlar shifrlanadi. <strong>HTTPS</strong> — HTTP ustiga <strong>TLS</strong> shifrlash qo'shilgan protokol. Ulanish boshida brauzer va server ochiq kalitli kriptografiya yordamida xavfsiz tarzda umumiy maxfiy kalit kelishib oladi, so'ng barcha ma'lumotlar shu kalit bilan shifrlanadi. Serverning haqiqiyligi <strong>sertifikat</strong> orqali tasdiqlanadi (masalan, Let's Encrypt bepul sertifikat beradi). Telegram Mini App'lar faqat HTTPS orqali ishlashi ham shu sababli.</p>
+
+<figure class="fig">
+  <svg class="sv tls" viewBox="0 0 640 300" role="img" aria-label="TLS qo'l berish: ClientHello, ServerHello va sertifikat, sertifikat tekshiruvi, kalit almashinuvi, umumiy maxfiy kalit, shifrlangan HTTP">
+    <defs>
+      <marker id="mk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="arrow on"/></marker>
+      <marker id="mkc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--copper)"/></marker>
+    </defs>
+    <rect x="20" y="8" width="130" height="40" rx="8" class="box on"/><text x="85" y="26" text-anchor="middle" class="ttl">Brauzer</text><text x="85" y="41" text-anchor="middle">mijoz</text>
+    <rect x="490" y="8" width="130" height="40" rx="8" class="box copper"/><text x="555" y="26" text-anchor="middle" class="ttl">Server</text><text x="555" y="41" text-anchor="middle">sertifikat bilan</text>
+    <path class="wire thin" d="M85 48 V 290 M555 48 V 290"/>
+    <g class="msg" style="--i:0"><line x1="90" y1="75" x2="548" y2="75" stroke="var(--accent)" stroke-width="2" marker-end="url(#mk)"/><text x="320" y="68" text-anchor="middle" class="lbl">1. ClientHello: qo'llab-quvvatlanadigan shifrlar</text></g>
+    <g class="msg" style="--i:1"><line x1="550" y1="110" x2="92" y2="110" stroke="var(--accent)" stroke-width="2" marker-end="url(#mk)"/><text x="320" y="103" text-anchor="middle" class="lbl">2. ServerHello + sertifikat (Let's Encrypt) + ochiq kalit</text></g>
+    <g class="msg" style="--i:2"><rect x="30" y="126" width="230" height="26" rx="6" class="box soft"/><text x="145" y="143" text-anchor="middle">3. sertifikat tekshirildi: server haqiqiy ✓</text></g>
+    <g class="msg" style="--i:3"><line x1="90" y1="180" x2="548" y2="180" stroke="var(--accent)" stroke-width="2" marker-end="url(#mk)"/><text x="320" y="173" text-anchor="middle" class="lbl">4. ochiq kalit bilan shifrlangan kalit materiali</text></g>
+    <g class="msg" style="--i:4"><text x="320" y="214" text-anchor="middle" class="lbl">5. ikkala tomonda umumiy maxfiy kalit</text></g>
+    <g class="key"><rect x="55" y="222" width="60" height="20" rx="10" class="box on"/><text x="85" y="236" text-anchor="middle" class="lbl">kalit</text><rect x="525" y="222" width="60" height="20" rx="10" class="box copper"/><text x="555" y="236" text-anchor="middle" class="lbl">kalit</text></g>
+    <g class="msg" style="--i:5"><path class="flow copper" d="M92 268 H 548"/><line x1="92" y1="268" x2="100" y2="268" stroke="var(--copper)" stroke-width="2" marker-start="url(#mkc)"/><line x1="540" y1="268" x2="548" y2="268" stroke="var(--copper)" stroke-width="2" marker-end="url(#mkc)"/><text x="320" y="288" text-anchor="middle" class="lbl">6. barcha HTTP ma'lumotlar shu kalit bilan shifrlanadi = HTTPS</text></g>
+  </svg>
+  <figcaption><span><b>HTTPS ulanishining boshlanishi (TLS qo'l berish).</b> Ochiq kalitli kriptografiya yordamida umumiy maxfiy kalit kelishib olinadi, so'ng hamma narsa shu kalit bilan shifrlanadi.</span></figcaption>
+</figure>
+
+<h2 id="13-4">13.4. Mijoz-server modeli</h2>
+<p>Internetdagi ko'p xizmatlar <strong>mijoz-server</strong> modelida ishlaydi. Mijoz (brauzer, mobil ilova) so'rov yuboradi, server uni qayta ishlab, javob qaytaradi. Server — bu ham oddiy kompyuter, faqat u doimiy yoqiq turadi, doimiy IP manzilga ega va so'rovlarni kutib turuvchi dastur (masalan, Node.js yoki Nginx) ishlab turadi. Telegram bot misolida: foydalanuvchi xabar yozadi → Telegram serverlariga boradi → Telegram uni <strong>webhook</strong> orqali sizning serveringizga HTTPS so'rov sifatida yuboradi → botingiz ma'lumotlar bazasiga murojaat qilib, javob tayyorlaydi → Telegram API orqali javob foydalanuvchiga qaytadi. Bu butun zanjir odatda 100-300 millisekund ichida bajariladi.</p>
+
+<figure class="fig">
+  <div class="controls"><button class="primary" type="button" data-chain="botChain">Xabar yubor</button><span class="small muted">Butun zanjir odatda 100–300 ms</span></div>
+  <div class="chain" id="botChain">
+    <div><span>Foydalanuvchi xabar yozadi<small>mijoz: Telegram ilovasi</small></span></div>
+    <div><span>Xabar Telegram serverlariga boradi<small>MTProto · TCP · IP · Wi-Fi</small></span></div>
+    <div><span>Telegram uni webhook orqali sizning serveringizga HTTPS so'rov sifatida yuboradi<small>POST https://sizning-domeningiz/webhook</small></span></div>
+    <div><span>Botingiz ma'lumotlar bazasiga murojaat qilib, javob tayyorlaydi<small>Node.js → PostgreSQL (port 5432)</small></span></div>
+    <div><span>Telegram API orqali javob yuboriladi<small>https://api.telegram.org/bot…/sendMessage</small></span></div>
+    <div><span>Javob foydalanuvchiga qaytadi<small>100–300 ms o'tdi</small></span></div>
+  </div>
+  <figcaption><span><b>Telegram bot zanjiri.</b> Mijoz so'raydi, server qayta ishlab javob qaytaradi; oradagi har qadam tarmoq orqali o'tadi.</span></figcaption>
+</figure>
+
+<div class="done-row"><button type="button" id="doneBtn" data-chapter="13">Bobni o'qidim</button><span>Tekshirish: <a href="../savollar.html#s21">21-savol</a>, <a href="../savollar.html#s22">22-savol</a></span></div>
+
+<nav class="pager">
+  <a href="12.html"><small>Oldingi</small>12-bob. Dasturlash tilidan mashina kodigacha</a>
+  <a class="next" href="14.html"><small>Keyingi</small>14-bob. Hammasi birgalikda</a>
+</nav>
+</main>
+
+<script src="../js/site.js"></script>
+<script>
+(function(){
+  const $=KQI.$;
+  /* ---------- 31-rasm: paketni o'rash ---------- */
+  const layers=['envTcp','envIp','envEth'];
+  const names=['Transport (TCP sarlavha): port 443 va tartib raqami qo\'shildi','Tarmoq (IP sarlavha): manzil qo\'shildi, routerlar shuni o\'qiydi','Kanal (Ethernet sarlavha): MAC manzil va CRC qo\'shildi, paket simga tayyor'];
+  let lvl=0,auto=[];
+  function pktDraw(){
+    layers.forEach((id,i)=>{const el=document.getElementById(id);const show=i<lvl;
+      if(show&&el.classList.contains('hide')){el.classList.remove('hide','pop');void el.offsetWidth;el.classList.add('pop');}
+      if(!show)el.classList.add('hide');});
+    $('#pktTxt').textContent=lvl?names[lvl-1]:'Ilova qatlami: "Salom!"';
+  }
+  $('#wrapBtn').onclick=()=>{if(lvl<3){lvl++;pktDraw();}};
+  $('#unwrapBtn').onclick=()=>{if(lvl>0){lvl--;pktDraw();}};
+  $('#pktFig').addEventListener('replay',()=>{auto.forEach(clearTimeout);auto=[];lvl=0;pktDraw();
+    for(let i=1;i<=3;i++)auto.push(setTimeout(()=>{lvl=i;pktDraw();},KQI.reduce?0:i*900));});
+  pktDraw();
+})();
+</script>
+</body>
+</html>
