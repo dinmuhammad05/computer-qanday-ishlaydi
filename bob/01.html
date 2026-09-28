@@ -7,19 +7,16 @@
 <meta name="description" content="Kompyuter ta'rifi, qisqacha tarix, Mur qonuni va kompyuter turlari.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/board.css">
 <style>
-/* 1-rasm: vaqt chizig'i */
-.tl .node{animation:rise .6s both;animation-delay:calc(var(--i) * .45s)}
-.tl .line{stroke-dasharray:760;stroke-dashoffset:760;animation:draw 3.6s linear both}
-@keyframes draw{to{stroke-dashoffset:0}}
-.tl .cursor{animation:slide 3.6s linear both}
-@keyframes slide{from{transform:translateX(0)}to{transform:translateX(700px)}}
-/* 1-jadval: tranzistorlar soni logarifmik chiziq */
-.growth i{display:block;height:100%;background:var(--accent);border-radius:6px;width:0;transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
-.growth .bar{height:12px;background:var(--code);border-radius:6px;overflow:hidden}
-.growth .row{display:grid;grid-template-columns:140px 1fr 90px;gap:10px;align-items:center;font-family:var(--mono);font-size:13px;margin-top:8px}
-.growth .row span:last-child{text-align:right;color:var(--muted)}
-@media (max-width:480px){.growth .row{grid-template-columns:80px 1fr 80px;font-size:12px}}
+/* 1-bob platalari */
+.board .ico{fill:none;stroke:var(--b-mut);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+.board .ico.on{stroke:var(--b-data)}
+.board .key{fill:var(--b-box2);stroke:var(--b-line);stroke-width:1;transition:fill .15s,stroke .15s}
+.board .key.hi{fill:var(--b-hi);stroke:var(--b-data)}
+.board .code{font-size:10px}
+.board .rowhi{transition:opacity .2s}
+.board .moore{stroke:var(--b-ctl);stroke-width:2}
 </style>
 </head>
 <body>
@@ -38,17 +35,65 @@
 
 <p>Kompyuter — bu ma'lumotni qabul qiladigan, uni oldindan berilgan buyruqlar (dastur) asosida qayta ishlaydigan, saqlaydigan va natijani chiqaradigan elektron qurilma. Bu ta'rifda to'rtta asosiy harakat bor: <strong>kirish, qayta ishlash, saqlash va chiqish</strong>. Telefoningiz, noutbukingiz, bankomat, avtomobildagi boshqaruv bloki, hatto kir yuvish mashinasidagi mikrokontroller ham shu to'rt harakatni bajaradi — demak ularning barchasi kompyuter.</p>
 
-<figure class="fig">
-  <svg class="sv" viewBox="0 0 640 120" role="img" aria-label="Kompyuterning to'rt harakati: kirish, qayta ishlash, saqlash, chiqish">
-    <g class="seq" style="--step:.9s">
-      <g style="--i:0"><rect x="10" y="30" width="130" height="60" rx="10" class="box on"/><text x="75" y="56" text-anchor="middle" class="ttl">Kirish</text><text x="75" y="76" text-anchor="middle">klaviatura, sensor</text></g>
-      <g style="--i:1"><rect x="175" y="30" width="130" height="60" rx="10" class="box on"/><text x="240" y="56" text-anchor="middle" class="ttl">Qayta ishlash</text><text x="240" y="76" text-anchor="middle">dastur bo'yicha</text></g>
-      <g style="--i:2"><rect x="340" y="30" width="130" height="60" rx="10" class="box on"/><text x="405" y="56" text-anchor="middle" class="ttl">Saqlash</text><text x="405" y="76" text-anchor="middle">xotira, disk</text></g>
-      <g style="--i:3"><rect x="505" y="30" width="125" height="60" rx="10" class="box on"/><text x="567" y="56" text-anchor="middle" class="ttl">Chiqish</text><text x="567" y="76" text-anchor="middle">ekran, karnay</text></g>
-    </g>
-    <path class="flow" d="M140 60 H 175 M305 60 H 340 M470 60 H 505"/>
-    <path class="flow copper" d="M405 90 V 108 H 240 V 90"/>
+<figure class="fig" id="figA" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 300" role="img" aria-label="Mini qurilma platasi: klaviatura USB orqali CPU ga, CPU xotiraga va ekranga ulangan; tugma bosilganda belgi to'rt qadam bosib o'tadi">
+    <defs><pattern id="gA" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="300" fill="url(#gA)"/>
+    <!-- Klaviatura -->
+    <rect x="20" y="40" width="210" height="220" rx="10" class="chip"/>
+    <text x="32" y="60" class="ttl">Klaviatura</text>
+    <text x="218" y="60" text-anchor="end" class="mut xs">USB HID</text>
+    <g id="aKeys"></g>
+    <circle cx="36" cy="180" r="5" class="led blue" id="aLedUsb"/><text x="46" y="184" class="xs" id="aPkt">USB paketi: —</text>
+    <text x="32" y="204" class="mut xs">MCU matritsani 1000 Hz da skanlaydi</text>
+    <text x="32" y="220" class="mut xs">bosilgan tugma → skan-kod</text>
+    <text x="32" y="246" class="mut xs" id="aKbdTxt">kutilmoqda…</text>
+    <!-- USB -->
+    <path class="wire w-ctl" id="aWusb" d="M230 150 H 330"/>
+    <text x="280" y="140" text-anchor="middle" class="mut xs">USB · 12 Mbit/s</text>
+    <!-- CPU -->
+    <rect x="330" y="40" width="260" height="220" rx="12" class="die"/>
+    <text x="342" y="60" class="ttl">CPU</text>
+    <text x="578" y="60" text-anchor="end" class="mut xs">dastur bo'yicha ishlaydi</text>
+    <rect x="342" y="70" width="236" height="96" rx="6" class="unit" id="aProg"/>
+    <text x="350" y="84" class="mut xs">Dastur (xotiradan yuklangan)</text>
+    <rect x="346" y="90" width="228" height="15" rx="3" class="rowhi" id="aL0"/><text x="352" y="101" class="code">1  c = kbd.read()      ; kirish</text>
+    <rect x="346" y="107" width="228" height="15" rx="3" class="rowhi" id="aL1"/><text x="352" y="118" class="code">2  c = c - 32          ; katta harf</text>
+    <rect x="346" y="124" width="228" height="15" rx="3" class="rowhi" id="aL2"/><text x="352" y="135" class="code">3  mem[0x1F0+i] = c    ; saqlash</text>
+    <rect x="346" y="141" width="228" height="15" rx="3" class="rowhi" id="aL3"/><text x="352" y="152" class="code">4  screen.put(c)       ; chiqish</text>
+    <rect x="342" y="176" width="112" height="72" rx="6" class="unit" id="aALU"/>
+    <text x="350" y="192" class="ttl">ALU</text>
+    <text x="398" y="216" text-anchor="middle" class="val" id="aAluTxt"></text>
+    <text x="398" y="236" text-anchor="middle" class="mut xs">hisob-kitob</text>
+    <rect x="464" y="176" width="114" height="72" rx="6" class="unit" id="aRegU"/>
+    <text x="472" y="192" class="ttl">Registr c</text>
+    <text x="521" y="222" text-anchor="middle" class="big" id="aReg">—</text>
+    <text x="521" y="240" text-anchor="middle" class="mut xs" id="aRegAsc">ASCII kodi</text>
+    <!-- RAM -->
+    <path class="wire w-addr" id="aWaddr" d="M590 84 H 640"/>
+    <text x="615" y="78" text-anchor="middle" class="mut xs">manzil</text>
+    <path class="wire w-data" id="aWdata" d="M590 104 H 640"/>
+    <text x="615" y="118" text-anchor="middle" class="mut xs">ma'lumot</text>
+    <rect x="640" y="40" width="240" height="100" rx="10" class="chip"/>
+    <text x="652" y="60" class="ttl">Xotira (RAM)</text>
+    <text x="868" y="60" text-anchor="end" class="mut xs">DDR4 · manzil hex</text>
+    <g id="aMem"></g>
+    <!-- Ekran -->
+    <path class="wire w-data" id="aWvid" d="M590 215 H 640"/>
+    <text x="615" y="209" text-anchor="middle" class="mut xs">HDMI</text>
+    <rect x="640" y="160" width="240" height="100" rx="10" class="chip"/>
+    <text x="652" y="180" class="ttl">Ekran</text>
+    <text x="868" y="180" text-anchor="end" class="mut xs">chiqish qurilmasi</text>
+    <rect x="652" y="190" width="216" height="58" rx="4" class="screen"/>
+    <text x="664" y="226" class="scr dim" id="aScr">▸ _</text>
+    <text x="450" y="284" text-anchor="middle" class="mut xs">Har tugma bosilganda: kirish → qayta ishlash → saqlash → chiqish. Telefon ham, bankomat ham, kir yuvish mashinasi kontrolleri ham shu siklni bajaradi.</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-ctl"><button type="button" class="primary" id="figARun">Boshla</button><span class="small muted">"O" va "K" tugmalari bosiladi: har harf to'rt qadam bosib o'tadi.</span></div>
+  <div class="board-steps"><span>Kirish</span><span>Qayta ishlash</span><span>Saqlash</span><span>Chiqish</span><span>Xulosa</span></div>
+  <div class="board-narr">"Boshla" tugmasini bosing yoki pastga suring: sahna o'zi boshlanadi.</div>
   <figcaption><span><b>Kompyuterning to'rt harakati.</b> Har qanday kompyuter, mikrokontrollerdan superkompyuterga qadar, shu siklni bajaradi.</span></figcaption>
 </figure>
 
@@ -58,20 +103,23 @@
 <p>Hisoblash qurilmalari tarixi ming yilliklarga borib taqaladi. Abak (cho'tlar) eramizdan avval ishlatilgan. 1642-yilda Blez Paskal tishli g'ildiraklar yordamida qo'shish va ayirishni bajaradigan mexanik kalkulyator yasadi. 1837-yilda Charlz Bebbij "Analitik mashina" loyihasini taklif qildi — unda zamonaviy kompyuterning deyarli barcha qismlari bor edi: hisoblash bloki ("tegirmon"), xotira ("ombor") va perfokartalar orqali dastur kiritish. Ada Lavleys bu mashina uchun birinchi algoritmni yozgan va shuning uchun birinchi dasturchi hisoblanadi.</p>
 <p>1946-yilda AQShda yaratilgan ENIAC birinchi to'liq elektron universal kompyuterlardan biri edi. U 17 468 ta elektron lampadan iborat bo'lib, 27 tonna og'irlikda edi va 150 kilovatt quvvat sarflardi. 1947-yilda Bell Labs laboratoriyasida tranzistor ixtiro qilindi — u lampaga qaraganda ming marta kichik, ishonchli va kam energiya sarflaydigan edi. 1958-yilda bir nechta tranzistorni bitta kremniy bo'lagiga joylashtirish — integral sxema (mikrochip) — paydo bo'ldi. 1971-yilda Intel 4004 — birinchi mikroprotsessor chiqdi: unda 2 300 ta tranzistor bor edi. Bugungi Apple M-seriya yoki AMD Ryzen protsessorlarida esa bu raqam o'nlab milliardga yetadi.</p>
 
-<figure class="fig">
-  <svg class="sv tl" viewBox="0 0 780 150" role="img" aria-label="Hisoblash texnikasi rivojlanishining asosiy bosqichlari: 1642 dan 2020 gacha">
-    <line x1="30" y1="60" x2="750" y2="60" stroke="var(--line)" stroke-width="3"/>
-    <line class="line" x1="30" y1="60" x2="750" y2="60" stroke="var(--accent)" stroke-width="3"/>
-    <circle class="cursor dot" cx="30" cy="60" r="7"/>
-    <g class="node" style="--i:0"><circle cx="30" cy="60" r="5" class="dot"/><text x="30" y="40" text-anchor="middle" class="lbl">1642</text><text x="30" y="85" text-anchor="middle" class="lbl">Paskal</text><text x="30" y="100" text-anchor="middle">mexanik</text></g>
-    <g class="node" style="--i:1"><circle cx="133" cy="60" r="5" class="dot"/><text x="133" y="40" text-anchor="middle" class="lbl">1837</text><text x="133" y="85" text-anchor="middle" class="lbl">Bebbij</text><text x="133" y="100" text-anchor="middle">analitik</text></g>
-    <g class="node" style="--i:2"><circle cx="236" cy="60" r="5" class="dot"/><text x="236" y="40" text-anchor="middle" class="lbl">1946</text><text x="236" y="85" text-anchor="middle" class="lbl">ENIAC</text><text x="236" y="100" text-anchor="middle">lampali</text></g>
-    <g class="node" style="--i:3"><circle cx="339" cy="60" r="5" class="dot"/><text x="339" y="40" text-anchor="middle" class="lbl">1947</text><text x="339" y="85" text-anchor="middle" class="lbl">Tranzistor</text><text x="339" y="100" text-anchor="middle">Bell Labs</text></g>
-    <g class="node" style="--i:4"><circle cx="442" cy="60" r="5" class="dot"/><text x="442" y="40" text-anchor="middle" class="lbl">1971</text><text x="442" y="85" text-anchor="middle" class="lbl">Intel 4004</text><text x="442" y="100" text-anchor="middle">1-mikroprotsessor</text></g>
-    <g class="node" style="--i:5"><circle cx="545" cy="60" r="5" class="dot"/><text x="545" y="40" text-anchor="middle" class="lbl">1981</text><text x="545" y="85" text-anchor="middle" class="lbl">IBM PC</text><text x="545" y="100" text-anchor="middle">shaxsiy</text></g>
-    <g class="node" style="--i:6"><circle cx="648" cy="60" r="5" class="dot"/><text x="648" y="40" text-anchor="middle" class="lbl">2007</text><text x="648" y="85" text-anchor="middle" class="lbl">iPhone</text><text x="648" y="100" text-anchor="middle">smartfon</text></g>
-    <g class="node" style="--i:7"><circle cx="750" cy="60" r="5" class="dot"/><text x="750" y="40" text-anchor="middle" class="lbl">2020+</text><text x="750" y="85" text-anchor="middle" class="lbl">AI chiplar</text><text x="750" y="100" text-anchor="middle">GPU/NPU</text></g>
+<figure class="fig" id="fig1" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 250" role="img" aria-label="Hisoblash texnikasi rivojlanishining asosiy bosqichlari: 1642 dan 2020 gacha, har davr o'z chipi bilan">
+    <defs><pattern id="g1" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="250" fill="url(#g1)"/>
+    <text x="22" y="26" class="ttl">Kalit qanday o'zgardi</text>
+    <text x="878" y="26" text-anchor="end" class="mut xs">tishli g'ildirak → lampa → tranzistor → chip</text>
+    <g id="tlNodes"></g>
+    <path class="wire w-data bus" id="tlBus" d="M22 190 H 878"/>
+    <text x="22" y="210" class="mut xs">1600</text>
+    <text x="878" y="210" text-anchor="end" class="mut xs">bugun · vaqt →</text>
+    <text x="450" y="236" text-anchor="middle" class="mut xs" id="tlFoot">Har davrning kaliti: mexanik → elektromexanik → lampa → tranzistor → integral sxema → mikroprotsessor → SoC</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>1642</span><span>1837</span><span>1946</span><span>1947</span><span>1971</span><span>1981</span><span>2007</span><span>2020+</span></div>
+  <div class="board-narr">Pastga suring: davrlar ketma-ket yonadi.</div>
   <figcaption><span><b>1-rasm.</b> Hisoblash texnikasi rivojlanishining asosiy bosqichlari</span></figcaption>
 </figure>
 
@@ -93,9 +141,21 @@
 </table>
 </div>
 
-<figure class="fig" id="growthFig">
-  <div class="controls"><button class="primary" type="button" id="growthBtn">Mur qonunini ko'rsat</button><span class="small muted">Logarifmik shkala: har bo'linma 10 barobar</span></div>
-  <div class="growth" id="growth"></div>
+<figure class="fig" id="growthFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 250" role="img" aria-label="Olti protsessorda tranzistorlar soni logarifmik shkalada: 2 300 dan 92 milliardgacha">
+    <defs><pattern id="gG" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="250" fill="url(#gG)"/>
+    <text x="22" y="26" class="ttl">Tranzistorlar soni bitta chipda</text>
+    <text x="878" y="26" text-anchor="end" class="mut xs">logarifmik shkala: har bo'linma 10 barobar</text>
+    <g id="grAxis"></g>
+    <g id="grRows"></g>
+    <line x1="400" y1="22" x2="416" y2="22" class="moore"/><text x="422" y="26" class="mut xs">Mur bashorati (har 2 yilda ×2)</text>
+    <g class="tokens"></g>
+  </svg>
+  </div>
+  <div class="board-ctl"><button class="primary" type="button" id="growthBtn">Mur qonunini ko'rsat</button><span class="small muted">Chiziqli shkalada 4004 ko'rinmasdi ham: farq 40 million barobar</span></div>
+  <div class="board-narr">Pastga suring yoki tugmani bosing: ustunlar o'sadi.</div>
   <figcaption><span><b>Tranzistorlar soni, 1971–2023.</b> Chiziqli shkalada 4004 ko'rinmasdi ham: farq 40 million barobar.</span></figcaption>
 </figure>
 
@@ -115,19 +175,165 @@
 </main>
 
 <script src="../js/site.js"></script>
-<script src="../js/quiz-data.js"></script>
-<script src="../js/quiz.js"></script>
+<script src="../js/board.js"></script>
 <script>
 (function(){
-  const data=[['1971 · 4004',2300],['1978 · 8086',29000],['1993 · Pentium',3.1e6],['2006 · Core 2 Duo',2.91e8],['2020 · M1',1.6e10],['2023 · M3 Max',9.2e10]];
-  const fmt=n=>n>=1e9?(n/1e9).toLocaleString('uz')+' mlrd':n>=1e6?(n/1e6).toLocaleString('uz')+' mln':n.toLocaleString('uz');
-  const g=document.getElementById('growth');
-  g.innerHTML=data.map(d=>`<div class="row"><span>${d[0]}</span><div class="bar"><i></i></div><span></span></div>`).join('');
-  const play=()=>{g.querySelectorAll('.row').forEach((r,i)=>{const w=(Math.log10(data[i][1])-3)/8.2*100;r.querySelector('i').style.width='0%';r.querySelector('span:last-child').textContent='';
-    setTimeout(()=>{r.querySelector('i').style.width=Math.max(w,2)+'%';r.querySelector('span:last-child').textContent=fmt(data[i][1]);},KQI.reduce?0:i*300);});};
-  document.getElementById('growthBtn').onclick=play;
-  document.getElementById('growthFig').addEventListener('replay',play);
+  if(!window.KQIBoard) return;
+  var B=KQIBoard, el=B.el;
+  function replayBtn(id,fig){ var b=document.getElementById(id); if(b) b.onclick=function(){ fig.dispatchEvent(new CustomEvent('replay')); }; }
+
+  /* ---------- To'rt harakat: mini qurilma platasi ---------- */
+  (function(){
+    var fig=document.getElementById('figA'); if(!fig) return;
+    var svg=fig.querySelector('svg');
+    var ROWS=['TYUIOP','GHJKL⏎','BNM,.␣'], keyPos={};
+    var kg=svg.querySelector('#aKeys');
+    ROWS.forEach(function(row,r){ row.split('').forEach(function(ch,c){
+      var x=30+c*32, y=72+r*30; keyPos[ch]=[x+14,y+12];
+      kg.appendChild(el('rect',{x:x,y:y,width:28,height:24,rx:4,'class':'key',id:'aK'+r+c}));
+      kg.appendChild(el('text',{x:x+14,y:y+16,'text-anchor':'middle','class':'xs'},ch));
+    }); });
+    function keyId(ch){ for(var r=0;r<ROWS.length;r++){ var c=ROWS[r].indexOf(ch); if(c>=0) return 'aK'+r+c; } return null; }
+    B.cells(svg.querySelector('#aMem'),{n:6,x:652,y:72,w:32,h:36,gap:4,prefix:'aM',labels:['1F0','1F1','1F2','1F3','1F4','1F5']});
+    var LETTERS=[{key:'O',low:'o',scan:'0x12',asc:111,up:79},{key:'K',low:'k',scan:'0x0E',asc:107,up:75}];
+    B.scene(fig,async function(c){
+      var T=600, out='';
+      svg.querySelectorAll('.key.hi').forEach(function(k){ k.classList.remove('hi'); });
+      for(var i=0;i<6;i++) c.text('aMv'+i,'');
+      c.text('aScr','▸ _'); svg.querySelector('#aScr').classList.add('dim');
+      c.text('aReg','—'); c.text('aAluTxt',''); c.text('aPkt','USB paketi: —'); c.text('aKbdTxt','kutilmoqda…');
+      for(var i=0;i<LETTERS.length&&c.alive();i++){
+        var L=LETTERS[i], kid=keyId(L.key);
+        /* 1. kirish */
+        c.step(0,'<b>Kirish.</b> "'+L.low+'" tugmasi bosildi. Klaviatura MCU si matritsada qaysi tugma yopilganini topib, skan-kod <b>'+L.scan+'</b> ni USB paketiga solib yubordi.');
+        svg.querySelector('#'+kid).classList.add('hi'); c.text('aKbdTxt','bosildi: "'+L.low+'" → skan-kod '+L.scan);
+        c.led('aLedUsb',1,'blue blink'); c.text('aPkt','USB paketi: '+L.scan); c.lit('aWusb');
+        await c.token(L.scan,'ctl',[[230,150],[330,150]],T);
+        c.led('aLedUsb',0,'blue'); c.unlit(); c.unit('aProg','on'); svg.querySelector('#aL0').classList.add('on');
+        c.text('aReg',String(L.asc)); c.text('aRegAsc','ASCII "'+L.low+'"'); c.unit('aRegU','on');
+        await c.delay(700); if(!c.alive()) return;
+        /* 2. qayta ishlash */
+        svg.querySelector('#aL0').classList.remove('on'); svg.querySelector('#aL1').classList.add('on');
+        c.step(1,'<b>Qayta ishlash.</b> Dastur 2-qatori: ALU '+L.asc+' dan 32 ni ayiradi — ASCII jadvalida kichik harf bilan katta harf farqi aynan 32. Natija '+L.up+' = "'+L.key+'".');
+        c.unit('aALU','on'); c.text('aAluTxt',L.asc+' − 32 = '+L.up);
+        await c.token(String(L.asc),'data',[[464,212],[454,212],[454,240],[398,240]],T*0.6);
+        await c.delay(300);
+        await c.token(String(L.up),'data',[[398,200],[454,200],[464,212]],T*0.6);
+        c.text('aReg',String(L.up)); c.text('aRegAsc','ASCII "'+L.key+'"'); c.flash('aRegU');
+        await c.delay(500); if(!c.alive()) return;
+        /* 3. saqlash */
+        svg.querySelector('#aL1').classList.remove('on'); svg.querySelector('#aL2').classList.add('on'); c.unit('aALU',null);
+        c.step(2,'<b>Saqlash.</b> Manzil <b>0x1F'+i+'</b> ko\'k manzil shinasiga, qiymat <b>'+L.up+'</b> yashil ma\'lumot shinasiga chiqdi. RAM shu katakni tanlab, baytni yozib oldi.');
+        c.lit('aWaddr'); await c.token('0x1F'+i,'addr',[[590,84],[640,84]],T);
+        c.lit('aWdata'); await c.token(String(L.up),'data',[[590,104],[640,104]],T);
+        c.cell('aM'+i,'hi'); c.text('aMv'+i,String(L.up)); c.flash('aM'+i);
+        await c.delay(500); if(!c.alive()) return;
+        /* 4. chiqish */
+        c.unlit(); svg.querySelector('#aL2').classList.remove('on'); svg.querySelector('#aL3').classList.add('on');
+        c.step(3,'<b>Chiqish.</b> Dastur 4-qatori: belgi video chiqishga yuboriladi — ekran "'+L.key+'" harfini chizadi.');
+        c.lit('aWvid'); await c.token(L.key,'data',[[590,215],[640,215]],T);
+        out+=L.key; c.text('aScr','▸ '+out+'_'); svg.querySelector('#aScr').classList.remove('dim');
+        await c.delay(600); if(!c.alive()) return;
+        c.unlit(); svg.querySelector('#aL3').classList.remove('on'); svg.querySelector('#'+kid).classList.remove('hi'); c.unit('aRegU',null);
+      }
+      c.text('aScr','▸ '+out); c.unit('aProg',null);
+      c.step(4,'<b>Xulosa.</b> Ikki tugma — sakkiz qadam: kirish (USB) → qayta ishlash (ALU) → saqlash (RAM 0x1F0, 0x1F1) → chiqish (ekran). Qurilma qanchalik katta yoki kichik bo\'lmasin, kompyuter deganda shu to\'rt harakat tushuniladi.');
+    });
+    replayBtn('figARun',fig);
+  })();
+
+  /* ---------- 1-rasm: vaqt chizig'i ---------- */
+  (function(){
+    var fig=document.getElementById('fig1'); if(!fig) return;
+    var svg=fig.querySelector('svg'), g=svg.querySelector('#tlNodes');
+    var N=[['1642','Paskal','mexanik'],['1837','Bebbij','analitik'],['1946','ENIAC','lampali'],['1947','Tranzistor','Bell Labs'],['1971','Intel 4004','1-mikroprotsessor'],['1981','IBM PC','shaxsiy'],['2007','iPhone','smartfon'],['2020+','AI chiplar','GPU/NPU']];
+    var NARR=[
+      '<b>1642 · Paskal.</b> Tishli g\'ildiraklar qo\'shadi va ayiradi. Kalit — mexanik: qo\'l bilan buraladi.',
+      '<b>1837 · Bebbij.</b> Analitik mashina loyihasi: "tegirmon" (ALU), "ombor" (xotira), perfokarta (dastur). Ada Lavleys unga birinchi algoritmni yozdi.',
+      '<b>1946 · ENIAC.</b> 17 468 elektron lampa, 27 tonna, 150 kVt. Lampa — elektr signali bilan boshqariladigan kalit.',
+      '<b>1947 · Tranzistor.</b> Bell Labs: lampadan ming marta kichik, ishonchli, kam quvvat sarflaydigan kalit.',
+      '<b>1971 · Intel 4004.</b> 2 300 tranzistor bitta kremniy bo\'lagida, 0.74 MHz — birinchi mikroprotsessor.',
+      '<b>1981 · IBM PC.</b> Intel 8088, 4.77 MHz, 16–256 KB xotira — kompyuter ish stoliga keldi.',
+      '<b>2007 · iPhone.</b> ARM protsessor, kam quvvat, sensorli ekran — kompyuter cho\'ntakka sig\'di.',
+      '<b>2020+ · AI chiplar.</b> GPU/NPU: o\'nlab milliard tranzistor, minglab yadro parallel ishlaydi.'];
+    function icon(i,cx,cy){
+      var s='';
+      switch(i){
+        case 0: s='<circle cx="'+cx+'" cy="'+cy+'" r="11"/><circle cx="'+cx+'" cy="'+cy+'" r="4"/>'; for(var a=0;a<8;a++){ var r=a*Math.PI/4; s+='<line x1="'+(cx+11*Math.cos(r)).toFixed(1)+'" y1="'+(cy+11*Math.sin(r)).toFixed(1)+'" x2="'+(cx+15*Math.cos(r)).toFixed(1)+'" y2="'+(cy+15*Math.sin(r)).toFixed(1)+'"/>'; } break;
+        case 1: s='<rect x="'+(cx-20)+'" y="'+(cy-13)+'" width="40" height="26" rx="2"/>'; for(var k=0;k<4;k++) s+='<rect x="'+(cx-15+k*9)+'" y="'+(cy-7+(k%2)*8)+'" width="4" height="5"/>'; break;
+        case 2: s='<rect x="'+(cx-8)+'" y="'+(cy-16)+'" width="16" height="26" rx="7"/><path d="M'+(cx-3)+' '+(cy+4)+' V'+(cy-6)+' L'+cx+' '+(cy-9)+' L'+(cx+3)+' '+(cy-6)+' V'+(cy+4)+'"/><line x1="'+(cx-4)+'" y1="'+(cy+10)+'" x2="'+(cx-4)+'" y2="'+(cy+16)+'"/><line x1="'+(cx+4)+'" y1="'+(cy+10)+'" x2="'+(cx+4)+'" y2="'+(cy+16)+'"/>'; break;
+        case 3: s='<circle cx="'+cx+'" cy="'+cy+'" r="14"/><line x1="'+(cx-5)+'" y1="'+(cy-9)+'" x2="'+(cx-5)+'" y2="'+(cy+9)+'"/><line x1="'+(cx-16)+'" y1="'+cy+'" x2="'+(cx-5)+'" y2="'+cy+'"/><path d="M'+(cx-5)+' '+(cy-4)+' L'+(cx+8)+' '+(cy-12)+' M'+(cx-5)+' '+(cy+4)+' L'+(cx+8)+' '+(cy+12)+'"/>'; break;
+        case 4: s='<rect x="'+(cx-20)+'" y="'+(cy-8)+'" width="40" height="16" rx="1"/>'; for(var k=0;k<5;k++) s+='<line x1="'+(cx-16+k*8)+'" y1="'+(cy-8)+'" x2="'+(cx-16+k*8)+'" y2="'+(cy-14)+'"/><line x1="'+(cx-16+k*8)+'" y1="'+(cy+8)+'" x2="'+(cx-16+k*8)+'" y2="'+(cy+14)+'"/>'; break;
+        case 5: s='<rect x="'+(cx-17)+'" y="'+(cy-15)+'" width="34" height="22" rx="2"/><line x1="'+(cx-10)+'" y1="'+(cy+13)+'" x2="'+(cx+10)+'" y2="'+(cy+13)+'"/><line x1="'+cx+'" y1="'+(cy+7)+'" x2="'+cx+'" y2="'+(cy+13)+'"/>'; break;
+        case 6: s='<rect x="'+(cx-9)+'" y="'+(cy-16)+'" width="18" height="32" rx="3"/><circle cx="'+cx+'" cy="'+(cy+11)+'" r="2"/><line x1="'+(cx-5)+'" y1="'+(cy-11)+'" x2="'+(cx+5)+'" y2="'+(cy-11)+'"/>'; break;
+        default: s='<rect x="'+(cx-16)+'" y="'+(cy-16)+'" width="32" height="32" rx="2"/>'; for(var r2=0;r2<3;r2++)for(var c2=0;c2<3;c2++) s+='<rect x="'+(cx-13+c2*10)+'" y="'+(cy-13+r2*10)+'" width="6" height="6"/>';
+      }
+      return s;
+    }
+    var X=[];
+    N.forEach(function(n,i){
+      var x=22+i*108; X.push(x+50);
+      var grp=el('g',{});
+      grp.appendChild(el('rect',{x:x,y:40,width:100,height:110,rx:8,'class':'unit',id:'tlU'+i}));
+      grp.appendChild(el('circle',{cx:x+12,cy:54,r:4.5,'class':'led',id:'tlL'+i}));
+      grp.appendChild(el('text',{x:x+22,y:58,'class':'ttl'},n[0]));
+      var ic=el('g',{'class':'ico',id:'tlI'+i}); ic.innerHTML=icon(i,x+50,86); grp.appendChild(ic);
+      grp.appendChild(el('text',{x:x+50,y:126,'text-anchor':'middle','class':'val'},n[1]));
+      grp.appendChild(el('text',{x:x+50,y:141,'text-anchor':'middle','class':'mut xs'},n[2]));
+      grp.appendChild(el('path',{'class':'wire w-data',id:'tlW'+i,d:'M'+(x+50)+' 150 V 190'}));
+      g.appendChild(grp);
+    });
+    B.scene(fig,async function(c){
+      svg.querySelectorAll('.ico.on').forEach(function(e){ e.classList.remove('on'); });
+      c.lit('tlBus');
+      for(var i=0;i<N.length&&c.alive();i++){
+        var from=i?X[i-1]:22;
+        await c.dot('data',[[from,190],[X[i],190]],i?420:200);
+        if(!c.alive()) return;
+        c.lit('tlW'+i); c.unit('tlU'+i,'on'); c.led('tlL'+i,1); svg.querySelector('#tlI'+i).classList.add('on');
+        c.step(i,NARR[i]);
+        await c.delay(1150);
+      }
+      if(!c.alive()) return;
+      c.narr('<b>380 yil.</b> Tishli g\'ildirakdan nanometrli tranzistorgacha g\'oya o\'zgarmadi: signal bilan boshqariladigan kalit. Faqat kalit kichiklashdi, tezlashdi va arzonlashdi — 1-jadvalga qarang.');
+    });
+  })();
+
+  /* ---------- Mur qonuni: tranzistorlar soni ---------- */
+  (function(){
+    var fig=document.getElementById('growthFig'); if(!fig) return;
+    var svg=fig.querySelector('svg'), ax=svg.querySelector('#grAxis'), rows=svg.querySelector('#grRows');
+    var data=[['1971 · 4004',2300,1971],['1978 · 8086',29000,1978],['1993 · Pentium',3.1e6,1993],['2006 · Core 2 Duo',2.91e8,2006],['2020 · M1',1.6e10,2020],['2023 · M3 Max',9.2e10,2023]];
+    var fmt=function(n){ return n>=1e9?(n/1e9).toLocaleString('uz')+' mlrd':n>=1e6?(n/1e6).toLocaleString('uz')+' mln':n.toLocaleString('uz'); };
+    var X0=170, W=600, LMIN=3, LMAX=11.2, ticks=['1 ming','10 ming','100 ming','1 mln','10 mln','100 mln','1 mlrd','10 mlrd','100 mlrd'];
+    var px=function(n){ return X0+(Math.log10(n)-LMIN)/(LMAX-LMIN)*W; };
+    ticks.forEach(function(t,i){ var x=X0+i/(LMAX-LMIN)*W; ax.appendChild(el('line',{x1:x,y1:36,x2:x,y2:218,'class':'grid'})); ax.appendChild(el('text',{x:x,y:228,'text-anchor':'middle','class':'mut xs'},t)); });
+    data.forEach(function(d,i){
+      var y=46+i*28;
+      rows.appendChild(el('circle',{cx:22,cy:y+8,r:4.5,'class':'led',id:'grL'+i}));
+      rows.appendChild(el('text',{x:34,y:y+12},d[0]));
+      rows.appendChild(el('rect',{x:X0,y:y,width:W,height:16,rx:4,'class':'bar'}));
+      var f=el('rect',{x:X0,y:y,width:0,height:16,rx:4,'class':'bar'}); f.style.fill='var(--b-data)'; f.style.transition='width .9s cubic-bezier(.2,.7,.2,1)'; f.id='grF'+i; rows.appendChild(f);
+      var pred=2300*Math.pow(2,(d[2]-1971)/2);
+      rows.appendChild(el('line',{x1:px(pred),y1:y-2,x2:px(pred),y2:y+18,'class':'moore',id:'grP'+i}));
+      rows.appendChild(el('text',{x:X0+W+8,y:y+12,'class':'val',id:'grV'+i},''));
+    });
+    B.scene(fig,async function(c){
+      data.forEach(function(d,i){ svg.querySelector('#grF'+i).style.width='0px'; c.text('grV'+i,''); });
+      c.narr('Har ustun oldingisidan o\'nlab-yuzlab marta uzun: bu logarifmik shkala, aks holda 4004 ustuni ko\'rinmasdi.');
+      for(var i=0;i<data.length&&c.alive();i++){
+        c.led('grL'+i,1); svg.querySelector('#grF'+i).style.width=(px(data[i][1])-X0).toFixed(1)+'px'; c.text('grV'+i,fmt(data[i][1]));
+        await c.delay(c.reduce?0:420);
+      }
+      if(!c.alive()) return;
+      await c.delay(400);
+      c.narr('<b>Mur qonuni.</b> 1971 dan har 2 yilda ×2 bo\'lsa, 2023 da 2 300 × 2<sup>26</sup> ≈ 154 mlrd bo\'lardi; haqiqatda 92 mlrd — 52 yil davomida bashorat deyarli to\'g\'ri chiqdi (mis chiziqchalar bashoratni ko\'rsatadi). Endi tranzistor bir necha nanometr: fizik chegara yaqin.');
+    });
+    replayBtn('growthBtn',fig);
+  })();
 })();
 </script>
+<script src="../js/quiz-data.js"></script>
+<script src="../js/quiz.js"></script>
 </body>
 </html>

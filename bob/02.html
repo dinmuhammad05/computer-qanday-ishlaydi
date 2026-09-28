@@ -7,51 +7,19 @@
 <meta name="description" content="Ikkilik sanoq tizimi, bit va bayt, ASCII va Unicode, piksellar, tovush va video — hammasi sonlar.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/board.css">
 <style>
-/* 2-rasm: bitlar */
-.bits.stagger>*{animation:rise .5s both;animation-delay:calc(var(--i) * .12s)}
-.bit sup{font-size:9px}
-.sum{font-family:var(--mono);font-size:15px;margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.sum span{padding:2px 8px;border-radius:6px;background:var(--code);color:var(--muted)}
-.sum span.t{background:var(--accent-soft);color:var(--accent);font-weight:600}
-.sum b{color:var(--ink);font-size:17px}
-/* o'nlikdan ikkilikka */
-.divs{display:grid;gap:6px;margin-top:8px;max-width:520px}
-.divs div{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-family:var(--mono);font-size:14px;opacity:.45;transition:all .3s}
-.divs div.lit{opacity:1;border-color:var(--accent)}
-.divs div.now{background:var(--accent-soft)}
-.divs div i{font-style:normal;font-weight:600;color:var(--copper);border:1px solid var(--copper);border-radius:6px;padding:0 8px}
-.divs .res{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600;grid-template-columns:1fr}
-/* 3-rasm: ASCII */
-.ascii{display:grid;gap:6px;margin-top:6px}
-.ascii .row{display:grid;grid-template-columns:44px 92px 1fr;gap:8px;align-items:center;font-family:var(--mono);font-size:14px;animation:rise .5s both;animation-delay:calc(var(--i) * .35s)}
-.ascii .ch{font-size:22px;font-weight:600;color:var(--copper);text-align:center;border:1px solid var(--copper);border-radius:8px;padding:2px 0;background:var(--copper-soft)}
-.ascii .code{color:var(--ink);text-align:center}
-.ascii .bb{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;max-width:260px}
-.ascii .bb span{border:1px solid var(--line);border-radius:5px;text-align:center;font-size:13px;color:var(--muted);background:var(--surface);animation:rise .3s both;animation-delay:calc(var(--i) * .35s + var(--j) * .05s + .25s)}
-.ascii .bb span.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
-.ascii .foot{font-family:var(--display);font-size:13px;color:var(--muted);margin-top:8px;animation:rise .5s both;animation-delay:calc(var(--n) * .35s + .4s)}
-@media (max-width:420px){.ascii .row{grid-template-columns:36px 76px 1fr;font-size:12px}.ascii .ch{font-size:18px}}
-/* 4-rasm: piksellar */
-.px .p{animation:rise .35s both;animation-delay:calc(var(--i) * .018s)}
-.px .sel{stroke:var(--ink);stroke-width:2;fill:none;animation:selp 1.4s ease-in-out infinite;animation-delay:2s}
-@keyframes selp{0%,100%{opacity:.4}50%{opacity:1}}
-.px .link{stroke:var(--ink);stroke-width:1.5;fill:none;stroke-dasharray:400;stroke-dashoffset:400;animation:drawln 1s ease-out both;animation-delay:2s}
-@keyframes drawln{to{stroke-dashoffset:0}}
-.px .big{animation:rise .5s both;animation-delay:2.4s}
-.px .chan{animation:rise .5s both;animation-delay:calc(2.9s + var(--i) * .35s)}
-.px .chan .b{animation:rise .3s both;animation-delay:calc(3.1s + var(--i) * .35s + var(--j) * .05s)}
-.px .note{animation:rise .5s both;animation-delay:4.4s}
-/* 5-rasm: tovush */
-.snd .wave{stroke:var(--blue);stroke-width:2.5;fill:none;stroke-dasharray:1400;stroke-dashoffset:1400;animation:drawwave 1.6s linear both}
-@keyframes drawwave{to{stroke-dashoffset:0}}
-.snd .s{animation:rise .3s both;animation-delay:calc(1.6s + var(--i) * var(--st,.07s))}
-.snd .stem{stroke:var(--copper);stroke-width:1.5;opacity:.6}
-.snd .smp{fill:var(--copper)}
-.snd .cur{stroke:var(--copper);stroke-width:1.5;stroke-dasharray:3 3;animation:cursorx var(--tot,4s) linear both;animation-delay:1.6s}
-@keyframes cursorx{from{transform:translateX(0)}to{transform:translateX(560px)}}
-.snd .stair{stroke:var(--copper);stroke-width:1.5;fill:none;opacity:0;animation:fadein .6s both;animation-delay:calc(1.8s + var(--tot,4s))}
-@keyframes fadein{to{opacity:.7}}
+/* 2-bob platalari */
+.board .led.btn{cursor:pointer}
+.board .led.btn:hover{stroke:var(--b-ink)}
+.board .key{fill:var(--b-box2);stroke:var(--b-line);stroke-width:1;transition:fill .15s,stroke .15s}
+.board .key.hi{fill:var(--b-hi);stroke:var(--b-data)}
+.board .cur{stroke:var(--b-ctl);stroke-width:1.5;stroke-dasharray:3 3;transition:transform .25s linear}
+.board .px{stroke:#1E2A38;stroke-width:.5;transition:fill .2s}
+.board .pxsel{fill:none;stroke:var(--b-ink);stroke-width:2}
+.board .stem{stroke:var(--b-ctl);stroke-width:1.2;opacity:.7}
+.board .smp{fill:var(--b-ctl)}
+.board .wave.stair{stroke:var(--b-ctl)}
 </style>
 </head>
 <body>
@@ -74,20 +42,79 @@
 <h2 id="2-1">2.1. Ikkilik sanoq tizimi</h2>
 <p>Biz odatda o'nlik tizimda sanaymiz: har bir xona o'ng tomondagisidan 10 barobar katta (birlar, o'nlar, yuzlar...). Ikkilik tizimda esa har bir xona 2 barobar katta: 1, 2, 4, 8, 16, 32, 64, 128 va hokazo. Ikkilik sonni o'nlikka o'girish uchun 1 turgan xonalarning qiymatlarini qo'shib chiqamiz.</p>
 
-<figure class="fig" id="bitsFig">
-  <div class="controls"><label for="decIn" class="small">O'nlik son:</label><input type="number" id="decIn" min="0" max="255" value="181"><span class="small muted">0–255 (1 bayt) · bitlarni bosib o'zgartiring</span></div>
-  <div class="small muted" style="margin-bottom:6px">Bit:</div>
-  <div class="bits stagger" id="bits" data-replay="1"></div>
-  <div class="sum" id="bitsSum"></div>
-  <div class="out" id="bitsOut"></div>
+<figure class="fig" id="bitsFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 310" role="img" aria-label="8 bitli registr: 8 ta LED, kuchlanish ossillogrammasi (0 V yoki 1 V) va o'nlik displey">
+    <defs><pattern id="gB" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="310" fill="url(#gB)"/>
+    <text x="22" y="26" class="ttl">Registr · 8 bit = 1 bayt</text>
+    <text x="580" y="26" text-anchor="end" class="mut xs">LED ni bosib bitni o'zgartiring</text>
+    <g id="bBits"></g>
+    <rect x="22" y="136" width="560" height="120" rx="6" class="screen"/>
+    <text x="30" y="150" class="mut xs">ossillograf: simdagi kuchlanish</text>
+    <text x="30" y="167" class="xs" style="fill:#5CF0A6">1.0 V</text>
+    <text x="30" y="239" class="xs" style="fill:#5CF0A6">0 V</text>
+    <line x1="70" y1="164" x2="566" y2="164" class="grid"/><line x1="70" y1="234" x2="566" y2="234" class="grid"/>
+    <path class="wave" id="bScope" d=""/>
+    <line class="cur" id="bCur" x1="70" y1="140" x2="70" y2="252" style="opacity:0"/>
+    <text x="574" y="250" text-anchor="end" class="mut xs">vaqt →</text>
+    <rect x="600" y="44" width="278" height="212" rx="10" class="chip"/>
+    <text x="612" y="64" class="ttl">Displey</text>
+    <text x="866" y="64" text-anchor="end" class="mut xs">CPU shunday o'qiydi</text>
+    <rect x="612" y="74" width="254" height="64" rx="4" class="lcd"/>
+    <text x="624" y="100" class="mut xs">o'nlik</text>
+    <text x="739" y="114" text-anchor="middle" class="lcdtxt" style="font-size:30px" id="bDec">181</text>
+    <text x="624" y="160" class="mut xs">yig'indi</text>
+    <text x="624" y="178" class="xs" id="bSum"></text>
+    <text x="624" y="194" class="xs" id="bSum2"></text>
+    <text x="624" y="220" class="mut xs">hex</text><text x="670" y="220" class="val" id="bHex">0xB5</text>
+    <text x="740" y="220" class="mut xs">ASCII</text><text x="790" y="220" class="val" id="bAsc">—</text>
+    <text x="624" y="244" class="mut xs" id="bNote">2⁸ = 256 xil qiymat: 0..255</text>
+    <text x="450" y="290" text-anchor="middle" class="mut xs">Simda ~1 V — bu 1, ~0 V — bu 0. 0.1 V shovqin bo'lsa ham ikkalasini ajratish oson, shuning uchun ikkilik tizim.</text>
+    <g class="tokens"></g>
+  </svg>
+  </div>
+  <div class="board-ctl"><label for="decIn" class="small">O'nlik son:</label><input type="number" id="decIn" min="0" max="255" value="181"><button type="button" class="primary" id="bitsRun">O'qib ko'rsat</button><span class="small muted">0–255 (1 bayt)</span></div>
+  <div class="board-steps"><span>Kuchlanish</span><span>Bitlar</span><span>Yig'indi</span><span>Natija</span></div>
+  <div class="board-narr">Pastga suring: ossillograf simdagi kuchlanishni bit-bit o'qiydi.</div>
   <figcaption><span><b>2-rasm.</b> 10110101 ikkilik sonini o'nlik tizimga o'girish</span></figcaption>
 </figure>
 
 <p>Teskari yo'nalish — o'nlik sonni ikkilikka o'girish uchun sonni ketma-ket 2 ga bo'lib, qoldiqlarni yozib boramiz, keyin ularni pastdan yuqoriga o'qiymiz. Masalan, 13: 13/2 = 6 (qoldiq 1), 6/2 = 3 (0), 3/2 = 1 (1), 1/2 = 0 (1). Pastdan o'qisak: 1101. Tekshiramiz: 8 + 4 + 0 + 1 = 13.</p>
 
-<figure class="fig" id="divFig">
-  <div class="controls"><label for="divIn" class="small">O'nlik son:</label><input type="number" id="divIn" min="0" max="255" value="13"><button class="primary" type="button" id="divBtn">2 ga bo'lib ko'rsat</button></div>
-  <div class="divs" id="divs"></div>
+<figure class="fig" id="divFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 260" role="img" aria-label="O'nlikdan ikkilikka: kirish registri, 2 ga bo'luvchi ALU, qoldiq bitlari natija registriga o'ngdan chapga yoziladi">
+    <defs><pattern id="gD" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="260" fill="url(#gD)"/>
+    <path class="wire w-data" id="dW1" d="M222 89 H 300"/>
+    <text x="261" y="82" text-anchor="middle" class="mut xs">son</text>
+    <path class="wire w-data" id="dW2" d="M400 134 V 160 H 122 V 134"/>
+    <text x="261" y="174" text-anchor="middle" class="mut xs">bo'linma qaytadi</text>
+    <path class="wire w-ctl" id="dW3" d="M500 89 H 540 V 60 H 860"/>
+    <g id="dStubs"></g>
+    <rect x="22" y="44" width="200" height="90" rx="8" class="unit" id="dUin"/>
+    <text x="34" y="62" class="ttl">Kirish registri</text>
+    <text x="122" y="104" text-anchor="middle" class="big" id="dIn">13</text>
+    <text x="122" y="124" text-anchor="middle" class="mut xs">o'nlik son</text>
+    <rect x="300" y="44" width="200" height="90" rx="8" class="unit" id="dUalu"/>
+    <text x="312" y="62" class="ttl">ALU · ÷ 2</text>
+    <circle cx="482" cy="58" r="4.5" class="led warn" id="dLed"/>
+    <text x="400" y="92" text-anchor="middle" class="val" id="dOp">13 ÷ 2 = 6</text>
+    <text x="400" y="118" text-anchor="middle" class="xs" id="dRem">qoldiq 1</text>
+    <rect x="560" y="44" width="318" height="90" rx="8" class="unit" id="dUout"/>
+    <text x="572" y="62" class="ttl">Natija registri</text>
+    <text x="866" y="62" text-anchor="end" class="mut xs">qoldiq → bit</text>
+    <g id="dLeds"></g>
+    <rect x="22" y="184" width="856" height="66" rx="6" class="lcd"/>
+    <g id="dLog"></g>
+    <text x="34" y="242" class="lcdtxt" id="dRes"></text>
+    <g class="tokens"></g>
+  </svg>
+  </div>
+  <div class="board-ctl"><label for="divIn" class="small">O'nlik son:</label><input type="number" id="divIn" min="0" max="255" value="13"><button class="primary" type="button" id="divBtn">2 ga bo'lib ko'rsat</button></div>
+  <div class="board-steps"><span>Bo'lish</span><span>Qoldiq → bit</span><span>Bo'linma qaytadi</span><span>Natija</span></div>
+  <div class="board-narr">Son kiriting va tugmani bosing: ALU sonni 2 ga bo'lib, qoldiqlarni bit sifatida yozadi.</div>
   <figcaption><span><b>O'nlikdan ikkilikka.</b> Har qadamda 2 ga bo'lamiz, qoldiq (0 yoki 1) — navbatdagi bit. Qoldiqlar pastdan yuqoriga o'qiladi.</span></figcaption>
 </figure>
 
@@ -132,9 +159,42 @@
 <h2 id="2-3">2.3. Matn: ASCII va Unicode</h2>
 <p>Harflarni saqlash uchun har bir belgiga son biriktiriladi. 1963-yilda yaratilgan <strong>ASCII</strong> standartida 128 ta belgi bor: lotin harflari, raqamlar va tinish belgilari. Masalan, katta 'A' = 65, kichik 'a' = 97, '0' raqami = 48. Kompyuter "Salom" so'zini aslida beshta son sifatida saqlaydi.</p>
 
-<figure class="fig" id="asciiFig">
-  <div class="controls"><label for="wordIn" class="small">So'z (lotin harflari):</label><input type="text" id="wordIn" value="Salom" maxlength="8" style="width:140px" autocomplete="off" spellcheck="false"></div>
-  <div class="ascii" id="ascii" data-replay="1"></div>
+<figure class="fig" id="asciiFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 320" role="img" aria-label="Klaviaturada so'z teriladi: har tugma skan-kod sifatida CPU ga boradi, CPU uni ASCII baytga aylantirib xotira katagiga yozadi va ekranga chiqaradi">
+    <defs><pattern id="gS" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="320" fill="url(#gS)"/>
+    <rect x="22" y="44" width="260" height="120" rx="10" class="chip"/>
+    <text x="34" y="62" class="ttl">Klaviatura</text>
+    <text x="270" y="62" text-anchor="end" class="mut xs">USB HID</text>
+    <g id="sKeys"></g>
+    <circle cx="36" cy="150" r="4.5" class="led blue" id="sLed"/><text x="46" y="154" class="xs" id="sPkt">skan-kod: —</text>
+    <path class="wire w-ctl" id="sWusb" d="M282 104 H 330"/>
+    <rect x="330" y="44" width="200" height="120" rx="12" class="die"/>
+    <text x="342" y="62" class="ttl">CPU</text>
+    <text x="518" y="62" text-anchor="end" class="mut xs">skan-kod → ASCII</text>
+    <rect x="342" y="72" width="176" height="80" rx="6" class="unit" id="sUmap"/>
+    <text x="350" y="88" class="mut xs">jadval (ASCII, 1963)</text>
+    <text x="430" y="112" text-anchor="middle" class="val" id="sMap">—</text>
+    <text x="430" y="132" text-anchor="middle" class="xs" id="sBits"></text>
+    <text x="430" y="146" text-anchor="middle" class="mut xs">1 belgi = 1 bayt = 8 bit</text>
+    <path class="wire w-data" id="sWvid" d="M530 104 H 580"/>
+    <rect x="580" y="44" width="298" height="120" rx="10" class="chip"/>
+    <text x="592" y="62" class="ttl">Ekran</text>
+    <rect x="592" y="72" width="274" height="80" rx="4" class="screen"/>
+    <text x="604" y="118" class="scr" style="font-size:22px" id="sScr">_</text>
+    <path class="wire w-addr" id="sWa" d="M420 164 V 174"/><path class="wire w-addr bus" id="sBusA" d="M60 174 H 860"/>
+    <path class="wire w-data" id="sWd" d="M440 164 V 184"/><path class="wire w-data bus" id="sBusD" d="M60 184 H 860"/>
+    <rect x="22" y="196" width="856" height="110" rx="10" class="chip"/>
+    <text x="34" y="214" class="ttl">Xotira (RAM)</text>
+    <text x="866" y="214" text-anchor="end" class="mut xs" id="sMemTxt">har katak — 1 bayt</text>
+    <g id="sMem"></g>
+    <g class="tokens"></g>
+  </svg>
+  </div>
+  <div class="board-ctl"><label for="wordIn" class="small">So'z (lotin harflari):</label><input type="text" id="wordIn" value="Salom" maxlength="8" style="width:140px" autocomplete="off" spellcheck="false"><button type="button" class="primary" id="asciiRun">Terib ko'rsat</button></div>
+  <div class="board-steps"><span>Tugma</span><span>Skan-kod</span><span>ASCII bayt</span><span>Xotira</span><span>Ekran</span></div>
+  <div class="board-narr">So'zni yozing va "Terib ko'rsat" ni bosing: har harf bayt bo'lib xotiraga tushadi.</div>
   <figcaption><span><b>3-rasm.</b> "Salom" so'zining kompyuter xotirasidagi ko'rinishi</span></figcaption>
 </figure>
 
@@ -143,44 +203,107 @@
 <h2 id="2-4">2.4. Rasm: piksellar</h2>
 <p>Raqamli rasm — bu kichik kvadratchalar, ya'ni <strong>piksellar</strong> to'ri. Har bir piksel rangi uchta son bilan beriladi: qizil (R), yashil (G) va ko'k (B) komponentlar. Har bir komponent 0 dan 255 gacha bo'ladi, ya'ni 1 bayt. Demak bitta piksel 3 bayt, 1920x1080 o'lchamdagi siqilmagan rasm esa 1920 × 1080 × 3 ≈ 6.2 MB joy egallaydi. JPEG, PNG, WebP kabi formatlar maxsus algoritmlar yordamida bu hajmni 10-20 barobar kamaytiradi.</p>
 
-<figure class="fig" id="pxFig">
-  <svg class="sv px" viewBox="0 0 680 250" role="img" aria-label="10 x 10 piksellik rasm; bitta piksel uchta rang kanali — R, G, B — har biri 8 bit">
-    <g id="pxGrid"></g>
-    <rect id="pxSel" class="sel" x="0" y="0" width="18" height="18" rx="2"/>
-    <text x="110" y="228" text-anchor="middle" class="lbl">10 x 10 piksellik rasm</text>
-    <path class="link" id="pxLink1" d=""/>
-    <path class="link" id="pxLink2" d=""/>
-    <g class="big">
-      <rect x="250" y="70" width="70" height="70" rx="6" fill="var(--copper)" stroke="var(--ink)" stroke-width="2"/>
-      <text x="285" y="160" text-anchor="middle" class="lbl">1 piksel</text>
-      <path d="M320 105 H 350" stroke="var(--wire)" stroke-width="2" fill="none"/>
-      <path d="M344 99 L 352 105 L 344 111 Z" fill="var(--wire)"/>
-    </g>
-    <text x="500" y="30" text-anchor="middle" class="ttl chan" style="--i:-1">3 ta rang kanali</text>
-    <g class="chan" style="--i:0" id="chR"></g>
-    <g class="chan" style="--i:1" id="chG"></g>
-    <g class="chan" style="--i:2" id="chB"></g>
-    <text x="500" y="228" text-anchor="middle" class="note">Har kanal 0..255 = 8 bit = 1 bayt</text>
+<figure class="fig" id="pxFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 330" role="img" aria-label="Kadr buferi (VRAM) baytlari, GPU manzilni hisoblab R, G, B baytlarni o'qiydi va ekranda pikselni chizadi">
+    <defs><pattern id="gP" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="330" fill="url(#gP)"/>
+    <rect x="22" y="44" width="300" height="250" rx="10" class="chip"/>
+    <text x="34" y="62" class="ttl">Kadr buferi (VRAM)</text>
+    <text x="310" y="62" text-anchor="end" class="mut xs">10×10 px · 300 bayt</text>
+    <text x="126" y="84" text-anchor="middle" class="xs label-bad">R</text><text x="194" y="84" text-anchor="middle" class="xs label-on">G</text><text x="262" y="84" text-anchor="middle" class="xs" style="fill:var(--b-addr)">B</text>
+    <g id="pCells"></g>
+    <text x="34" y="284" class="mut xs">… 0x00 … 0x12B: har piksel uchun 3 bayt ketma-ket</text>
+    <path class="wire w-addr" id="pWa" d="M360 110 H 322"/><text x="341" y="104" text-anchor="middle" class="mut xs">manzil</text>
+    <path class="wire w-data" id="pWd" d="M322 150 H 360"/><text x="341" y="166" text-anchor="middle" class="mut xs">3 bayt</text>
+    <rect x="360" y="44" width="190" height="250" rx="12" class="die"/>
+    <text x="372" y="62" class="ttl">GPU</text>
+    <text x="538" y="62" text-anchor="end" class="mut xs">skanlash 60 Hz</text>
+    <circle cx="380" cy="82" r="4.5" class="led" id="pLedScan"/><text x="390" y="86" class="xs">SCAN</text>
+    <text x="372" y="112" class="xs" id="pPix">piksel (x=—, y=—)</text>
+    <text x="372" y="130" class="mut xs">manzil = (y·10 + x)·3</text>
+    <text x="372" y="146" class="xs" id="pAddr"></text>
+    <text x="372" y="178" class="xs label-bad" id="pR">R = —</text>
+    <text x="372" y="196" class="xs label-on" id="pG">G = —</text>
+    <text x="372" y="214" class="xs" style="fill:var(--b-addr)" id="pB">B = —</text>
+    <rect x="470" y="166" width="60" height="54" rx="6" class="unit" id="pSw"/>
+    <text x="500" y="238" text-anchor="middle" class="mut xs">rang</text>
+    <text x="372" y="270" class="mut xs">24 bit = 16.7 mln rang</text>
+    <path class="wire w-data" id="pWv" d="M550 170 H 580"/><text x="565" y="162" text-anchor="middle" class="mut xs">HDMI</text>
+    <rect x="580" y="44" width="298" height="250" rx="10" class="chip"/>
+    <text x="592" y="62" class="ttl">Monitor</text>
+    <text x="866" y="62" text-anchor="end" class="mut xs">10 × 10 piksel</text>
+    <rect x="620" y="72" width="216" height="216" rx="4" class="screen"/>
+    <g id="pGrid"></g>
+    <rect id="pSel" class="pxsel" x="0" y="0" width="20" height="20" rx="2" style="opacity:0"/>
+    <text x="450" y="316" text-anchor="middle" class="mut xs">Full HD: 1920 × 1080 × 3 bayt = 6.2 MB har kadr; 60 Hz da sekundiga 373 MB kadr buferidan o'qiladi.</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>Kadr buferi</span><span>Skanlash</span><span>Manzil</span><span>3 bayt</span><span>Piksel</span></div>
+  <div class="board-narr">Pastga suring: GPU kadr buferini o'qib ekranni chizadi.</div>
   <figcaption><span><b>4-rasm.</b> Rasm — piksellar to'ri, har bir piksel — uchta son</span></figcaption>
 </figure>
 
 <h2 id="2-5">2.5. Tovush va video</h2>
 <p>Tovush — havo bosimining uzluksiz o'zgarishi, ya'ni to'lqin. Mikrofon uni elektr signaliga aylantiradi, so'ng <strong>analog-raqamli o'zgartirgich (ADC)</strong> bu to'lqinni juda tez-tez o'lchaydi. CD sifatida sekundiga 44 100 marta o'lchov olinadi va har bir o'lchov 16 bitli son sifatida saqlanadi. Ijro etishda teskari jarayon — <strong>DAC</strong> sonlarni yana to'lqinga aylantiradi.</p>
 
-<figure class="fig" id="sndFig">
-  <div class="controls"><label for="rateIn" class="small">O'lchovlar zichligi:</label><input type="range" id="rateIn" min="6" max="48" value="24"><span class="small muted" id="rateTxt"></span></div>
-  <svg class="sv snd" viewBox="0 0 640 230" role="img" aria-label="Uzluksiz tovush to'lqini va undan olingan o'lchovlar">
-    <line x1="40" y1="110" x2="620" y2="110" stroke="var(--line)" stroke-width="1.5"/>
-    <line x1="40" y1="20" x2="40" y2="200" stroke="var(--line)" stroke-width="1.5"/>
-    <text x="46" y="28">+32767</text><text x="46" y="200">−32768</text><text x="600" y="126" text-anchor="end">vaqt →</text>
-    <path class="wave" id="wavePath" d=""/>
-    <g id="samples"></g>
-    <path class="stair" id="stair" d=""/>
-    <line class="cur" id="cur" x1="40" y1="20" x2="40" y2="200"/>
-    <text x="330" y="222" text-anchor="middle" class="lbl">Uzluksiz to'lqin (ko'k) → har 1/44100 soniyada o'lchov (qizil nuqtalar)</text>
+<figure class="fig" id="sndFig" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 330" role="img" aria-label="Mikrofon to'lqini ossillografda, ADC uni 16 bitli namunalarga aylantirib xotiraga yozadi, DAC namunalardan to'lqinni tiklab karnayga beradi">
+    <defs><pattern id="gN" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="330" fill="url(#gN)"/>
+    <rect x="22" y="44" width="90" height="120" rx="8" class="unit" id="nMic"/>
+    <text x="67" y="62" text-anchor="middle" class="ttl">Mikrofon</text>
+    <rect x="57" y="74" width="20" height="36" rx="10" class="pin"/><path d="M50 100 Q 67 124 84 100 M67 118 V 130 M57 130 H 77" class="wire" style="opacity:1"/>
+    <text x="67" y="150" text-anchor="middle" class="mut xs">analog signal</text>
+    <path class="wire w-data" id="nW1" d="M112 104 H 130"/>
+    <rect x="130" y="44" width="300" height="120" rx="6" class="screen"/>
+    <text x="138" y="58" class="mut xs">analog: uzluksiz to'lqin</text>
+    <text x="138" y="74" class="xs" style="fill:#5CF0A6">+1 V</text><text x="138" y="158" class="xs" style="fill:#5CF0A6">−1 V</text>
+    <line x1="170" y1="104" x2="424" y2="104" class="grid"/>
+    <path class="wave" id="nWave" d=""/>
+    <g id="nSamp"></g>
+    <line class="cur" id="nCur" x1="170" y1="62" x2="170" y2="158" style="opacity:0"/>
+    <path class="wire w-data" id="nW2" d="M430 104 H 450"/>
+    <rect x="450" y="44" width="130" height="120" rx="8" class="unit" id="nAdc"/>
+    <text x="462" y="62" class="ttl">ADC</text>
+    <circle cx="562" cy="58" r="4.5" class="led warn" id="nLedS"/>
+    <text x="462" y="80" class="mut xs">16 bit · 44 100 Hz</text>
+    <text x="515" y="112" text-anchor="middle" class="big" id="nVal">—</text>
+    <text x="515" y="132" text-anchor="middle" class="mut xs">−32768 … +32767</text>
+    <text x="515" y="150" text-anchor="middle" class="xs" id="nCnt">o'lchov 0</text>
+    <path class="wire w-data" id="nW3" d="M580 104 H 600"/>
+    <rect x="600" y="44" width="278" height="120" rx="10" class="chip"/>
+    <text x="612" y="62" class="ttl">Xotira (RAM)</text>
+    <text x="866" y="62" text-anchor="end" class="mut xs">har o'lchov 2 bayt</text>
+    <g id="nMem"></g>
+    <text x="612" y="128" class="mut xs" id="nMore">…</text>
+    <text x="612" y="150" class="mut xs">44 100 × 16 bit = 88 KB/s (mono)</text>
+    <path class="wire w-data" id="nW4" d="M740 164 V 240 H 580"/>
+    <rect x="450" y="190" width="130" height="100" rx="8" class="unit" id="nDac"/>
+    <text x="462" y="208" class="ttl">DAC</text>
+    <circle cx="562" cy="204" r="4.5" class="led" id="nLedD"/>
+    <text x="462" y="228" class="mut xs">son → kuchlanish</text>
+    <text x="515" y="256" text-anchor="middle" class="val" id="nDacTxt">kutilmoqda</text>
+    <text x="515" y="276" text-anchor="middle" class="mut xs">ijro: teskari yo'l</text>
+    <path class="wire w-data" id="nW5" d="M450 240 H 430"/>
+    <rect x="130" y="190" width="300" height="100" rx="6" class="screen"/>
+    <text x="138" y="204" class="mut xs">DAC chiqishi: zinapoya to'lqin</text>
+    <line x1="170" y1="240" x2="424" y2="240" class="grid"/>
+    <path class="wave stair" id="nStair" d=""/>
+    <path class="wire w-data" id="nW6" d="M130 240 H 112"/>
+    <rect x="22" y="190" width="90" height="100" rx="8" class="unit" id="nSpk"/>
+    <text x="67" y="208" text-anchor="middle" class="ttl">Karnay</text>
+    <path d="M52 232 H 62 L 76 220 V 260 L 62 248 H 52 Z M82 230 Q 90 240 82 250" class="wire" style="opacity:1"/>
+    <text x="67" y="280" text-anchor="middle" class="mut xs">tovush</text>
+    <text x="450" y="316" text-anchor="middle" class="mut xs" id="nFoot">CD sifati: 44 100 o'lchov/s × 16 bit × 2 kanal = 1 411 kbit/s. MP3 buni ~10 barobar siqadi.</text>
+    <g class="tokens"></g>
   </svg>
-  <div class="out" id="sndOut"></div>
+  </div>
+  <div class="board-ctl"><label for="rateIn" class="small">O'lchovlar zichligi:</label><input type="range" id="rateIn" min="6" max="48" value="24"><span class="small muted" id="rateTxt"></span><button type="button" class="primary" id="sndRun">Yozib ko'rsat</button></div>
+  <div class="board-steps"><span>Mikrofon</span><span>ADC o'lchaydi</span><span>Xotira</span><span>DAC tiklaydi</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: ADC to'lqinni sonlarga aylantiradi, DAC ularni yana to'lqinga.</div>
   <figcaption><span><b>5-rasm.</b> Tovushni raqamlashtirish (diskretizatsiya)</span></figcaption>
 </figure>
 
@@ -199,117 +322,271 @@
 </main>
 
 <script src="../js/site.js"></script>
-<script src="../js/quiz-data.js"></script>
-<script src="../js/quiz.js"></script>
+<script src="../js/board.js"></script>
 <script>
 (function(){
-  const $=KQI.$, reduce=KQI.reduce;
-  /* animatsiyani qayta boshlash */
-  const rerun=el=>{const all=el.querySelectorAll('*');all.forEach(e=>{e.style.animation='none';});void el.offsetWidth;all.forEach(e=>{e.style.animation='';});};
+  if(!window.KQIBoard) return;
+  var B=KQIBoard, el=B.el;
+  function replay(fig){ fig.dispatchEvent(new CustomEvent('replay')); }
+  function debounce(fn,ms){ var t; return function(){ clearTimeout(t); t=setTimeout(fn,ms); }; }
 
-  /* ---------- 2-rasm: ikkilik -> o'nlik ---------- */
-  const bitsEl=$('#bits'),bitsOut=$('#bitsOut'),bitsSum=$('#bitsSum'),decIn=$('#decIn');
-  let bits=[1,0,1,1,0,1,0,1];
-  const btns=[];
-  bits.forEach((v,i)=>{
-    const d=document.createElement('button');d.type='button';d.className='bit';d.style.setProperty('--i',i);d.setAttribute('aria-label','bit '+(7-i));
-    d.innerHTML=`<small>2<sup>${7-i}</sup></small><b>${v}</b><small>${1<<(7-i)}</small>`;
-    d.onclick=()=>{bits[i]=bits[i]?0:1;drawBits();};
-    bitsEl.appendChild(d);btns.push(d);
-  });
-  function drawBits(){
-    bits.forEach((v,i)=>{btns[i].classList.toggle('on',!!v);btns[i].querySelector('b').textContent=v;});
-    const terms=bits.map((v,i)=>v?(1<<(7-i)):0).filter(Boolean);
-    const n=terms.reduce((a,b)=>a+b,0);
-    decIn.value=n;
-    bitsSum.innerHTML=bits.map((v,i)=>`<span class="${v?'t':''}">${v?(1<<(7-i)):0}</span>`).join('<i class="muted">+</i>')+`<i class="muted">=</i><b>${n}</b>`;
-    bitsOut.innerHTML=`${terms.length?terms.join(' + '):'0'} = <b>${n}</b> &nbsp;·&nbsp; hex <b>0x${n.toString(16).toUpperCase().padStart(2,'0')}</b> &nbsp;·&nbsp; ASCII ${n>=32&&n<127?'"<b>'+String.fromCharCode(n)+'</b>"':'—'}`;
-    bitsOut.classList.remove('flash');void bitsOut.offsetWidth;bitsOut.classList.add('flash');
-  }
-  decIn.addEventListener('input',()=>{let n=Math.max(0,Math.min(255,parseInt(decIn.value)||0));bits=n.toString(2).padStart(8,'0').split('').map(Number);drawBits();});
-  drawBits();
-  $('#bitsFig').addEventListener('replay',()=>rerun(bitsEl));
+  /* ---------- 2-rasm: 8 LED + ossillograf + displey ---------- */
+  (function(){
+    var fig=document.getElementById('bitsFig'); if(!fig) return;
+    var svg=fig.querySelector('svg'), g=svg.querySelector('#bBits'), decIn=document.getElementById('decIn');
+    var bits=[1,0,1,1,0,1,0,1], SX=function(i){ return 101+i*62; };
+    bits.forEach(function(v,i){
+      var x=SX(i), grp=el('g',{'class':'bitg','data-i':i,role:'button',tabindex:0,'aria-label':'bit '+(7-i)});
+      grp.style.cursor='pointer';
+      grp.appendChild(el('text',{x:x,y:48,'text-anchor':'middle','class':'mut xs'},'bit '+(7-i)));
+      grp.appendChild(el('circle',{cx:x,cy:72,r:10,'class':'led btn',id:'bL'+i}));
+      grp.appendChild(el('text',{x:x,y:104,'text-anchor':'middle','class':'val',id:'bD'+i},'0'));
+      grp.appendChild(el('text',{x:x,y:120,'text-anchor':'middle','class':'mut xs'},String(1<<(7-i))));
+      var tog=function(){ bits[i]=bits[i]?0:1; draw(); };
+      grp.addEventListener('click',tog); grp.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tog(); } });
+      g.appendChild(grp);
+    });
+    function num(){ return bits.reduce(function(a,v){ return a*2+v; },0); }
+    function draw(){
+      var n=num(), d='';
+      bits.forEach(function(v,i){ B.setLeds(svg,'bL',bits.join('')); svg.querySelector('#bD'+i).textContent=v; var x0=70+i*62, y=v?164:234; d+=(i?' V'+y+' H':'M'+x0+' '+y+' H')+(x0+62); });
+      svg.querySelector('#bScope').setAttribute('d',d);
+      svg.querySelector('#bDec').textContent=n;
+      svg.querySelector('#bHex').textContent='0x'+n.toString(16).toUpperCase().padStart(2,'0');
+      svg.querySelector('#bAsc').textContent=(n>=32&&n<127)?'"'+String.fromCharCode(n)+'"':'—';
+      svg.querySelector('#bSum').textContent=bits.map(function(v,i){ return v?(1<<(7-i)):0; }).join(' + ');
+      svg.querySelector('#bSum2').textContent='= '+n;
+      decIn.value=n;
+    }
+    decIn.addEventListener('input',function(){ var n=Math.max(0,Math.min(255,parseInt(decIn.value)||0)); bits=B.bin(n,8).split('').map(Number); draw(); });
+    draw();
+    B.scene(fig,async function(c){
+      draw(); var cur=svg.querySelector('#bCur'), terms=[];
+      c.text('bSum',''); c.text('bSum2',''); cur.style.opacity=1;
+      c.step(0,'<b>Kuchlanish.</b> Simda 8 ta vaqt oralig\'i: har birida yo ~1 V, yo ~0 V. Ossillograf shu kuchlanishni chapdan o\'ngga o\'qiydi.');
+      await c.delay(900);
+      for(var i=0;i<8&&c.alive();i++){
+        cur.setAttribute('transform','translate('+(SX(i)-70)+',0)');
+        var v=bits[i], w=1<<(7-i); terms.push(v?w:0);
+        c.step(1,'<b>Bit '+(7-i)+'.</b> '+(v?'~1 V → 1':'~0 V → 0')+' · xona qiymati '+w+(v?' → yig\'indiga qo\'shiladi':' → qo\'shilmaydi'));
+        if(v){ c.led('bL'+i,1,'blink'); } else { c.led('bL'+i,0,''); }
+        c.text('bSum',terms.join(' + '));
+        await c.delay(520);
+        if(v) c.led('bL'+i,1,'');
+      }
+      if(!c.alive()) return;
+      cur.style.opacity=0;
+      var n=num();
+      c.step(2,'<b>Yig\'indi.</b> '+terms.filter(Boolean).join(' + ')+' = <b>'+n+'</b>');
+      c.text('bSum2','= '+n); c.flash('bDec');
+      await c.delay(1000); if(!c.alive()) return;
+      c.step(3,'<b>Natija.</b> 8 bit = 1 bayt = '+n+' (o\'nlik) = '+svg.querySelector('#bHex').textContent+' (hex)'+((n>=32&&n<127)?' = ASCII "'+String.fromCharCode(n)+'"':'')+'. Kompyuter uchun bu bir xil narsa: sim ustidagi 8 ta kuchlanish; ma\'noni dastur beradi.');
+    });
+    document.getElementById('bitsRun').onclick=function(){ replay(fig); };
+  })();
 
-  /* ---------- O'nlikdan ikkilikka: 2 ga bo'lish ---------- */
-  const divs=$('#divs'),divIn=$('#divIn');
-  let divTimers=[];
-  function showDiv(animate){
-    divTimers.forEach(clearTimeout);divTimers=[];
-    let n=Math.max(0,Math.min(255,parseInt(divIn.value)||0));divIn.value=n;
-    const steps=[];let x=n;
-    if(x===0)steps.push([0,0,0]);
-    while(x>0){steps.push([x,Math.floor(x/2),x%2]);x=Math.floor(x/2);}
-    divs.innerHTML=steps.map(s=>`<div><span>${s[0]} / 2 = ${s[1]}</span><span>qoldiq <i>${s[2]}</i></span></div>`).join('')+
-      `<div class="res">Pastdan yuqoriga o'qiymiz: ${steps.map(s=>s[2]).reverse().join('')}<sub>2</sub> = ${n}</div>`;
-    const rows=[...divs.children];
-    if(!animate){rows.forEach(r=>r.classList.add('lit'));return;}
-    rows.forEach((r,i)=>divTimers.push(setTimeout(()=>{rows.forEach(x=>x.classList.remove('now'));r.classList.add('lit','now');if(i===rows.length-1)divTimers.push(setTimeout(()=>r.classList.remove('now'),600));},reduce?0:i*550)));
-  }
-  $('#divBtn').onclick=()=>showDiv(true);
-  divIn.addEventListener('input',()=>showDiv(false));
-  $('#divFig').addEventListener('replay',()=>showDiv(true));
-  showDiv(false);
+  /* ---------- O'nlikdan ikkilikka: ÷2 zanjiri ---------- */
+  (function(){
+    var fig=document.getElementById('divFig'); if(!fig) return;
+    var svg=fig.querySelector('svg'), divIn=document.getElementById('divIn');
+    var LX=function(k){ return 860-k*40; }, leds=svg.querySelector('#dLeds'), stubs=svg.querySelector('#dStubs'), log=svg.querySelector('#dLog');
+    for(var k=0;k<8;k++){
+      stubs.appendChild(el('path',{'class':'wire w-ctl',id:'dS'+k,d:'M'+LX(k)+' 60 V 87'}));
+      leds.appendChild(el('circle',{cx:LX(k),cy:96,r:9,'class':'led',id:'dB'+k}));
+      leds.appendChild(el('text',{x:LX(k),y:122,'text-anchor':'middle','class':'mut xs'},'bit '+k));
+      log.appendChild(el('text',{x:34+(k%4)*212,y:204+Math.floor(k/4)*18,'class':'xs',id:'dLog'+k,style:'fill:#8EC5FF'},''));
+    }
+    function val(){ var n=Math.max(0,Math.min(255,parseInt(divIn.value)||0)); divIn.value=n; return n; }
+    function clear(c){ for(var k=0;k<8;k++){ svg.querySelector('#dLog'+k).textContent=''; svg.querySelector('#dB'+k).classList.remove('on'); } svg.querySelector('#dRes').textContent=''; svg.querySelector('#dOp').textContent='—'; svg.querySelector('#dRem').textContent=''; }
+    divIn.addEventListener('input',function(){ clear(); svg.querySelector('#dIn').textContent=val(); });
+    B.scene(fig,async function(c){
+      var n=val(), x=n, k=0, bitsStr='';
+      clear(); c.text('dIn',String(n)); c.unit('dUin','on');
+      if(n===0){ c.text('dOp','0 ÷ 2 = 0'); c.text('dRem','qoldiq 0'); c.text('dLog0','0 / 2 = 0   qoldiq 0'); c.text('dRes','0 = 0'); c.step(3,'<b>0.</b> Barcha bitlar 0: 00000000.'); return; }
+      while(x>0&&c.alive()){
+        var q=Math.floor(x/2), r=x%2;
+        c.step(0,'<b>'+(k+1)+'-qadam.</b> ALU: '+x+' ÷ 2 = '+q+', qoldiq <b>'+r+'</b>.');
+        c.lit('dW1'); await c.token(String(x),'data',[[222,89],[300,89]],380);
+        c.unit('dUalu','on'); c.led('dLed',1,'warn'); c.text('dOp',x+' ÷ 2 = '+q); c.text('dRem','qoldiq '+r);
+        await c.delay(250); if(!c.alive()) return;
+        c.step(1,'<b>Qoldiq → bit '+k+'.</b> '+r+' natija registrining '+k+'-xonasiga (o\'ngdan '+(k+1)+'-chi) yoziladi.');
+        c.lit(['dW3','dS'+k]); await c.token(String(r),'ctl',[[500,89],[540,89],[540,60],[LX(k),60],[LX(k),87]],520);
+        c.led('dB'+k,!!r); c.text('dLog'+k,x+' / 2 = '+q+'   qoldiq '+r); bitsStr=r+bitsStr;
+        c.unlit(); c.led('dLed',0,'warn');
+        if(q>0){
+          c.step(2,'<b>Bo\'linma qaytadi.</b> '+q+' yana kirish registriga tushadi va bo\'lish takrorlanadi.');
+          c.lit('dW2'); await c.token(String(q),'data',[[400,134],[400,160],[122,160],[122,134]],480);
+          c.text('dIn',String(q)); c.flash('dUin'); c.unlit();
+        } else { c.text('dIn','0'); }
+        x=q; k++;
+      }
+      if(!c.alive()) return;
+      c.unit('dUalu',null); c.unit('dUout','on');
+      c.text('dRes','Bitlar (o\'ngdan chapga to\'ldi): '+bitsStr+' = '+n);
+      c.step(3,'<b>Natija.</b> Bo\'linma 0 bo\'lganda to\'xtaymiz. Qoldiqlar o\'ngdan chapga to\'ldi, ya\'ni "pastdan yuqoriga" o\'qildi: <b>'+bitsStr+'</b><sub>2</sub> = '+n+'. Tekshiring: '+bitsStr.split('').reverse().map(function(b,i){ return b==='1'?(1<<i):null; }).filter(function(v){ return v!==null; }).reverse().join(' + ')+' = '+n+'.');
+    });
+    document.getElementById('divBtn').onclick=function(){ replay(fig); };
+  })();
 
-  /* ---------- 3-rasm: ASCII ---------- */
-  const asciiEl=$('#ascii'),wordIn=$('#wordIn');
-  function drawAscii(){
-    let w=wordIn.value.replace(/[^\x20-\x7E]/g,'');
-    if(!w)w=' ';
-    asciiEl.innerHTML=[...w].map((c,i)=>{
-      const code=c.charCodeAt(0),b=code.toString(2).padStart(8,'0');
-      return `<div class="row" style="--i:${i}"><span class="ch">${c===' '?'␣':c.replace('<','&lt;').replace('&','&amp;')}</span><span class="code">'${c===' '?' ':c.replace('<','&lt;').replace('&','&amp;')}' = ${code}</span><span class="bb">${[...b].map((x,j)=>`<span class="${x==='1'?'on':''}" style="--i:${i};--j:${j}">${x}</span>`).join('')}</span></div>`;
-    }).join('')+`<div class="foot" style="--n:${w.length}">Har bir harf — bitta son, har bir son — 8 bit &nbsp;·&nbsp; jami ${w.length} bayt = ${w.length*8} bit</div>`;
-  }
-  wordIn.addEventListener('input',drawAscii);
-  $('#asciiFig').addEventListener('replay',()=>rerun(asciiEl));
-  drawAscii();
+  /* ---------- 3-rasm: klaviatura → ASCII bayt → xotira ---------- */
+  (function(){
+    var fig=document.getElementById('asciiFig'); if(!fig) return;
+    var svg=fig.querySelector('svg'), wordIn=document.getElementById('wordIn');
+    var ROWS=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'], OFF=[34,46,58], keys=svg.querySelector('#sKeys');
+    ROWS.forEach(function(row,r){ row.split('').forEach(function(ch,c){ var x=OFF[r]+c*24, y=70+r*24; keys.appendChild(el('rect',{x:x,y:y,width:22,height:20,rx:3,'class':'key',id:'sK'+ch})); keys.appendChild(el('text',{x:x+11,y:y+14,'text-anchor':'middle','class':'xs'},ch)); }); });
+    var mem=svg.querySelector('#sMem'), CX=function(i){ return 80+i*106; };
+    for(var i=0;i<8;i++){
+      var x=30+i*106, y=222;
+      mem.appendChild(el('rect',{x:x,y:y,width:100,height:76,rx:5,'class':'cell',id:'sC'+i}));
+      mem.appendChild(el('text',{x:x+8,y:y+14,'class':'mut xs'},'[0x0'+i+']'));
+      mem.appendChild(el('text',{x:x+50,y:y+38,'text-anchor':'middle','class':'val',id:'sCh'+i},''));
+      B.leds(mem,{n:8,x:x+12,y:y+52,step:11,r:3.5,prefix:'sLd'+i+'_'});
+      mem.appendChild(el('text',{x:x+50,y:y+70,'text-anchor':'middle','class':'mut xs',id:'sBt'+i},''));
+    }
+    function hid(ch){ var l=ch.toLowerCase(), code;
+      if(l>='a'&&l<='z') code=4+l.charCodeAt(0)-97; else if(ch>='1'&&ch<='9') code=0x1E+ch.charCodeAt(0)-49; else if(ch==='0') code=0x27; else if(ch===' ') code=0x2C; else code=null;
+      var s=code===null?'??':'0x'+code.toString(16).toUpperCase().padStart(2,'0'); return (ch>='A'&&ch<='Z')?'Shift+'+s:s; }
+    function word(){ var w=wordIn.value.replace(/[^\x20-\x7E]/g,'').slice(0,8); return w||' '; }
+    B.scene(fig,async function(c){
+      var w=word(), T=420;
+      for(var i=0;i<8;i++){ c.text('sCh'+i,''); c.text('sBt'+i,''); B.setLeds(svg,'sLd'+i+'_','00000000'); }
+      c.text('sScr','_'); c.text('sMap','—'); c.text('sBits',''); c.text('sPkt','skan-kod: —'); svg.querySelectorAll('.key.hi').forEach(function(k){ k.classList.remove('hi'); });
+      c.text('sMemTxt','har katak — 1 bayt');
+      var shown='';
+      for(var i=0;i<w.length&&c.alive();i++){
+        var ch=w[i], code=ch.charCodeAt(0), bits=B.bin(code,8), key=svg.querySelector('#sK'+ch.toUpperCase()), disp=ch===' '?'␣':ch, cx=CX(i);
+        c.step(0,'<b>Tugma.</b> "'+disp+'" bosildi. Klaviatura ichidagi mikrokontroller qaysi qator va ustun yopilganini aniqladi.');
+        if(key) key.classList.add('hi');
+        await c.delay(300); if(!c.alive()) return;
+        var sc=hid(ch);
+        c.step(1,'<b>Skan-kod.</b> USB paketida harf emas, tugma raqami ketadi: <b>'+sc+'</b>. Harf qaysi ekanini hali hech kim bilmaydi.');
+        c.text('sPkt','skan-kod: '+sc); c.led('sLed',1,'blue blink'); c.lit('sWusb');
+        await c.token(sc,'ctl',[[282,104],[330,104]],T); c.led('sLed',0,'blue'); c.unlit();
+        c.unit('sUmap','on'); c.text('sMap','"'+disp+'" = '+code); c.text('sBits',bits);
+        c.step(2,'<b>ASCII bayt.</b> OT drayveri jadvaldan qaraydi: '+sc+' → "'+disp+'" = <b>'+code+'</b> = '+bits+'. Endi bu 1 bayt.');
+        await c.delay(500); if(!c.alive()) return;
+        c.step(3,'<b>Xotira.</b> Manzil [0x0'+i+'] ko\'k shinaga, bayt '+code+' yashil shinaga: RAM katagi 8 ta bitni saqlab qoldi.');
+        c.lit(['sWa','sBusA']); await c.token('0x0'+i,'addr',[[420,164],[420,174],[cx,174],[cx,222]],T);
+        c.lit(['sWd','sBusD']); await c.token(String(code),'data',[[440,164],[440,184],[cx,184],[cx,222]],T);
+        c.cell('sC'+i,'hi'); c.text('sCh'+i,'"'+disp+'" '+code); c.text('sBt'+i,bits); B.setLeds(svg,'sLd'+i+'_',bits); c.flash('sC'+i); c.unlit();
+        c.step(4,'<b>Ekran.</b> Dastur baytni shrift jadvalidan harf shakliga aylantirib chizadi — biz "'+disp+'" ni ko\'ramiz.');
+        c.lit('sWvid'); await c.token(disp,'data',[[530,104],[580,104]],T*0.8);
+        shown+=ch; c.text('sScr',shown+'_'); c.unlit(); c.unit('sUmap',null);
+        if(key) key.classList.remove('hi');
+        c.text('sMemTxt',(i+1)+' bayt = '+(i+1)*8+' bit');
+        await c.delay(150);
+      }
+      if(!c.alive()) return;
+      c.text('sScr',shown);
+      var codes=w.split('').map(function(ch){ return ch.charCodeAt(0); });
+      c.narr('<b>Xulosa.</b> "'+w.replace(/</g,'&lt;')+'" — kompyuter uchun '+w.length+' ta son: <b>'+codes.join(' ')+'</b>. Jami '+w.length+' bayt = '+(w.length*8)+' bit. Kirill harfi UTF-8 da 2 bayt, emoji 4 bayt egallaydi.');
+    });
+    wordIn.addEventListener('input',debounce(function(){ replay(fig); },500));
+    document.getElementById('asciiRun').onclick=function(){ replay(fig); };
+  })();
 
-  /* ---------- 4-rasm: piksellar ---------- */
-  const pic=['bbbbbbbbbb','bbbyyyybbb','bbyyyyyybb','byykyykyyb','byyyyyyyyb','bykyyyykyb','byykkkkyyb','bbyyyyyybb','bbbyyyybbb','bbbbbbbbbb'];
-  const col={b:'var(--blue-soft)',y:'var(--copper)',k:'var(--ink)'};
-  const SEL=[4,6];
-  const grid=$('#pxGrid');const cs=18,ox=20,oy=20;
-  let html='';
-  pic.forEach((row,r)=>[...row].forEach((c,q)=>{html+=`<rect class="p" style="--i:${r*10+q}" x="${ox+q*cs}" y="${oy+r*cs}" width="${cs-1}" height="${cs-1}" rx="1.5" fill="${col[c]}"/>`;}));
-  grid.innerHTML=html;
-  const sx=ox+SEL[1]*cs,sy=oy+SEL[0]*cs;
-  const sel=$('#pxSel');sel.setAttribute('x',sx-1);sel.setAttribute('y',sy-1);sel.setAttribute('width',cs+1);sel.setAttribute('height',cs+1);
-  $('#pxLink1').setAttribute('d',`M${sx+cs} ${sy} L 250 70`);
-  $('#pxLink2').setAttribute('d',`M${sx+cs} ${sy+cs} L 250 140`);
-  const chans=[['chR','R (qizil)',242,'var(--copper)','var(--copper-soft)'],['chG','G (yashil)',201,'var(--accent)','var(--accent-soft)'],['chB','B (ko\'k)',76,'var(--blue)','var(--blue-soft)']];
-  chans.forEach((c,i)=>{
-    const y=50+i*56,b=c[2].toString(2).padStart(8,'0');
-    let s=`<rect x="370" y="${y}" width="270" height="44" rx="8" fill="${c[4]}" stroke="${c[3]}" stroke-width="1.5"/>`;
-    s+=`<text x="380" y="${y+18}" class="lbl">${c[1]} = ${c[2]} = ${b}</text>`;
-    [...b].forEach((x,j)=>{s+=`<rect class="b" style="--i:${i};--j:${j}" x="${380+j*23}" y="${y+24}" width="19" height="14" rx="3" fill="${x==='1'?c[3]:'var(--surface)'}" stroke="${c[3]}" stroke-width="1"/>`;
-      s+=`<text class="b" style="--i:${i};--j:${j}" x="${389.5+j*23}" y="${y+35}" text-anchor="middle" font-size="10" fill="${x==='1'?'var(--surface)':'var(--muted)'}">${x}</text>`;});
-    $('#'+c[0]).innerHTML=s;
-  });
-  $('#pxFig').addEventListener('replay',()=>rerun($('#pxFig svg')));
+  /* ---------- 4-rasm: VRAM → GPU → piksel ---------- */
+  (function(){
+    var fig=document.getElementById('pxFig'); if(!fig) return;
+    var svg=fig.querySelector('svg');
+    var pic=['bbbbbbbbbb','bbbyyyybbb','bbyyyyyybb','byykyykyyb','byyyyyyyyb','bykyyyykyb','byykkkkyyb','bbyyyyyybb','bbbyyyybbb','bbbbbbbbbb'];
+    var RGB={b:[24,42,74],y:[242,201,76],k:[24,28,37]}, css=function(a){ return 'rgb('+a.join(',')+')'; };
+    var SEL=[3,5], cs=20, ox=628, oy=80, grid=svg.querySelector('#pGrid');
+    pic.forEach(function(row,r){ row.split('').forEach(function(ch,q){ grid.appendChild(el('rect',{x:ox+q*cs,y:oy+r*cs,width:cs,height:cs,'class':'px',id:'pP'+(r*10+q),fill:'#04120B'})); }); });
+    var sel=svg.querySelector('#pSel'); sel.setAttribute('x',ox+SEL[1]*cs); sel.setAttribute('y',oy+SEL[0]*cs);
+    var cells=svg.querySelector('#pCells'), PIX=[34,35,36,37];
+    PIX.forEach(function(p,row){
+      var y=92+row*46; cells.appendChild(el('text',{x:40,y:y+26,'class':'mut xs'},'px '+p));
+      for(var col=0;col<3;col++){ var x=92+col*68, addr=p*3+col;
+        cells.appendChild(el('rect',{x:x,y:y,width:64,height:40,rx:4,'class':'cell',id:'pC'+row+col}));
+        cells.appendChild(el('text',{x:x+32,y:y+13,'text-anchor':'middle','class':'mut xs'},'0x'+addr.toString(16).toUpperCase().padStart(2,'0')));
+        cells.appendChild(el('text',{x:x+32,y:y+32,'text-anchor':'middle','class':'val'},String(RGB[pic[Math.floor(p/10)][p%10]][col])));
+      }
+    });
+    var selIdx=SEL[0]*10+SEL[1], selRGB=RGB[pic[SEL[0]][SEL[1]]], base=selIdx*3;
+    B.scene(fig,async function(c){
+      svg.querySelectorAll('.px').forEach(function(p){ p.setAttribute('fill','#04120B'); }); sel.style.opacity=0;
+      c.text('pPix','piksel (x=—, y=—)'); c.text('pAddr',''); c.text('pR','R = —'); c.text('pG','G = —'); c.text('pB','B = —'); svg.querySelector('#pSw').style.fill='';
+      c.step(0,'<b>Kadr buferi.</b> Rasm VRAM da 300 bayt bo\'lib yotadi: har piksel uchun ketma-ket 3 bayt — R, G, B. Kataklar manzillari 0x00 dan 0x12B gacha.');
+      await c.delay(1200); if(!c.alive()) return;
+      c.step(1,'<b>Skanlash.</b> GPU sekundiga 60 marta buferni boshidan oxirigacha o\'qib, ekranni qator-qator chizadi.');
+      c.led('pLedScan',1,'blink'); c.lit(['pWa','pWd','pWv']);
+      for(var r=0;r<10&&c.alive();r++){ for(var q=0;q<10;q++) svg.querySelector('#pP'+(r*10+q)).setAttribute('fill',css(RGB[pic[r][q]])); await c.delay(110); }
+      if(!c.alive()) return;
+      c.led('pLedScan',0,''); c.unlit(); await c.delay(500);
+      c.step(2,'<b>Manzil.</b> Bitta pikselni olaylik: x=5, y=3. Uning baytlari qayerda? manzil = (3·10 + 5)·3 = <b>105 = 0x69</b>. GPU shu manzilni ko\'k shinaga chiqaradi.');
+      sel.style.opacity=1; c.text('pPix','piksel (x=5, y=3)'); c.text('pAddr','= (3·10+5)·3 = 105 = 0x69');
+      c.lit('pWa'); await c.token('0x69','addr',[[360,110],[322,110]],450);
+      c.cell('pC10','hi'); c.cell('pC11','hi'); c.cell('pC12','hi'); c.unlit();
+      await c.delay(400); if(!c.alive()) return;
+      c.step(3,'<b>3 bayt.</b> VRAM 0x69, 0x6A, 0x6B kataklaridagi uchta baytni yashil shinadan qaytaradi: R='+selRGB[0]+', G='+selRGB[1]+', B='+selRGB[2]+'.');
+      c.lit('pWd');
+      var ids=['pR','pG','pB'], names=['R','G','B'];
+      for(var i=0;i<3&&c.alive();i++){ await c.token(String(selRGB[i]),'data',[[322,150],[360,150]],380); c.text(ids[i],names[i]+' = '+selRGB[i]+' = '+B.bin(selRGB[i],8)); }
+      if(!c.alive()) return;
+      svg.querySelector('#pSw').style.fill=css(selRGB); c.unit('pSw','on'); c.unlit();
+      await c.delay(500); if(!c.alive()) return;
+      c.step(4,'<b>Piksel.</b> GPU uchta sonni HDMI orqali monitorga yuboradi, monitor shu nuqtada '+selRGB[0]+'/255 qizil, '+selRGB[1]+'/255 yashil, '+selRGB[2]+'/255 ko\'k yorug\'lik chiqaradi. 1 piksel = 3 bayt = 24 bit → 16.7 mln rang.');
+      c.lit('pWv'); await c.token('RGB','data',[[550,170],[580,170]],380); c.flash('pP'+selIdx); c.unlit();
+      await c.delay(1200); if(!c.alive()) return;
+      c.narr('<b>Xulosa.</b> Rasm — sonlar to\'ri. Full HD kadr 1920 × 1080 × 3 = 6.2 MB; JPEG/PNG/WebP shu sonlarni 10–20 barobar siqadi, lekin ekranga chiqishdan oldin yana shu 3 baytga yoyiladi.');
+    });
+  })();
 
-  /* ---------- 5-rasm: tovush ---------- */
-  const rateIn=$('#rateIn'),rateTxt=$('#rateTxt'),samples=$('#samples'),sndOut=$('#sndOut'),sndSvg=$('#sndFig svg');
-  const X0=40,X1=600,YM=110,AMP=80;
-  const f=t=>0.6*Math.sin(t*2*Math.PI*2.2)+0.3*Math.sin(t*2*Math.PI*5.3+1)+0.1*Math.sin(t*2*Math.PI*11+2); /* -1..1 */
-  let d='';for(let i=0;i<=280;i++){const t=i/280,x=X0+t*(X1-X0),y=YM-f(t)*AMP;d+=(i?' L':'M')+x.toFixed(1)+' '+y.toFixed(1);}
-  $('#wavePath').setAttribute('d',d);
-  function drawSamples(){
-    const n=+rateIn.value;
-    rateTxt.textContent=`${n} ta o'lchov ko'rsatilmoqda (CD: 44 100 ta / soniya)`;
-    const step=Math.max(.02,Math.min(.12,2.8/n));
-    sndSvg.style.setProperty('--tot',(n*step+.2)+'s');
-    let s='',st='',vals=[];
-    for(let i=0;i<n;i++){const t=(i+.5)/n,x=X0+t*(X1-X0),v=f(t),y=YM-v*AMP;const iv=Math.round(v*32767);vals.push(iv);
-      s+=`<g class="s" style="--i:${i};--st:${step}s"><line class="stem" x1="${x.toFixed(1)}" y1="${YM}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/><circle class="smp" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5"/></g>`;
-      st+=(i?' L':'M')+(X0+i/n*(X1-X0)).toFixed(1)+' '+y.toFixed(1)+' L '+(X0+(i+1)/n*(X1-X0)).toFixed(1)+' '+y.toFixed(1);}
-    samples.innerHTML=s;$('#stair').setAttribute('d',st);
-    sndOut.innerHTML=`16 bitli o'lchovlar: <b>${vals.slice(0,8).join(', ')}</b>${n>8?', …':''} &nbsp;<span class="muted">(har biri −32768..32767 oralig'ida)</span>`;
-    rerun(sndSvg);
-  }
-  rateIn.addEventListener('input',drawSamples);
-  $('#sndFig').addEventListener('replay',()=>rerun(sndSvg));
-  drawSamples();
+  /* ---------- 5-rasm: mikrofon → ADC → RAM → DAC ---------- */
+  (function(){
+    var fig=document.getElementById('sndFig'); if(!fig) return;
+    var svg=fig.querySelector('svg'), rateIn=document.getElementById('rateIn'), rateTxt=document.getElementById('rateTxt');
+    var X0=170,X1=424,YM=104,AMP=38,YM2=240,AMP2=34;
+    var f=function(t){ return 0.6*Math.sin(t*2*Math.PI*2.2)+0.3*Math.sin(t*2*Math.PI*5.3+1)+0.1*Math.sin(t*2*Math.PI*11+2); };
+    var d=''; for(var i=0;i<=200;i++){ var t=i/200, x=X0+t*(X1-X0), y=YM-f(t)*AMP; d+=(i?' L':'M')+x.toFixed(1)+' '+y.toFixed(1); }
+    svg.querySelector('#nWave').setAttribute('d',d);
+    B.cells(svg.querySelector('#nMem'),{n:6,x:612,y:72,w:42,h:40,gap:2,prefix:'nC',labels:['[0]','[1]','[2]','[3]','[4]','[5]']});
+    for(var i=0;i<6;i++) svg.querySelector('#nCv'+i).style.fontSize='10px';
+    function n(){ return +rateIn.value; }
+    function paintRate(){ rateTxt.textContent=n()+' ta o\'lchov ko\'rsatilmoqda (CD: 44 100 ta / soniya)'; }
+    paintRate();
+    B.scene(fig,async function(c){
+      var N=n(), samp=svg.querySelector('#nSamp'), cur=svg.querySelector('#nCur'), stair=svg.querySelector('#nStair'), vals=[];
+      samp.innerHTML=''; stair.setAttribute('d',''); cur.style.opacity=0;
+      for(var i=0;i<6;i++) c.text('nCv'+i,'');
+      c.text('nVal','—'); c.text('nCnt','o\'lchov 0'); c.text('nMore','…'); c.text('nDacTxt','kutilmoqda');
+      c.step(0,'<b>Mikrofon.</b> Havo bosimi membranani tebratadi, natijada uzluksiz o\'zgaruvchi kuchlanish (analog signal) hosil bo\'ladi — yuqori ossillografdagi to\'lqin.');
+      c.unit('nMic','on'); c.lit('nW1'); await c.delay(1300); if(!c.alive()) return;
+      c.step(1,'<b>ADC o\'lchaydi.</b> Har '+(N<20?'oraliqda':'1/44100 soniyada')+' kuchlanish o\'lchanadi va 16 bitli songa (−32768…+32767) aylantiriladi.');
+      c.lit('nW2'); c.unit('nAdc','on'); cur.style.opacity=1;
+      var per=Math.max(70,Math.min(260,4200/N));
+      for(var i=0;i<N&&c.alive();i++){
+        var t=(i+.5)/N, x=X0+t*(X1-X0), v=f(t), y=YM-v*AMP, iv=Math.round(v*32767); vals.push(iv);
+        cur.setAttribute('transform','translate('+(x-X0).toFixed(1)+',0)');
+        samp.appendChild(el('line',{x1:x,y1:YM,x2:x,y2:y,'class':'stem'})); samp.appendChild(el('circle',{cx:x,cy:y,r:3,'class':'smp'}));
+        c.led('nLedS',1,'warn'); c.text('nVal',String(iv)); c.text('nCnt','o\'lchov '+(i+1));
+        if(i<6){ c.lit('nW3'); await c.token(String(iv),'data',[[580,104],[600,104]],Math.max(per,260)); c.cell('nC'+i,'hi'); c.text('nCv'+i,String(iv)); c.flash('nC'+i); }
+        else { c.text('nMore','… ['+i+'] = '+iv); await c.delay(per); }
+        c.led('nLedS',0,'warn');
+      }
+      if(!c.alive()) return;
+      cur.style.opacity=0; c.unit('nAdc',null); c.unlit();
+      c.step(2,'<b>Xotira.</b> '+N+' ta o\'lchov = '+N+' × 2 bayt = '+(N*2)+' bayt. CD sifatida 1 soniya mono tovush 44 100 × 2 = 88 200 bayt.');
+      c.text('nMore','… jami '+N+' o\'lchov = '+(N*2)+' bayt');
+      await c.delay(1100); if(!c.alive()) return;
+      c.step(3,'<b>DAC tiklaydi.</b> Ijro vaqtida sonlar xotiradan DAC ga oqadi; DAC har songa mos kuchlanish beradi va uni keyingi o\'lchovgacha ushlab turadi — zinapoya to\'lqin.');
+      c.lit('nW4'); await c.token('sonlar','data',[[740,164],[740,240],[580,240]],600);
+      c.unit('nDac','on'); c.led('nLedD',1); c.text('nDacTxt','tiklamoqda'); c.lit(['nW5','nW6']);
+      var sd='';
+      for(var i=0;i<N&&c.alive();i++){ var y2=YM2-(vals[i]/32767)*AMP2, xa=X0+i/N*(X1-X0), xb=X0+(i+1)/N*(X1-X0); sd+=(i?' L':'M')+xa.toFixed(1)+' '+y2.toFixed(1)+' L '+xb.toFixed(1)+' '+y2.toFixed(1); stair.setAttribute('d',sd); await c.delay(Math.max(25,900/N)); }
+      if(!c.alive()) return;
+      c.unit('nSpk','on'); c.text('nDacTxt','tayyor');
+      await c.delay(600); if(!c.alive()) return;
+      c.step(4, N<14?'<b>Xulosa.</b> Faqat '+N+' ta o\'lchov — zinapoya dag\'al, to\'lqin shakli buzildi: tez o\'zgarishlar yo\'qoldi. Slayderni o\'ngga suring.':'<b>Xulosa.</b> '+N+' ta o\'lchov — zinapoya asl to\'lqinga yaqin. Haqiqiy 44 100 Hz da pog\'onalar shu qadar maydaki, quloq ularni sezmaydi. Tovush = sonlar ketma-ketligi.');
+    });
+    rateIn.addEventListener('input',function(){ paintRate(); });
+    rateIn.addEventListener('change',function(){ replay(fig); });
+    document.getElementById('sndRun').onclick=function(){ replay(fig); };
+  })();
 })();
 </script>
+<script src="../js/quiz-data.js"></script>
+<script src="../js/quiz.js"></script>
 </body>
 </html>
