@@ -31,14 +31,6 @@
 @keyframes vnBus{0%,58%{stroke:var(--wire)}62%,97%{stroke:var(--copper)}100%{stroke:var(--wire)}}
 .vn .q{fill:var(--copper);opacity:0;animation:vnQ 10s linear infinite}
 @keyframes vnQ{0%,63%{opacity:0}66%,96%{opacity:1}100%{opacity:0}}
-/* 12-rasm: abstraksiya qatlamlari — pastdan yuqoriga yonadi */
-.layers{display:grid;gap:5px;max-width:560px;margin:0 auto}
-.layers div{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:center;padding:8px 14px;border:1px solid var(--accent);border-radius:8px;background:var(--accent-soft);width:calc(100% - var(--i) * 3%);margin-inline:auto;animation:layerOn .5s both;animation-delay:calc(var(--i) * .42s);font-size:15px}
-.layers div b{font-family:var(--display);font-weight:600}
-.layers div span{color:var(--muted);font-family:var(--mono);font-size:13px}
-@keyframes layerOn{from{opacity:.3;background:var(--surface);border-color:var(--line);transform:translateY(6px)}}
-.layers-note{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);font-family:var(--mono);max-width:560px;margin:8px auto 0}
-@media (max-width:480px){.layers div{grid-template-columns:1fr;gap:0;width:calc(100% - var(--i) * 2%)}}
 </style>
 </head>
 <body>
@@ -136,19 +128,41 @@
 <h2 id="5-2">5.2. Abstraksiya qatlamlari</h2>
 <p>Kompyuterni tushunishning eng yaxshi usuli — uni qatlamlar sifatida ko'rish. Har bir qatlam o'zidan pastdagi qatlamning murakkabligini yashiradi va yuqoridagi qatlamga oddiy "interfeys" taqdim etadi. Siz JavaScript'da kod yozganingizda tranzistorlar haqida o'ylamaysiz — va aynan shu tufayli murakkab dasturlar yaratish mumkin bo'ladi. Bu darslik pastdan yuqoriga qarab harakatlanadi: biz fizika va tranzistorlarni ko'rib chiqdik, endi protsessor ichiga kiramiz.</p>
 
-<figure class="fig">
-  <div class="layers" data-replay role="img" aria-label="To'qqiz abstraksiya qatlami: fizikadan ilovagacha">
-    <div style="--i:8"><b>Ilova</b><span>Telegram bot, sayt</span></div>
-    <div style="--i:7"><b>Dasturlash tili</b><span>JS, Python</span></div>
-    <div style="--i:6"><b>Operatsion tizim</b><span>Linux, Windows</span></div>
-    <div style="--i:5"><b>Mashina kodi (ISA)</b><span>x86, ARM buyruqlari</span></div>
-    <div style="--i:4"><b>Mikroarxitektura</b><span>konveyer, kesh</span></div>
-    <div style="--i:3"><b>Mantiqiy sxemalar</b><span>yig'uvchi, registr</span></div>
-    <div style="--i:2"><b>Ventillar</b><span>AND, OR, NOT</span></div>
-    <div style="--i:1"><b>Tranzistorlar</b><span>kalit</span></div>
-    <div style="--i:0"><b>Fizika</b><span>elektronlar, kremniy</span></div>
+<figure class="fig" id="fig12" data-replay>
+  <div class="board-wrap">
+  <svg class="board" viewBox="0 0 900 440" role="img" aria-label="To'qqiz abstraksiya qatlami: fizikadan ilovagacha; bitta harakat har qatlamda qanday ko'rinadi">
+    <defs><pattern id="g12" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="440" fill="url(#g12)"/>
+    <rect x="20" y="20" width="480" height="400" rx="14" class="die"/>
+    <text x="36" y="38" class="ttl">Qatlamlar: yuqorida odam, pastda fizika</text>
+    <path class="wire w-data" id="lwire" d="M480 44 V 400"/>
+    <g class="lay" data-i="0"><rect x="40" y="44" width="420" height="34" rx="6" class="unit" id="lay0"/><circle cx="58" cy="61" r="5" class="led" id="ll0"/><text x="72" y="65" class="val">Ilova</text><text x="450" y="65" text-anchor="end" class="mut xs">Telegram bot, sayt</text></g>
+    <g class="lay" data-i="1"><rect x="40" y="86" width="414" height="34" rx="6" class="unit" id="lay1"/><circle cx="58" cy="103" r="5" class="led" id="ll1"/><text x="72" y="107" class="val">Dasturlash tili</text><text x="444" y="107" text-anchor="end" class="mut xs">JS, Python</text></g>
+    <g class="lay" data-i="2"><rect x="40" y="128" width="408" height="34" rx="6" class="unit" id="lay2"/><circle cx="58" cy="145" r="5" class="led" id="ll2"/><text x="72" y="149" class="val">Operatsion tizim</text><text x="438" y="149" text-anchor="end" class="mut xs">Linux, Windows</text></g>
+    <g class="lay" data-i="3"><rect x="40" y="170" width="402" height="34" rx="6" class="unit" id="lay3"/><circle cx="58" cy="187" r="5" class="led" id="ll3"/><text x="72" y="191" class="val">Mashina kodi (ISA)</text><text x="432" y="191" text-anchor="end" class="mut xs">x86, ARM buyruqlari</text></g>
+    <g class="lay" data-i="4"><rect x="40" y="212" width="396" height="34" rx="6" class="unit" id="lay4"/><circle cx="58" cy="229" r="5" class="led" id="ll4"/><text x="72" y="233" class="val">Mikroarxitektura</text><text x="426" y="233" text-anchor="end" class="mut xs">konveyer, kesh</text></g>
+    <g class="lay" data-i="5"><rect x="40" y="254" width="390" height="34" rx="6" class="unit" id="lay5"/><circle cx="58" cy="271" r="5" class="led" id="ll5"/><text x="72" y="275" class="val">Mantiqiy sxemalar</text><text x="420" y="275" text-anchor="end" class="mut xs">yig'uvchi, registr</text></g>
+    <g class="lay" data-i="6"><rect x="40" y="296" width="384" height="34" rx="6" class="unit" id="lay6"/><circle cx="58" cy="313" r="5" class="led" id="ll6"/><text x="72" y="317" class="val">Ventillar</text><text x="414" y="317" text-anchor="end" class="mut xs">AND, OR, NOT</text></g>
+    <g class="lay" data-i="7"><rect x="40" y="338" width="378" height="34" rx="6" class="unit" id="lay7"/><circle cx="58" cy="355" r="5" class="led" id="ll7"/><text x="72" y="359" class="val">Tranzistorlar</text><text x="408" y="359" text-anchor="end" class="mut xs">kalit</text></g>
+    <g class="lay" data-i="8"><rect x="40" y="380" width="372" height="34" rx="6" class="unit" id="lay8"/><circle cx="58" cy="397" r="5" class="led" id="ll8"/><text x="72" y="401" class="val">Fizika</text><text x="402" y="401" text-anchor="end" class="mut xs">elektronlar, kremniy</text></g>
+    <rect x="530" y="20" width="350" height="400" rx="14" class="chip"/>
+    <text x="546" y="42" class="ttl">Shu qatlamda bitta harakat qanday ko'rinadi</text>
+    <text x="546" y="70" class="mut xs">harakat: foydalanuvchi /start yubordi, bot "Salom!" deb javob beradi</text>
+    <rect x="546" y="86" width="318" height="120" rx="6" class="screen"/>
+    <text x="558" y="112" class="scr" id="vName">Ilova</text>
+    <text x="558" y="140" class="scr dim" id="vLine1">/start → bot 'Salom!'</text>
+    <text x="558" y="166" class="scr dim" id="vLine2"></text>
+    <text x="546" y="240" class="mut">Har qatlam pastdagisining murakkabligini</text>
+    <text x="546" y="256" class="mut">yashiradi va yuqoridagiga oddiy interfeys beradi.</text>
+    <text x="546" y="292" class="mut xs">Dasturchi 2-qatlamda yozadi.</text>
+    <text x="546" y="308" class="mut xs">Bitta sendMessage() → minglab buyruq →</text>
+    <text x="546" y="324" class="mut xs">milliardlab tranzistor ulanishi.</text>
+    <text x="546" y="360" class="xs" id="vCount"></text>
+    <g class="tokens"></g>
+  </svg>
   </div>
-  <div class="layers-note"><span>↓ pastda: apparat, fizika</span><span>yuqorida: dastur, odam ↑</span></div>
+  <div class="board-steps"><span>Ilova</span><span>Til</span><span>OS</span><span>ISA</span><span>Mikroarx.</span><span>Sxema</span><span>Ventil</span><span>Tranzistor</span><span>Fizika</span></div>
+  <div class="board-narr">Bitta harakat 9 qatlam bo'ylab pastga tushadi. Sahna o'zi boshlanadi.</div>
   <figcaption><span><b>12-rasm.</b> Kompyuterning abstraksiya qatlamlari: fizikadan ilovagacha</span></figcaption>
 </figure>
 
@@ -164,6 +178,38 @@
 
 <script src="../js/site.js"></script>
 <script src="../js/board.js"></script>
+<script>
+(function(){
+  var fig=document.getElementById('fig12'); if(!fig||!window.KQIBoard) return;
+  var V=[["Ilova", "/start → bot 'Salom!' deb javob beradi"], ["Dasturlash tili", "bot.sendMessage(id, 'Salom!')  — JavaScript"], ["Operatsion tizim", "write(fd, \"Salom!\", 6)  — syscall #1, kernel mode"], ["Mashina kodi (ISA)", "MOV RAX, 1 · MOV RDI, 3 · SYSCALL  — x86-64"], ["Mikroarxitektura", "konveyer: F → D → E → S · L1 kesh: hit, 1 ns"], ["Mantiqiy sxemalar", "64 bitli yig'uvchi, registr fayli, dekoder"], ["Ventillar", "XOR yig'indini, AND ko'chirishni beradi"], ["Tranzistorlar", "MOSFET: gate = 1 → kanal ochiq, tok oqadi"], ["Fizika", "elektronlar kremniy kristalida, ~1 V yoki 0 V"]];
+  var NARR=["<b>Ilova.</b> Foydalanuvchi /start yubordi. Bot 'Salom!' deb javob berishi kerak. Bu qatlamda faqat xabarlar bor.",
+    "<b>Dasturlash tili.</b> Dasturchi bitta qator yozdi: sendMessage. U tranzistor haqida o'ylamaydi.",
+    "<b>Operatsion tizim.</b> Kutubxona tarmoqqa yozish uchun yadroga syscall qiladi: write(). Protsessor kernel mode ga o'tadi.",
+    "<b>ISA.</b> Yadro kodi ham oxir-oqibat x86-64 buyruqlari: MOV, SYSCALL. Protsessor faqat shularni tushunadi.",
+    "<b>Mikroarxitektura.</b> Har buyruq konveyerdan o'tadi, ma'lumot keshdan olinadi. Dasturchi buni ko'rmaydi.",
+    "<b>Mantiqiy sxemalar.</b> Buyruqni dekoder ochadi, yig'uvchi qo'shadi, registr eslab qoladi.",
+    "<b>Ventillar.</b> Yig'uvchi ichida XOR va AND: 4-bobdagi haqiqat jadvallari.",
+    "<b>Tranzistorlar.</b> Har ventil bir nechta MOSFET: gate ga 1 berilsa kanal ochiladi.",
+    "<b>Fizika.</b> Oxirida faqat elektronlar va kremniy: 1 V yoki 0 V. Shu yerdan yuqoriga qarab hamma narsa qurilgan."];
+  KQIBoard.scene(fig,async function(c){
+    for(var i=0;i<9;i++){ c.led('ll'+i,0); c.unit('lay'+i,null); }
+    c.text('vCount','');
+    for(var i=0;i<9&&c.alive();i++){
+      var y=44+i*42+17;
+      if(i>0){ c.lit(['lwire']); await c.token('↓','data',[[480,y-42],[480,y]],420); }
+      c.unit('lay'+i,'on'); c.led('ll'+i,1);
+      if(i>0){ c.unit('lay'+(i-1),null); }
+      c.text('vName',V[i][0]); c.text('vLine1',V[i][1]); c.text('vLine2',['1 ta xabar','1 qator kod','1 ta syscall','~5 000 buyruq','~20 000 takt','~10\u2076 sxema amali','~10\u2078 ventil','~10\u2079 tranzistor','~10\u00b9\u2070 elektron'][i]);
+      c.step(i,NARR[i]);
+      await c.delay(1400);
+    }
+    if(!c.alive()) return;
+    for(var k=0;k<9;k++){ c.led('ll'+k,1); c.unit('lay'+k,'on'); }
+    c.text('vCount','Hammasi bir vaqtda ishlaydi: har qatlam o\'z tilida.','label-on');
+    c.narr("<b>Xulosa.</b> Siz JavaScript'da kod yozganingizda tranzistorlar haqida o'ylamaysiz — va aynan shu tufayli murakkab dasturlar yaratish mumkin. Bu darslik pastdan yuqoriga qarab harakatlanadi.");
+  });
+})();
+</script>
 <script>
 (function(){
   var fig=document.getElementById('fig11'); if(!fig||!window.KQIBoard) return;
