@@ -7,37 +7,13 @@
 <meta name="description" content="Xotira ierarxiyasi, lokallik prinsipi, RAM (DRAM va SRAM), ROM va flesh, HDD va SSD.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/board.css">
 <style>
-/* 16-rasm: piramida */
-.pyr .up{animation:upArrow 2s ease-in-out infinite}
-@keyframes upArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-/* "registr = 1 soniya" ustunlari */
-.mem{display:grid;gap:8px;margin-top:8px}
-.mem .r{display:grid;grid-template-columns:90px 1fr 110px;gap:10px;align-items:center;font-family:var(--mono);font-size:13px}
-.mem .bar{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
-.mem .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:7px;transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
-.mem .r:nth-child(n+4) .bar i{background:var(--copper)}
-.mem .t{text-align:right;color:var(--muted)}
-@media (max-width:480px){.mem .r{grid-template-columns:70px 1fr 90px;font-size:12px}}
-/* 17-rasm: DRAM va SRAM */
-.cell .charge{transform-box:fill-box;transform-origin:bottom;animation:leak 4s linear infinite}
-@keyframes leak{0%{transform:scaleY(1)}88%{transform:scaleY(.3)}90%,100%{transform:scaleY(1)}}
-.cell .plus{animation:leakTxt 4s linear infinite}
-@keyframes leakTxt{0%{opacity:1}88%{opacity:.15}90%,100%{opacity:1}}
-.cell .refresh{opacity:0;animation:refresh 4s linear infinite}
-@keyframes refresh{0%,84%{opacity:0}86%,98%{opacity:1}100%{opacity:0}}
-.cell .rpulse{offset-path:path('M110 40 V108');offset-rotate:0deg;opacity:0;animation:rpulse 4s linear infinite}
-@keyframes rpulse{0%,85%{opacity:0;offset-distance:0%}86%{opacity:1}94%{opacity:1;offset-distance:100%}95%,100%{opacity:0;offset-distance:100%}}
-.cell .clock{animation:clockSweep 4s linear infinite;transform-box:fill-box;transform-origin:left}
-@keyframes clockSweep{0%{transform:scaleX(0)}88%{transform:scaleX(1)}90%,100%{transform:scaleX(0)}}
-.cell .hold{animation:hold 2s ease-in-out infinite}
-@keyframes hold{0%,100%{opacity:1}50%{opacity:.7}}
-/* 18-rasm: HDD va SSD */
-.disk .platter{transform-box:fill-box;transform-origin:center;animation:spin 1.2s linear infinite}
-.disk .arm{transform-box:view-box;transform-origin:300px 250px;animation:seek 2.6s ease-in-out infinite alternate}
-@keyframes seek{from{transform:rotate(-6deg)}to{transform:rotate(9deg)}}
-.disk .chip{animation:chipBlink 2.4s steps(1) infinite;animation-delay:calc(var(--i) * .6s)}
-@keyframes chipBlink{0%,20%{fill:var(--accent-soft);stroke:var(--accent)}25%,100%{fill:var(--surface);stroke:var(--line)}}
+/* 8-bob: rasmlar umumiy css/board.css uslubida. HDD plastinasi va kallagi: */
+.board .kplat{transform-box:fill-box;transform-origin:center;animation:spin 1.2s linear infinite;animation-play-state:paused}
+.board .kplat.on{animation-play-state:running}
+.board .karm{transform-box:view-box;transform-origin:330px 300px;transition:transform .9s cubic-bezier(.4,0,.2,1)}
+@media (prefers-reduced-motion:reduce){.board .kplat{animation:none}}
 </style>
 </head>
 <body>
@@ -56,26 +32,115 @@
 
 <p>Ideal xotira cheksiz katta, cheksiz tez va arzon bo'lishi kerak edi. Afsuski, fizika bunga yo'l qo'ymaydi: tez xotira qimmat va kichik, katta xotira esa sekin. Shuning uchun kompyuterlarda bir nechta xotira turi pog'onama-pog'ona ishlatiladi — bu <strong>xotira ierarxiyasi</strong> deyiladi. Maqsad — ko'p ishlatiladigan ma'lumotni tez xotirada, kam ishlatiladiganini esa sekin, lekin katta xotirada saqlash.</p>
 
-<figure class="fig">
-  <svg class="sv pyr" viewBox="0 0 640 310" role="img" aria-label="Xotira ierarxiyasi piramidasi: registr, kesh, RAM, SSD, HDD/bulut; yuqoriga qarab tezroq, qimmatroq, kichikroq">
-    <g class="stagger">
-      <g style="--i:4"><polygon points="284,20 356,20 408,68 232,68" class="box on"/><text x="320" y="40" text-anchor="middle" class="ttl">Registr</text><text x="320" y="58" text-anchor="middle">&lt; 1 ns  |  baytlar</text></g>
-      <g style="--i:3"><polygon points="232,70 408,70 460,118 180,118" class="box on"/><text x="320" y="90" text-anchor="middle" class="ttl">Kesh L1-L3</text><text x="320" y="108" text-anchor="middle">1-40 ns  |  KB-MB</text></g>
-      <g style="--i:2"><polygon points="180,120 460,120 512,168 128,168" class="box blue"/><text x="320" y="140" text-anchor="middle" class="ttl">RAM</text><text x="320" y="158" text-anchor="middle">~80 ns  |  8-64 GB</text></g>
-      <g style="--i:1"><polygon points="128,170 512,170 564,218 76,218" class="box copper"/><text x="320" y="190" text-anchor="middle" class="ttl">SSD</text><text x="320" y="208" text-anchor="middle">~0.1 ms  |  0.25-4 TB</text></g>
-      <g style="--i:0"><polygon points="76,220 564,220 616,268 24,268" class="box soft"/><text x="320" y="240" text-anchor="middle" class="ttl">HDD / bulut</text><text x="320" y="258" text-anchor="middle">~10 ms  |  TB+</text></g>
-    </g>
-    <g class="up"><polygon class="arrow on" points="52,150 40,166 64,166"/><line x1="52" y1="166" x2="52" y2="200" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/></g>
-    <text x="320" y="296" text-anchor="middle" class="lbl">Yuqoriga: tezroq, qimmatroq, kichikroq</text>
+<figure class="fig" id="fig16">
+  <div class="board-wrap">
+  <svg class="board" data-replay viewBox="0 0 900 420" role="img" aria-label="Xotira ierarxiyasi haqiqiy chiplar bilan: CPU ichida registr fayli, L1, L2, L3 SRAM keshlari va xotira kontrolleri; tashqarida DDR5 DIMM, NVMe SSD va HDD. So'rov belgisi pog'onama-pog'ona tushadi, har bosqichda kechikish ko'rsatiladi">
+    <defs><pattern id="g16" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="420" fill="url(#g16)"/>
+    <!-- CPU -->
+    <rect x="20" y="30" width="280" height="330" rx="14" class="die" id="hCPU"/>
+    <text x="36" y="52" class="ttl">CPU kristali</text>
+    <rect x="36" y="64" width="248" height="52" rx="6" class="unit" id="hR"/>
+    <text x="44" y="80" class="ttl">Registr fayli</text><text x="44" y="93" class="mut xs">16 × 64 bit · 128 B</text>
+    <rect x="44" y="98" width="84" height="14" rx="3" class="cell" id="hRc"/><text x="86" y="108" text-anchor="middle" class="xs" id="hRt"></text>
+    <text x="140" y="109" class="val">< 1 ns</text>
+    <text x="234" y="84" text-anchor="end" class="mut xs">hit</text><circle cx="244" cy="80" r="4.5" class="led" id="hRh"/>
+    <text x="234" y="106" text-anchor="end" class="mut xs">miss</text><circle cx="244" cy="102" r="4.5" class="led bad" id="hRm"/>
+    <rect x="36" y="124" width="248" height="52" rx="6" class="unit" id="hL1"/>
+    <text x="44" y="140" class="ttl">L1 kesh · SRAM</text><text x="44" y="153" class="mut xs">32 KB</text>
+    <rect x="44" y="158" width="84" height="14" rx="3" class="cell" id="hL1c"/><text x="86" y="168" text-anchor="middle" class="xs" id="hL1t"></text>
+    <text x="140" y="169" class="val">~1 ns</text>
+    <text x="234" y="144" text-anchor="end" class="mut xs">hit</text><circle cx="244" cy="140" r="4.5" class="led" id="hL1h"/>
+    <text x="234" y="166" text-anchor="end" class="mut xs">miss</text><circle cx="244" cy="162" r="4.5" class="led bad" id="hL1m"/>
+    <rect x="36" y="184" width="248" height="52" rx="6" class="unit" id="hL2"/>
+    <text x="44" y="200" class="ttl">L2 kesh · SRAM</text><text x="44" y="213" class="mut xs">1 MB</text>
+    <rect x="44" y="218" width="84" height="14" rx="3" class="cell" id="hL2c"/><text x="86" y="228" text-anchor="middle" class="xs" id="hL2t"></text>
+    <text x="140" y="229" class="val">~4 ns</text>
+    <text x="234" y="204" text-anchor="end" class="mut xs">hit</text><circle cx="244" cy="200" r="4.5" class="led" id="hL2h"/>
+    <text x="234" y="226" text-anchor="end" class="mut xs">miss</text><circle cx="244" cy="222" r="4.5" class="led bad" id="hL2m"/>
+    <rect x="36" y="244" width="248" height="52" rx="6" class="unit" id="hL3"/>
+    <text x="44" y="260" class="ttl">L3 kesh · SRAM</text><text x="44" y="273" class="mut xs">32 MB</text>
+    <rect x="44" y="278" width="84" height="14" rx="3" class="cell" id="hL3c"/><text x="86" y="288" text-anchor="middle" class="xs" id="hL3t"></text>
+    <text x="140" y="289" class="val">~40 ns</text>
+    <text x="234" y="264" text-anchor="end" class="mut xs">hit</text><circle cx="244" cy="260" r="4.5" class="led" id="hL3h"/>
+    <text x="234" y="286" text-anchor="end" class="mut xs">miss</text><circle cx="244" cy="282" r="4.5" class="led bad" id="hL3m"/>
+    <rect x="36" y="304" width="248" height="44" rx="6" class="unit" id="hIMC"/>
+    <text x="44" y="322" class="ttl">Xotira kontrolleri (IMC)</text><text x="44" y="338" class="mut xs">DDR5 · 64 bit · 2 kanal</text>
+    <path class="wire w-data" id="hw01" d="M86 116 V124"/><path class="wire w-data" id="hw12" d="M86 176 V184"/><path class="wire w-data" id="hw23" d="M86 236 V244"/><path class="wire w-data" id="hw34" d="M86 296 V304"/>
+    <path class="wire w-addr bus" id="hbA" d="M284 316 H330"/><path class="wire w-data bus" id="hbD" d="M284 330 H330"/>
+    <!-- kechikish -->
+    <rect x="330" y="30" width="150" height="104" rx="8" class="unit"/>
+    <text x="340" y="48" class="ttl">Kechikish</text>
+    <rect x="340" y="56" width="130" height="36" rx="4" class="lcd"/><text x="350" y="80" class="lcdtxt" id="hlat">0 ns</text>
+    <text x="340" y="108" class="mut xs">topildi:</text><text x="340" y="122" class="xs" id="hwhere">—</text>
+    <!-- DIMM -->
+    <rect x="330" y="150" width="150" height="210" rx="8" class="chip" id="hDIMM"/>
+    <text x="340" y="168" class="ttl">DDR5 DIMM · 16 GB</text>
+    <text x="405" y="330" text-anchor="middle" class="val">~80 ns</text>
+    <rect x="340" y="176" width="130" height="28" rx="4" class="unit" id="hd0"/><text x="405" y="194" text-anchor="middle">DRAM 4 GB</text><rect x="340" y="212" width="130" height="28" rx="4" class="unit" id="hd1"/><text x="405" y="230" text-anchor="middle">DRAM 4 GB</text><rect x="340" y="248" width="130" height="28" rx="4" class="unit" id="hd2"/><text x="405" y="266" text-anchor="middle">DRAM 4 GB</text><rect x="340" y="284" width="130" height="28" rx="4" class="unit" id="hd3"/><text x="405" y="302" text-anchor="middle">DRAM 4 GB</text>
+    <rect x="342" y="346" width="6" height="10" class="pin"/><rect x="351" y="346" width="6" height="10" class="pin"/><rect x="360" y="346" width="6" height="10" class="pin"/><rect x="369" y="346" width="6" height="10" class="pin"/><rect x="378" y="346" width="6" height="10" class="pin"/><rect x="387" y="346" width="6" height="10" class="pin"/><rect x="396" y="346" width="6" height="10" class="pin"/><rect x="405" y="346" width="6" height="10" class="pin"/><rect x="414" y="346" width="6" height="10" class="pin"/><rect x="423" y="346" width="6" height="10" class="pin"/><rect x="432" y="346" width="6" height="10" class="pin"/><rect x="441" y="346" width="6" height="10" class="pin"/><rect x="450" y="346" width="6" height="10" class="pin"/><rect x="459" y="346" width="6" height="10" class="pin"/>
+    <!-- ierarxiya qoidasi -->
+    <rect x="510" y="30" width="370" height="104" rx="8" class="unit"/>
+    <text x="520" y="48" class="ttl">Ierarxiya qoidasi</text>
+    <text x="520" y="68" class="mut xs">yuqori pog'ona: tezroq · kichikroq · bayti qimmatroq</text>
+    <text x="520" y="82" class="mut xs">pastki pog'ona: sekinroq · kattaroq · arzonroq</text>
+    <text x="520" y="96" class="mut xs">har pog'ona pastdagining nusxasini saqlaydi (kesh)</text>
+    <text x="520" y="120" class="xs" id="hpath">so'rov yo'li: —</text>
+    <!-- SSD -->
+    <rect x="510" y="150" width="170" height="210" rx="8" class="chip" id="hSSD"/>
+    <text x="520" y="168" class="ttl">NVMe SSD · M.2</text><text x="520" y="182" class="mut xs">1 TB · ~100 µs = 100 000 ns</text>
+    <rect x="520" y="192" width="150" height="34" rx="4" class="unit" id="hSSDc"/><text x="595" y="208" text-anchor="middle" class="ttl">Kontroller · FTL</text><text x="595" y="220" text-anchor="middle" class="mut xs">LBA → NAND blok / sahifa</text>
+    <rect x="520" y="240" width="72" height="32" rx="4" class="unit" id="hn0"/><text x="556" y="254" text-anchor="middle" class="ttl">NAND</text><text x="556" y="266" text-anchor="middle" class="mut xs">256 GB</text><rect x="598" y="240" width="72" height="32" rx="4" class="unit" id="hn1"/><text x="634" y="254" text-anchor="middle" class="ttl">NAND</text><text x="634" y="266" text-anchor="middle" class="mut xs">256 GB</text><rect x="520" y="280" width="72" height="32" rx="4" class="unit" id="hn2"/><text x="556" y="294" text-anchor="middle" class="ttl">NAND</text><text x="556" y="306" text-anchor="middle" class="mut xs">256 GB</text><rect x="598" y="280" width="72" height="32" rx="4" class="unit" id="hn3"/><text x="634" y="294" text-anchor="middle" class="ttl">NAND</text><text x="634" y="306" text-anchor="middle" class="mut xs">256 GB</text>
+    <path class="wire w-data" id="hwNand" d="M595 226 V240 M556 272 V280 H634 V272"/>
+    <text x="595" y="340" text-anchor="middle" class="mut xs">PCIe 4.0 x4 · 8 GB/s</text>
+    <!-- HDD -->
+    <rect x="710" y="150" width="170" height="210" rx="8" class="chip" id="hHDD"/>
+    <text x="720" y="168" class="ttl">HDD · SATA</text><text x="720" y="182" class="mut xs">4 TB · ~10 ms = 10 000 000 ns</text>
+    <g class="kplat" id="hPlat"><circle cx="795" cy="270" r="60" class="unit"/><circle cx="795" cy="270" r="48" fill="none" class="wire" style="stroke:var(--b-line);stroke-width:1"/><circle cx="795" cy="270" r="36" fill="none" class="wire" style="stroke:var(--b-line);stroke-width:1"/><circle cx="795" cy="270" r="24" fill="none" class="wire" style="stroke:var(--b-line);stroke-width:1"/><rect x="793" y="222" width="5" height="8" class="heat" id="hSec"/><circle cx="795" cy="270" r="9" class="pin"/></g>
+    <g class="karm" id="hArm" style="transform-origin:860px 340px"><line x1="860" y1="340" x2="806" y2="240" class="wire" style="stroke:var(--b-ink);stroke-width:4"/><circle cx="860" cy="340" r="6" class="pin"/><circle cx="806" cy="240" r="4" class="led warn" id="hHead"/></g>
+    <text x="722" y="352" class="mut xs">7200 ayl/min · SATA 6 Gb/s</text>
+    <!-- tashqi shinalar -->
+    <path class="wire w-data" id="hwPcie" d="M160 360 V380 H595 V360"/>
+    <path class="wire w-data" id="hwSata" d="M220 360 V400 H795 V360"/>
+    <text x="380" y="376" class="mut xs">PCIe 4.0 x4</text><text x="500" y="396" class="mut xs">SATA (chipset orqali)</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>So'rov</span><span>Kesh L1→L3</span><span>DRAM</span><span>SSD</span><span>Qaytish</span><span>HDD bo'lsa</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: dastur bitta o'zgaruvchini so'raydi va uni ierarxiya bo'ylab izlaymiz.</div>
   <figcaption><span><b>16-rasm.</b> Xotira ierarxiyasi: yuqoriga qarab tezlik oshadi, hajm kamayadi</span></figcaption>
 </figure>
 
 <p>Tezlik farqini his qilish uchun bitta o'xshatish: agar registrga murojaat 1 soniya davom etsa, L1 kesh ~3 soniya, RAM ~4 daqiqa, SSD ~3 kun, HDD esa ~1 yil davom etgan bo'lardi. Shuning uchun dasturlar tezligi ko'pincha protsessor chastotasiga emas, xotiradan qanchalik samarali foydalanishiga bog'liq.</p>
 
 <figure class="fig" id="memFig">
-  <div class="controls"><button id="memBtn" class="primary" type="button">Ko'rsat</button><span class="small muted">Agar registrga murojaat 1 soniya bo'lsa (logarifmik shkala)</span></div>
-  <div class="mem" id="mem" data-replay></div>
+  <div class="board-wrap">
+  <svg class="board" data-replay viewBox="0 0 900 230" role="img" aria-label="Xotira kechikishi inson miqyosida: registr 1 soniya bo'lsa, L1 3 soniya, RAM 4 daqiqa, SSD 3 kun, HDD 1 yil (logarifmik shkala)">
+    <defs><pattern id="gb" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="230" fill="url(#gb)"/>
+    <text x="30" y="24" class="mut xs">agar registrga murojaat 1 soniya bo'lsa (logarifmik shkala)</text>
+    <text x="870" y="24" text-anchor="end" class="mut xs">inson miqyosida</text>
+    <text x="30" y="48" class="ttl">Registr</text><text x="120" y="48" class="mut xs">< 1 ns</text>
+    <g class="bar"><rect x="190" y="36" width="560" height="16" rx="8"/><rect class="f" x="190" y="36" width="0" height="16" rx="8" id="hbf0"/></g>
+    <text x="870" y="48" text-anchor="end" class="val" id="hbt0"></text>
+    <text x="30" y="84" class="ttl">L1 kesh</text><text x="120" y="84" class="mut xs">~1 ns</text>
+    <g class="bar"><rect x="190" y="72" width="560" height="16" rx="8"/><rect class="f" x="190" y="72" width="0" height="16" rx="8" id="hbf1"/></g>
+    <text x="870" y="84" text-anchor="end" class="val" id="hbt1"></text>
+    <text x="30" y="120" class="ttl">RAM</text><text x="120" y="120" class="mut xs">~80 ns</text>
+    <g class="bar"><rect x="190" y="108" width="560" height="16" rx="8"/><rect class="f" x="190" y="108" width="0" height="16" rx="8" id="hbf2"/></g>
+    <text x="870" y="120" text-anchor="end" class="val" id="hbt2"></text>
+    <text x="30" y="156" class="ttl">SSD</text><text x="120" y="156" class="mut xs">~0.1 ms</text>
+    <g class="bar"><rect x="190" y="144" width="560" height="16" rx="8"/><rect class="f warn" x="190" y="144" width="0" height="16" rx="8" id="hbf3"/></g>
+    <text x="870" y="156" text-anchor="end" class="val" id="hbt3"></text>
+    <text x="30" y="192" class="ttl">HDD</text><text x="120" y="192" class="mut xs">~10 ms</text>
+    <g class="bar"><rect x="190" y="180" width="560" height="16" rx="8"/><rect class="f warn" x="190" y="180" width="0" height="16" rx="8" id="hbf4"/></g>
+    <text x="870" y="192" text-anchor="end" class="val" id="hbt4"></text>
+    <text x="30" y="220" class="mut xs" id="hbNote">shkala logarifmik: aks holda HDD ustuni registrnikidan 30 million marta uzun bo'lardi</text>
+    <g class="tokens"></g>
+  </svg>
+  </div>
+  <div class="board-ctl"><button id="memBtn" class="primary" type="button">Ko'rsat</button><span class="small muted">Agar registrga murojaat 1 soniya bo'lsa (logarifmik shkala)</span></div>
+  <div class="board-narr">Pastga suring: ustunlar birma-bir o'sadi.</div>
   <figcaption><span><b>Xotira kechikishi inson miqyosida.</b> Har bir ustun bir xil registr soniyasiga nisbatan; shkala logarifmik, aks holda HDD ustuni 30 million marta uzun bo'lardi.</span></figcaption>
 </figure>
 
@@ -85,75 +150,72 @@
 <p><strong>RAM</strong> (Random Access Memory) — "ixtiyoriy murojaatli xotira". Nomi shundan: istalgan manzilga bir xil vaqtda murojaat qilish mumkin, ketma-ket o'qish shart emas. RAM'da ishlab turgan dasturlar, ularning o'zgaruvchilari, ochiq brauzer sahifalari saqlanadi. Uning asosiy kamchiligi — energiyaga bog'liqlik: tok o'chishi bilan barcha ma'lumot yo'qoladi.</p>
 <p>RAM'ning ikki turi bor. <strong>DRAM</strong> (dinamik) — har bir bit bitta tranzistor va bitta mitti kondensatorda saqlanadi: kondensator zaryadlangan bo'lsa — 1, zaryadsiz bo'lsa — 0. Kondensator asta-sekin zaryadini yo'qotgani uchun har 64 millisekundda barcha yacheykalar qayta "yangilanishi" kerak. DRAM zich va arzon, shuning uchun asosiy xotira sifatida ishlatiladi. <strong>SRAM</strong> (statik) — har bir bit 6 ta tranzistordan iborat flip-flopda saqlanadi. U ancha tez va yangilanish talab qilmaydi, lekin katta joy egallaydi va qimmat — shuning uchun kesh xotira uchun ishlatiladi.</p>
 
-<figure class="fig">
-  <svg class="sv cell" viewBox="0 0 680 300" role="img" aria-label="DRAM yacheykasi: bitta tranzistor va kondensator, zaryad oqib ketadi va har 64 ms yangilanadi; SRAM yacheykasi: 6 tranzistorli flip-flop, yangilash shart emas">
+<figure class="fig" id="fig17">
+  <div class="board-wrap">
+  <svg class="board" data-replay viewBox="0 0 900 340" role="img" aria-label="DRAM yacheykasi: bitta tranzistor va kondensator, zaryad o'lchagichi oqib ketadi va har 64 ms yangilanish impulsi keladi; SRAM yacheykasi: 6 tranzistorli ikki inverter bir-birini ushlab turadi, yangilash shart emas">
+    <defs><pattern id="g17" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="340" fill="url(#g17)"/>
     <!-- DRAM -->
-    <text x="170" y="22" text-anchor="middle" class="ttl">DRAM yacheyka (1 bit)</text>
-    <line x1="30" y1="70" x2="300" y2="70" class="wire" style="stroke:var(--blue)"/>
-    <text x="36" y="60">so'z liniyasi</text>
-    <line x1="110" y1="40" x2="110" y2="250" class="wire" style="stroke:var(--copper)"/>
-    <text x="118" y="250">bit liniyasi</text>
+    <rect x="20" y="20" width="420" height="300" rx="12" class="chip"/>
+    <text x="32" y="42" class="ttl">DRAM yacheykasi (1 bit) — 1 tranzistor + 1 kondensator</text>
+    <text x="300" y="82" text-anchor="end" class="mut xs">so'z liniyasi (qatorni tanlash)</text>
+    <path class="wire w-addr" id="dWL" d="M40 90 H300"/>
+    <text x="126" y="248" class="mut xs">bit liniyasi</text>
+    <path class="wire w-data" id="dBL" d="M120 60 V250"/>
     <!-- tranzistor -->
-    <line x1="150" y1="70" x2="150" y2="94" class="wire thin"/>
-    <rect x="132" y="94" width="36" height="5" fill="var(--ink)"/>
-    <line x1="132" y1="106" x2="168" y2="106" stroke="var(--ink)" stroke-width="3"/>
-    <line x1="110" y1="108" x2="132" y2="108" class="wire thin"/>
-    <line x1="168" y1="108" x2="206" y2="108" class="wire thin"/>
-    <text x="150" y="128" text-anchor="middle" class="lbl">Tranz.</text>
+    <path class="wire w-ctl" id="dGate" d="M160 90 V106" style="stroke-dasharray:none"/>
+    <rect x="144" y="106" width="32" height="4" class="pin" id="dGp"/>
+    <line x1="144" y1="116" x2="176" y2="116" class="wire" style="stroke:var(--b-ink);stroke-width:3"/>
+    <path class="wire w-data" id="dSrc" d="M120 120 H144 V116"/>
+    <path class="wire w-data" id="dDrn" d="M176 116 V120 H218"/>
+    <text x="160" y="140" text-anchor="middle" class="mut xs">tranzistor (kalit)</text>
     <!-- kondensator -->
-    <line x1="206" y1="92" x2="206" y2="124" stroke="var(--ink)" stroke-width="3"/>
-    <line x1="216" y1="92" x2="216" y2="124" stroke="var(--ink)" stroke-width="3"/>
-    <line x1="216" y1="108" x2="240" y2="108" class="wire thin"/>
-    <line x1="240" y1="108" x2="240" y2="122" class="wire thin"/>
-    <line x1="230" y1="122" x2="250" y2="122" class="wire thin"/><line x1="234" y1="127" x2="246" y2="127" class="wire thin"/><line x1="238" y1="132" x2="242" y2="132" class="wire thin"/>
-    <text x="211" y="146" text-anchor="middle" class="lbl">kondensator</text>
-    <text x="196" y="88" text-anchor="middle" class="plus" style="fill:var(--accent);font-weight:700">+ + +</text>
-    <!-- zaryad darajasi -->
-    <rect x="270" y="86" width="18" height="44" rx="3" class="box soft"/>
-    <rect x="270" y="86" width="18" height="44" rx="3" class="charge" fill="var(--accent)"/>
-    <text x="279" y="146" text-anchor="middle">zaryad</text>
-    <text x="300" y="100" class="lbl" style="fill:var(--accent)">= 1</text>
-    <!-- vaqt: 64 ms -->
-    <rect x="40" y="184" width="260" height="8" rx="4" class="box soft"/>
-    <rect x="40" y="184" width="260" height="8" rx="4" class="clock" fill="var(--copper)"/>
-    <text x="40" y="176">0 ms</text><text x="300" y="176" text-anchor="end">64 ms</text>
-    <text x="170" y="210" text-anchor="middle">zaryad asta-sekin oqib ketadi...</text>
-    <text x="170" y="230" text-anchor="middle" class="lbl refresh" style="fill:var(--copper)">yangilash! (qayta zaryadlash)</text>
-    <circle class="rpulse dot copper" r="6"/>
-    <text x="170" y="282" text-anchor="middle">har 64 ms da barcha yacheykalar yangilanadi</text>
+    <line x1="218" y1="104" x2="218" y2="136" class="wire" style="stroke:var(--b-ink);stroke-width:3"/>
+    <line x1="228" y1="104" x2="228" y2="136" class="wire" style="stroke:var(--b-ink);stroke-width:3"/>
+    <path class="wire" d="M228 120 H250 V134 M240 134 H260 M244 140 H256 M248 146 H252"/>
+    <text x="223" y="160" text-anchor="middle" class="mut xs">kondensator ~30 fF</text>
+    <!-- zaryad o'lchagichi -->
+    <g class="bar"><rect x="290" y="110" width="22" height="80" rx="3"/><rect class="f" x="290" y="110" width="22" height="80" rx="3" id="dCap"/></g>
+    <text x="301" y="104" text-anchor="middle" class="xs" id="dCapT">100%</text>
+    <text x="301" y="206" text-anchor="middle" class="mut xs">zaryad</text>
+    <circle cx="350" cy="120" r="7" class="led" id="dBit"/><text x="364" y="124" class="val" id="dBitT">bit = 1</text>
+    <text x="336" y="146" class="mut xs" id="dBitS">o'qish chegarasi: 50%</text>
+    <!-- sense amp -->
+    <rect x="90" y="252" width="80" height="28" rx="4" class="unit" id="dSA"/><text x="130" y="270" text-anchor="middle" class="xs">sense amp</text>
+    <!-- yangilash -->
+    <rect x="30" y="288" width="210" height="26" rx="4" class="unit" id="dRefU"/>
+    <circle cx="44" cy="301" r="5" class="led warn" id="dRef"/><text x="54" y="305" class="xs">yangilash kontrolleri · har 64 ms</text>
+    <text x="256" y="292" class="mut xs">0</text><text x="430" y="292" text-anchor="end" class="mut xs">64 ms</text>
+    <g class="bar"><rect x="256" y="298" width="174" height="10" rx="5"/><rect class="f warn" x="256" y="298" width="0" height="10" rx="5" id="dTime"/></g>
     <!-- SRAM -->
-    <text x="510" y="22" text-anchor="middle" class="ttl">SRAM yacheyka (1 bit)</text>
-    <line x1="370" y1="50" x2="650" y2="50" class="wire" style="stroke:var(--blue)"/>
-    <text x="440" y="42">so'z liniyasi</text>
-    <line x1="380" y1="40" x2="380" y2="200" class="wire" style="stroke:var(--copper)"/>
-    <line x1="640" y1="40" x2="640" y2="200" class="wire" style="stroke:var(--copper)"/>
-    <text x="386" y="200">bit</text><text x="634" y="200" text-anchor="end">bit</text>
-    <line x1="420" y1="66" x2="600" y2="66" class="wire thin"/><text x="606" y="70">Vdd</text>
-    <line x1="420" y1="180" x2="600" y2="180" class="wire thin"/><text x="606" y="184">GND</text>
-    <!-- inverter A: T1 (yuqori), T2 (past) -->
-    <line x1="450" y1="66" x2="450" y2="180" class="wire thin"/>
-    <circle cx="450" cy="96" r="13" class="pin on"/><text x="450" y="100" text-anchor="middle" style="fill:var(--surface);font-weight:700;font-size:10px">T1</text>
-    <circle cx="450" cy="152" r="13" class="pin on"/><text x="450" y="156" text-anchor="middle" style="fill:var(--surface);font-weight:700;font-size:10px">T2</text>
-    <!-- inverter B: T3, T4 -->
-    <line x1="570" y1="66" x2="570" y2="180" class="wire thin"/>
-    <circle cx="570" cy="96" r="13" class="pin on"/><text x="570" y="100" text-anchor="middle" style="fill:var(--surface);font-weight:700;font-size:10px">T3</text>
-    <circle cx="570" cy="152" r="13" class="pin on"/><text x="570" y="156" text-anchor="middle" style="fill:var(--surface);font-weight:700;font-size:10px">T4</text>
-    <!-- kirish tranzistorlari T5, T6 -->
-    <line x1="380" y1="124" x2="450" y2="124" class="wire thin"/>
-    <circle cx="410" cy="124" r="13" class="pin"/><text x="410" y="128" text-anchor="middle" class="lbl" style="font-size:10px">T5</text>
-    <line x1="410" y1="50" x2="410" y2="111" class="wire thin"/>
-    <line x1="570" y1="124" x2="640" y2="124" class="wire thin"/>
-    <circle cx="610" cy="124" r="13" class="pin"/><text x="610" y="128" text-anchor="middle" class="lbl" style="font-size:10px">T6</text>
-    <line x1="610" y1="50" x2="610" y2="111" class="wire thin"/>
-    <!-- o'zaro bog'lanish (teskari aloqa) -->
-    <path class="flow" style="stroke-width:2" d="M450 124 H500 V140 H556"/>
-    <path class="flow copper" style="stroke-width:2" d="M570 124 H520 V108 H464"/>
-    <g class="hold"><circle cx="450" cy="124" r="5" class="dot"/><text x="500" y="100" text-anchor="middle" class="lbl" style="fill:var(--accent)">Q = 1</text></g>
-    <g class="hold"><circle cx="570" cy="124" r="5" class="dot copper"/><text x="528" y="158" text-anchor="middle" class="lbl" style="fill:var(--copper)">Q̄ = 0</text></g>
-    <text x="510" y="230" text-anchor="middle" class="lbl">6 tranzistor, yangilash shart emas</text>
-    <text x="510" y="252" text-anchor="middle">ikki inverter bir-birini ushlab turadi: tok bor ekan, holat saqlanadi</text>
-    <text x="510" y="282" text-anchor="middle">tez, lekin 6 barobar ko'p joy — kesh uchun</text>
+    <rect x="460" y="20" width="420" height="300" rx="12" class="chip"/>
+    <text x="472" y="42" class="ttl">SRAM yacheykasi (1 bit) — 6 tranzistor</text>
+    <text x="480" y="78" class="mut xs">so'z liniyasi</text>
+    <path class="wire w-addr" id="sWL" d="M480 90 H860"/>
+    <path class="wire w-data" id="sBL" d="M500 60 V250"/><text x="506" y="248" class="mut xs">BL</text>
+    <path class="wire w-data" id="sBLb" d="M850 60 V250"/><text x="844" y="248" text-anchor="end" class="mut xs">BL̄</text>
+    <path class="wire w-pwr" id="sVdd" d="M560 116 H800"/><text x="556" y="120" text-anchor="end" class="xs label-bad">Vdd</text>
+    <path class="wire" id="sGnd" d="M560 226 H800"/><text x="556" y="230" text-anchor="end" class="mut xs">GND</text>
+    <!-- inverter A -->
+    <path class="wire w-data" d="M610 116 V226"/><circle cx="610" cy="140" r="12" class="unit" id="sT1"/><text x="610" y="144" text-anchor="middle" class="xs">T1</text><circle cx="610" cy="202" r="12" class="unit" id="sT2"/><text x="610" y="206" text-anchor="middle" class="xs">T2</text>
+    <!-- inverter B -->
+    <path class="wire w-data" d="M750 116 V226"/><circle cx="750" cy="140" r="12" class="unit" id="sT3"/><text x="750" y="144" text-anchor="middle" class="xs">T3</text><circle cx="750" cy="202" r="12" class="unit" id="sT4"/><text x="750" y="206" text-anchor="middle" class="xs">T4</text>
+    <!-- kirish tranzistorlari -->
+    <path class="wire w-data" id="sA1" d="M500 170 H610"/><circle cx="550" cy="170" r="12" class="unit" id="sT5"/><text x="550" y="174" text-anchor="middle" class="xs">T5</text><path class="wire w-ctl" d="M550 90 V158" style="stroke-dasharray:none"/>
+    <path class="wire w-data" id="sA2" d="M750 170 H850"/><circle cx="810" cy="170" r="12" class="unit" id="sT6"/><text x="810" y="174" text-anchor="middle" class="xs">T6</text><path class="wire w-ctl" d="M810 90 V158" style="stroke-dasharray:none"/>
+    <!-- teskari aloqa -->
+    <path class="wire w-data" id="sX1" d="M610 170 H680 V150 H738"/>
+    <path class="wire w-ctl" id="sX2" d="M750 170 H700 V192 H622" style="stroke-dasharray:none"/>
+    <circle cx="610" cy="170" r="6" class="led" id="sQ"/><text x="640" y="166" text-anchor="middle" class="val label-on" id="sQt">Q = 1</text>
+    <circle cx="750" cy="170" r="6" class="led warn" id="sQb"/><text x="680" y="214" text-anchor="middle" class="val label-warn" id="sQbt">Q̄ = 0</text>
+    <rect x="472" y="262" width="396" height="46" rx="4" class="unit" id="sHoldU"/>
+    <circle cx="486" cy="278" r="5" class="led" id="sHold"/><text x="496" y="282" class="xs" id="sHoldT">ikki inverter bir-birini ushlab turadi, yangilash shart emas</text>
+    <text x="496" y="298" class="mut xs">tez, lekin 6 tranzistor = 6 barobar ko'p joy → kesh uchun</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>Yozish</span><span>Oqish</span><span>Yangilash</span><span>SRAM ushlaydi</span><span>O'qish</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: yacheykalarga 1 yoziladi va nima bo'lishini kuzatamiz.</div>
   <figcaption><span><b>17-rasm.</b> DRAM va SRAM yacheykalari</span></figcaption>
 </figure>
 
@@ -166,39 +228,47 @@
 <p><strong>HDD</strong> (qattiq disk) — magnit qatlam bilan qoplangan, daqiqasiga 5400-7200 marta aylanadigan plastinalardan iborat. Ular ustida havoda "suzib" turuvchi o'qish-yozish kallagi joylashgan — u plastinadan atigi bir necha nanometr balandlikda harakatlanadi. Ma'lumot plastinaning kichik sohalarini magnitlash yo'nalishi sifatida yoziladi. HDD arzon va katta hajmli, lekin mexanik bo'lgani uchun sekin va zarbaga sezgir.</p>
 <p><strong>SSD</strong> (qattiq holatdagi disk) — NAND flesh xotira chiplari va ularni boshqaradigan kontrollerdan iborat. Unda harakatlanuvchi qism yo'q, shuning uchun u tez, jim va mustahkam. NVMe interfeysli zamonaviy SSD sekundiga 5-12 GB o'qiy oladi — bu HDD'dan 30-80 barobar tez. Flesh yacheykalar cheklangan marta (bir necha ming marta) qayta yozilishi mumkin, shuning uchun kontroller yozuvlarni butun disk bo'ylab tekis taqsimlaydi (<strong>wear leveling</strong>).</p>
 
-<figure class="fig">
-  <svg class="sv disk" viewBox="0 0 680 300" role="img" aria-label="HDD: aylanuvchi magnit plastina va harakatlanuvchi o'qish kallagi; SSD: NAND chiplar va kontroller, harakatlanuvchi qism yo'q">
+<figure class="fig" id="fig18">
+  <div class="board-wrap">
+  <svg class="board" data-replay viewBox="0 0 900 360" role="img" aria-label="HDD: aylanuvchi magnit plastina, kallak kerakli yo'lga boradi va sektorni kutadi (~12 ms); SSD: kontroller FTL jadvalidan NAND chipidagi sahifani topadi (~20 mikrosoniya)">
+    <defs><pattern id="g18" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="360" fill="url(#g18)"/>
     <!-- HDD -->
-    <text x="170" y="22" text-anchor="middle" class="ttl">HDD (qattiq disk)</text>
-    <g class="platter">
-      <circle cx="150" cy="160" r="100" class="box soft"/>
-      <circle cx="150" cy="160" r="75" fill="none" stroke="var(--line)"/>
-      <circle cx="150" cy="160" r="50" fill="none" stroke="var(--line)"/>
-      <path d="M150 160 L150 60 A100 100 0 0 1 236 110 Z" fill="var(--accent-soft)" opacity=".8"/>
-      <rect x="150" y="82" width="10" height="4" class="dot copper"/><rect x="150" y="98" width="10" height="4" class="dot"/><rect x="150" y="114" width="10" height="4" class="dot copper"/><rect x="150" y="130" width="10" height="4" class="dot copper"/>
-      <circle cx="150" cy="160" r="12" fill="var(--wire)"/>
-    </g>
-    <g class="arm">
-      <line x1="300" y1="250" x2="175" y2="120" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
-      <circle cx="300" cy="250" r="10" fill="var(--ink)"/>
-      <circle cx="175" cy="120" r="6" class="dot copper"/>
-    </g>
-    <text x="230" y="98" class="lbl">o'qish kallagi</text>
-    <text x="150" y="286" text-anchor="middle">magnit plastina 5400-7200 ayl/min</text>
+    <rect x="20" y="20" width="420" height="320" rx="12" class="chip" id="kHDD"/>
+    <text x="32" y="42" class="ttl">HDD · 3.5″ · 7200 ayl/min · SATA</text>
+    <g class="kplat" id="kPlat"><circle cx="170" cy="190" r="110" class="unit"/><circle cx="170" cy="190" r="95" fill="none" class="wire" style="stroke:var(--b-line);stroke-width:1"/><circle cx="170" cy="190" r="80" fill="none" class="wire" style="stroke:var(--b-line);stroke-width:1"/><circle cx="170" cy="190" r="65" fill="none" class="wire" style="stroke:var(--b-line);stroke-width:1"/><circle cx="170" cy="190" r="50" fill="none" class="wire" style="stroke:var(--b-line);stroke-width:1"/><circle cx="170" cy="190" r="35" fill="none" class="wire" style="stroke:var(--b-line);stroke-width:1"/><line x1="190.0" y1="190.0" x2="278.0" y2="190.0" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="187.3" y1="200.0" x2="263.5" y2="244.0" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="180.0" y1="207.3" x2="224.0" y2="283.5" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="170.0" y1="210.0" x2="170.0" y2="298.0" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="160.0" y1="207.3" x2="116.0" y2="283.5" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="152.7" y1="200.0" x2="76.5" y2="244.0" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="150.0" y1="190.0" x2="62.0" y2="190.0" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="152.7" y1="180.0" x2="76.5" y2="136.0" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="160.0" y1="172.7" x2="116.0" y2="96.5" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="170.0" y1="170.0" x2="170.0" y2="82.0" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="180.0" y1="172.7" x2="224.0" y2="96.5" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><line x1="187.3" y1="180.0" x2="263.5" y2="136.0" class="wire" style="stroke:var(--b-line);stroke-width:.6"/><rect x="212" y="186" width="12" height="7" class="heat" id="kSec"/><circle cx="170" cy="190" r="14" class="pin"/></g>
+    <g class="karm" id="kArm"><line x1="330" y1="300" x2="222" y2="118" class="wire" style="stroke:var(--b-ink);stroke-width:5"/><circle cx="330" cy="300" r="9" class="pin"/><circle cx="222" cy="118" r="5" class="led warn" id="kHead"/></g>
+    <text x="300" y="78" class="mut xs">o'qish-yozish kallagi</text>
+    <rect x="300" y="88" width="130" height="30" rx="4" class="lcd"/><text x="310" y="108" class="lcdtxt" id="kHt">0.0 ms</text>
+    <circle cx="308" cy="140" r="4.5" class="led warn" id="kS1"/><text x="318" y="144" class="xs">1. kallak yo'li ~8 ms</text>
+    <circle cx="308" cy="160" r="4.5" class="led warn" id="kS2"/><text x="318" y="164" class="xs">2. sektorni kutish ~4 ms</text>
+    <circle cx="308" cy="180" r="4.5" class="led" id="kS3"/><text x="318" y="184" class="xs">3. o'qish ~0.1 ms</text>
+    <text x="300" y="214" class="mut xs" id="kSecT">LBA 1048576 →</text>
+    <text x="300" y="228" class="mut xs" id="kSecT2">silindr 12 · sektor 7</text>
+    <path class="wire w-data" id="kSata" d="M330 316 H430"/><text x="300" y="332" class="mut xs">SATA 6 Gb/s →</text>
     <!-- SSD -->
-    <text x="510" y="22" text-anchor="middle" class="ttl">SSD (flesh xotira)</text>
-    <rect x="378" y="40" width="284" height="220" rx="10" class="box soft"/>
-    <rect x="392" y="60" width="56" height="56" rx="6" class="box chip" style="--i:0"/><text x="420" y="92" text-anchor="middle" class="lbl">NAND</text>
-    <rect x="458" y="60" width="56" height="56" rx="6" class="box chip" style="--i:1"/><text x="486" y="92" text-anchor="middle" class="lbl">NAND</text>
-    <rect x="524" y="60" width="56" height="56" rx="6" class="box chip" style="--i:2"/><text x="552" y="92" text-anchor="middle" class="lbl">NAND</text>
-    <rect x="590" y="60" width="56" height="56" rx="6" class="box chip" style="--i:3"/><text x="618" y="92" text-anchor="middle" class="lbl">NAND</text>
-    <path class="flow" style="stroke-width:2" d="M420 116 V140 H486 V116 M552 116 V140 H618 V116 M486 140 H552"/>
-    <line x1="520" y1="140" x2="520" y2="160" class="wire"/>
-    <rect x="470" y="160" width="100" height="44" rx="6" class="box on"/><text x="520" y="186" text-anchor="middle" class="ttl">kontr.</text>
-    <path class="flow copper" style="stroke-width:2" d="M520 204 V240"/>
-    <rect x="470" y="240" width="100" height="14" rx="3" fill="var(--wire)"/><text x="520" y="272" text-anchor="middle">NVMe / SATA ulanish</text>
-    <text x="520" y="290" text-anchor="middle">harakatlanuvchi qism yo'q, 10-50x tez</text>
+    <rect x="470" y="20" width="410" height="320" rx="12" class="chip" id="kSSD"/>
+    <text x="482" y="42" class="ttl">NVMe SSD · M.2 2280 · PCIe 4.0 x4</text>
+    <rect x="740" y="26" width="128" height="26" rx="4" class="lcd"/><text x="750" y="44" class="lcdtxt" id="kSt">0 µs</text>
+    <rect x="482" y="60" width="180" height="70" rx="6" class="unit" id="kCtl"/>
+    <text x="492" y="78" class="ttl">Kontroller · FTL</text>
+    <text x="492" y="94" class="mut xs">LBA → NAND chip / blok / sahifa</text>
+    <text x="492" y="112" class="xs" id="kCtlT">kutmoqda</text>
+    <rect x="680" y="60" width="188" height="70" rx="6" class="unit" id="kCache"/>
+    <text x="690" y="78" class="ttl">DRAM kesh · 1 GB</text>
+    <text x="690" y="94" class="mut xs">xarita jadvali (mapping)</text>
+    <text x="690" y="112" class="xs" id="kMapT">LBA 1048576 → ?</text>
+    <path class="wire w-data" id="kBus" d="M572 130 V140 H821 M527 140 V150 M625 140 V150 M723 140 V150 M821 140 V150"/>
+    <path class="wire w-addr" id="kCM" d="M662 95 H680"/>
+    <rect x="482" y="150" width="90" height="56" rx="4" class="unit" id="kn0"/><text x="527" y="174" text-anchor="middle" class="ttl">NAND</text><text x="527" y="190" text-anchor="middle" class="mut xs">TLC · 128 GB · 0</text><rect x="580" y="150" width="90" height="56" rx="4" class="unit" id="kn1"/><text x="625" y="174" text-anchor="middle" class="ttl">NAND</text><text x="625" y="190" text-anchor="middle" class="mut xs">TLC · 128 GB · 1</text><rect x="678" y="150" width="90" height="56" rx="4" class="unit" id="kn2"/><text x="723" y="174" text-anchor="middle" class="ttl">NAND</text><text x="723" y="190" text-anchor="middle" class="mut xs">TLC · 128 GB · 2</text><rect x="776" y="150" width="90" height="56" rx="4" class="unit" id="kn3"/><text x="821" y="174" text-anchor="middle" class="ttl">NAND</text><text x="821" y="190" text-anchor="middle" class="mut xs">TLC · 128 GB · 3</text><rect x="482" y="216" width="90" height="56" rx="4" class="unit" id="kn4"/><text x="527" y="240" text-anchor="middle" class="ttl">NAND</text><text x="527" y="256" text-anchor="middle" class="mut xs">TLC · 128 GB · 4</text><rect x="580" y="216" width="90" height="56" rx="4" class="unit" id="kn5"/><text x="625" y="240" text-anchor="middle" class="ttl">NAND</text><text x="625" y="256" text-anchor="middle" class="mut xs">TLC · 128 GB · 5</text><rect x="678" y="216" width="90" height="56" rx="4" class="unit" id="kn6"/><text x="723" y="240" text-anchor="middle" class="ttl">NAND</text><text x="723" y="256" text-anchor="middle" class="mut xs">TLC · 128 GB · 6</text><rect x="776" y="216" width="90" height="56" rx="4" class="unit" id="kn7"/><text x="821" y="240" text-anchor="middle" class="ttl">NAND</text><text x="821" y="256" text-anchor="middle" class="mut xs">TLC · 128 GB · 7</text>
+    <text x="482" y="298" class="mut xs">harakatlanuvchi qism yo'q · 8 kanal parallel</text>
+    <rect x="486" y="306" width="5" height="12" class="pin"/><rect x="494" y="306" width="5" height="12" class="pin"/><rect x="502" y="306" width="5" height="12" class="pin"/><rect x="510" y="306" width="5" height="12" class="pin"/><rect x="518" y="306" width="5" height="12" class="pin"/><rect x="526" y="306" width="5" height="12" class="pin"/><rect x="534" y="306" width="5" height="12" class="pin"/><rect x="542" y="306" width="5" height="12" class="pin"/><rect x="550" y="306" width="5" height="12" class="pin"/><rect x="558" y="306" width="5" height="12" class="pin"/><rect x="566" y="306" width="5" height="12" class="pin"/><rect x="574" y="306" width="5" height="12" class="pin"/><rect x="582" y="306" width="5" height="12" class="pin"/><rect x="590" y="306" width="5" height="12" class="pin"/><rect x="598" y="306" width="5" height="12" class="pin"/><rect x="606" y="306" width="5" height="12" class="pin"/><rect x="614" y="306" width="5" height="12" class="pin"/><rect x="622" y="306" width="5" height="12" class="pin"/><rect x="630" y="306" width="5" height="12" class="pin"/><rect x="638" y="306" width="5" height="12" class="pin"/><rect x="646" y="306" width="5" height="12" class="pin"/><rect x="654" y="306" width="5" height="12" class="pin"/><rect x="662" y="306" width="5" height="12" class="pin"/><rect x="670" y="306" width="5" height="12" class="pin"/><rect x="678" y="306" width="5" height="12" class="pin"/><rect x="686" y="306" width="5" height="12" class="pin"/><rect x="694" y="306" width="5" height="12" class="pin"/><rect x="702" y="306" width="5" height="12" class="pin"/><rect x="710" y="306" width="5" height="12" class="pin"/><rect x="718" y="306" width="5" height="12" class="pin"/><rect x="726" y="306" width="5" height="12" class="pin"/><rect x="734" y="306" width="5" height="12" class="pin"/><rect x="742" y="306" width="5" height="12" class="pin"/><rect x="750" y="306" width="5" height="12" class="pin"/><rect x="758" y="306" width="5" height="12" class="pin"/><rect x="766" y="306" width="5" height="12" class="pin"/><rect x="774" y="306" width="5" height="12" class="pin"/><rect x="782" y="306" width="5" height="12" class="pin"/><rect x="790" y="306" width="5" height="12" class="pin"/><rect x="798" y="306" width="5" height="12" class="pin"/><rect x="806" y="306" width="5" height="12" class="pin"/><rect x="814" y="306" width="5" height="12" class="pin"/><rect x="822" y="306" width="5" height="12" class="pin"/><rect x="830" y="306" width="5" height="12" class="pin"/><rect x="838" y="306" width="5" height="12" class="pin"/><rect x="846" y="306" width="5" height="12" class="pin"/><rect x="854" y="306" width="5" height="12" class="pin"/><rect x="862" y="306" width="5" height="12" class="pin"/>
+    <text x="875" y="332" text-anchor="end" class="mut xs">← PCIe x4 · 8 GB/s</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>So'rov</span><span>SSD: FTL → NAND</span><span>HDD: kallak</span><span>HDD: aylanish</span><span>O'qish</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: bir xil 4 KB blok ikkala diskdan so'raladi.</div>
   <figcaption><span><b>18-rasm.</b> HDD va SSD tuzilishi</span></figcaption>
 </figure>
 
@@ -227,22 +297,146 @@
 </main>
 
 <script src="../js/site.js"></script>
-<script src="../js/quiz-data.js"></script>
-<script src="../js/quiz.js"></script>
+<script src="../js/board.js"></script>
 <script>
 (function(){
-  const $=KQI.$,reduce=KQI.reduce;
-  const memData=[['Registr','< 1 ns','1 soniya',1],['L1 kesh','~1 ns','3 soniya',3],['RAM','~80 ns','4 daqiqa',240],['SSD','~0.1 ms','3 kun',259200],['HDD','~10 ms','1 yil',31536000]];
-  const mem=$('#mem'),fig=$('#memFig');
-  mem.innerHTML=memData.map(m=>`<div class="r"><span>${m[0]}<br><span class="muted">${m[1]}</span></span><div class="bar"><i></i></div><span class="t"></span></div>`).join('');
-  function play(){
-    mem.querySelectorAll('.r').forEach((r,i)=>{const w=(Math.log10(memData[i][3])+0.3)/7.9*100;r.querySelector('i').style.width='0%';r.querySelector('.t').textContent='';
-      setTimeout(()=>{r.querySelector('i').style.width=w+'%';r.querySelector('.t').textContent=memData[i][2];},reduce?0:i*350);});
+  if(!window.KQIBoard) return;
+  var B=KQIBoard, $=function(s){ return document.querySelector(s); };
+  function fmtNs(ns){ return ns>=1e6?(ns/1e6).toLocaleString('en-US',{maximumFractionDigits:1})+' ms':ns>=1000?(ns/1000).toLocaleString('en-US',{maximumFractionDigits:1})+' µs':ns+' ns'; }
+
+  /* ---------- 16-rasm: ierarxiya chiplari ---------- */
+  var f16=document.getElementById('fig16');
+  if(f16){
+    var s16=f16.querySelector('svg');
+    var P={R:[86,110],L1:[86,170],L2:[86,230],L3:[86,290],IMC:[86,330],IMCo:[284,323],DIMM:[405,300],D2:[405,262],PC1:[160,360],PC2:[160,380],PC3:[595,380],SSDc:[595,209],N1:[556,256],HD1:[220,360],HD2:[220,400],HD3:[795,400],HD4:[795,300]};
+    B.scene(f16,async function(c){
+      var T=430, ns=0;
+      function lat(add,where){ ns+=add; c.text('hlat',fmtNs(ns)); if(where) c.text('hwhere',where); }
+      c.text('hlat','0 ns'); c.text('hwhere','—'); c.text('hpath','so\'rov yo\'li: —'); ['hR','hL1','hL2','hL3'].forEach(function(i){ c.text(i+'t',''); });
+      s16.querySelector('#hArm').style.transform='rotate(0deg)'; s16.querySelector('#hPlat').classList.remove('on');
+      c.step(0,'Dastur <b>0x7F3A2000</b> manzildagi o\'zgaruvchini so\'radi (fayldan yuklangan sahifa). Registr faylida yo\'q — u faqat kompilyator qo\'ygan bir necha qiymatni tutadi. So\'rov pastga tushadi.');
+      c.unit('hR','warn'); c.led('hRm',1); c.text('hpath','so\'rov yo\'li: registr'); await c.delay(900); if(!c.alive()) return;
+      c.step(1,'<b>L1</b> (32 KB): miss, 1 ns. <b>L2</b> (1 MB): miss, +4 ns. <b>L3</b> (32 MB): miss, +40 ns. Uchala SRAM kesh ham bo\'sh — chunki bu sahifa hali umuman o\'qilmagan.');
+      c.lit('hw01'); await c.token('0x7F3A2000','addr',[P.R,P.L1],T); c.unit('hL1','bad'); c.led('hL1m',1); lat(1,'—'); c.text('hpath','so\'rov yo\'li: registr → L1');
+      c.lit('hw12'); await c.token('0x7F3A2000','addr',[P.L1,P.L2],T); c.unit('hL2','bad'); c.led('hL2m',1); lat(4); c.text('hpath','so\'rov yo\'li: registr → L1 → L2');
+      c.lit('hw23'); await c.token('0x7F3A2000','addr',[P.L2,P.L3],T); c.unit('hL3','bad'); c.led('hL3m',1); lat(40); c.text('hpath','so\'rov yo\'li: … → L3'); if(!c.alive()) return;
+      await c.delay(500);
+      c.step(2,'Xotira kontrolleri DDR5 DIMM ga murojaat qiladi (+80 ns). Lekin OT sahifalar jadvali aytadi: bu sahifa hali <b>RAM ga yuklanmagan</b> (sahifa xatosi, page fault) — ma\'lumot diskda.');
+      c.lit(['hw34','hbA']); c.unit('hIMC','on'); await c.token('0x7F3A2000','addr',[P.L3,P.IMC,P.IMCo,[330,316],[405,316],P.DIMM],T*1.8); c.unit('hd3','bad'); c.flash('hd3'); lat(80,'—'); c.text('hpath','so\'rov yo\'li: … → L3 → DRAM'); if(!c.alive()) return;
+      await c.delay(700);
+      c.step(3,'OT so\'rovni <b>PCIe x4</b> orqali NVMe SSD ga yuboradi. Kontroller FTL jadvalidan LBA ni NAND chipidagi blok/sahifaga aylantiradi, 1-chipdan 4 KB sahifa o\'qiladi: ~100 µs = 100 000 ns!');
+      c.lit('hwPcie'); c.unit('hd3',null); await c.token('LBA 4 KB','addr',[P.IMC,[160,340],P.PC1,P.PC2,P.PC3,P.SSDc],T*2.4); c.unit('hSSDc','on'); c.lit('hwNand'); await c.dot('addr',[P.SSDc,[595,240],[556,240],P.N1],T*0.8); c.unit('hn0','on'); c.flash('hn0'); lat(100000,'NVMe SSD, NAND 0'); c.text('hpath','so\'rov yo\'li: … → DRAM → SSD'); if(!c.alive()) return;
+      await c.delay(600);
+      c.step(4,'Ma\'lumot yuqoriga qaytadi va <b>har pog\'onada nusxasi qoladi</b>: 4 KB sahifa DRAM ga, 64 B kesh satri L3 → L2 → L1 ga, 8 baytlik qiymat registrga. Keyingi murojaat endi 1 ns da L1 dan olinadi.');
+      await c.token('4 KB','data',[P.N1,[556,240],[595,240],P.SSDc,P.PC3,P.PC2,P.PC1,[160,340],P.IMC],T*2.4); if(!c.alive()) return;
+      c.lit('hbD'); await c.token('4 KB','data',[P.IMCo,[330,330],[405,330],P.D2],T); c.unit('hd2','on'); c.flash('hd2');
+      await c.token('64 B','data',[P.D2,[405,330],[330,330],P.IMCo,P.IMC,P.L3],T*1.4); c.unit('hL3','on'); c.led('hL3m',0); c.led('hL3h',1); c.cell('hL3c','hi'); c.text('hL3t','0x7F3A2000');
+      await c.token('64 B','data',[P.L3,P.L2],T*0.8); c.unit('hL2','on'); c.led('hL2m',0); c.led('hL2h',1); c.cell('hL2c','hi'); c.text('hL2t','0x7F3A2000');
+      await c.token('64 B','data',[P.L2,P.L1],T*0.8); c.unit('hL1','on'); c.led('hL1m',0); c.led('hL1h',1); c.cell('hL1c','hi'); c.text('hL1t','0x7F3A2000');
+      await c.token('8 B','data',[P.L1,P.R],T*0.8); c.unit('hR','on'); c.led('hRm',0); c.led('hRh',1); c.cell('hRc','hi'); c.text('hRt','qiymat'); c.unlit(); if(!c.alive()) return;
+      await c.delay(900);
+      c.step(5,'Agar fayl <b>HDD</b> da bo\'lganida: kallak kerakli yo\'lga boradi, plastina aylanib sektorni keltiradi — ~10 ms = 10 000 000 ns. SSD dan 100 barobar, L1 dan 10 million barobar sekin.',true);
+      c.lit('hwSata'); s16.querySelector('#hPlat').classList.add('on'); await c.token('LBA','addr',[P.IMC,[220,340],P.HD1,P.HD2,P.HD3,[795,330]],T*2); s16.querySelector('#hArm').style.transform='rotate(14deg)'; await c.delay(900); c.led('hHead',1); c.text('hlat','≈ 10 ms'); c.text('hwhere','HDD (taqqoslash)'); await c.delay(1200); if(!c.alive()) return;
+      s16.querySelector('#hPlat').classList.remove('on'); c.led('hHead',0);
+      c.step(6,'<b>Xulosa.</b> Yuqoriga qarab: tezroq, kichikroq, qimmatroq. Bir bayt uchun registr 1 ns dan kam, SSD 100 000 ns, HDD 10 000 000 ns. Ierarxiya ishlashining siri — lokallik: bir marta yuklangan narsa yaqin orada yana kerak bo\'ladi, va u endi yuqori pog\'onada turadi.');
+    });
   }
-  $('#memBtn').onclick=play;
-  fig.addEventListener('replay',play);
-  new MutationObserver(()=>{if(fig.classList.contains('play')&&!fig.dataset.auto){fig.dataset.auto='1';play();}}).observe(fig,{attributes:true,attributeFilter:['class']});
+
+  /* ---------- registr = 1 soniya ---------- */
+  var fm=document.getElementById('memFig');
+  if(fm){
+    var memData=[['Registr','1 soniya',1,'1 soniya. Protsessor ichida, shu yerda.'],['L1 kesh','3 soniya',3,'3 soniya. Stol ustidagi qog\'ozga qarash kabi.'],['RAM','4 daqiqa',240,'4 daqiqa! Boshqa xonaga borib kelish. Har DRAM murojaatida CPU shuncha "kutadi".'],['SSD','3 kun',259200,'3 kun. Pochta orqali buyurtma.'],['HDD','1 yil',31536000,'1 yil. Shuning uchun OT diskdan o\'qishni kutmaydi, boshqa ish qiladi.']];
+    B.scene(fm,async function(c){
+      var svg=fm.querySelector('svg');
+      for(var i=0;i<5;i++){ svg.querySelector('#hbf'+i).setAttribute('width','0'); c.text('hbt'+i,''); }
+      await c.delay(300);
+      for(var k=0;k<5&&c.alive();k++){
+        var w=(Math.log10(memData[k][2])+0.3)/7.9*560;
+        svg.querySelector('#hbf'+k).setAttribute('width',String(Math.round(w))); c.text('hbt'+k,memData[k][1]);
+        c.narr('<b>'+memData[k][0]+':</b> '+memData[k][3],k>=3);
+        await c.delay(k===4?900:750);
+      }
+      if(!c.alive()) return;
+      c.narr('<b>Xulosa.</b> Registr 1 soniya bo\'lsa HDD 1 yil — 30 million barobar farq. Shuning uchun dastur tezligi ko\'pincha CPU chastotasiga emas, ma\'lumot qaysi pog\'onada turganiga bog\'liq.');
+    });
+    $('#memBtn').onclick=function(){ fm.dispatchEvent(new CustomEvent('replay')); };
+  }
+
+  /* ---------- 17-rasm: DRAM va SRAM yacheykalari ---------- */
+  var f17=document.getElementById('fig17');
+  if(f17){
+    var s17=f17.querySelector('svg'), cap=s17.querySelector('#dCap'), tl=s17.querySelector('#dTime');
+    function setCap(p){ var h=80*p/100; cap.setAttribute('y',String(190-h)); cap.setAttribute('height',String(h)); cap.classList.toggle('warn',p<60&&p>=50); cap.classList.toggle('bad',p<50); s17.querySelector('#dCapT').textContent=Math.round(p)+'%'; }
+    async function leak(c,from,to,ms){
+      var t0=performance.now();
+      while(c.alive()){
+        var f=Math.min(1,(performance.now()-t0)/ms), p=from+(to-from)*f;
+        setCap(p); tl.setAttribute('width',String(Math.round(174*f))); s17.querySelector('#dBitT').textContent=p>=50?'bit = 1':'bit = ? (xato!)';
+        c.led('dBit',p>=50);
+        if(f>=1) break; await c.delay(60);
+      }
+    }
+    B.scene(f17,async function(c){
+      var T=420;
+      setCap(0); tl.setAttribute('width','0'); c.led('dBit',0); c.text('dBitT','bit = 0'); c.led('sQ',1); c.led('sQb',0); c.led('sHold',0);
+      c.step(0,'<b>Yozish.</b> Ko\'k so\'z liniyasi qatorni tanlaydi — tranzistor ochiladi. Yashil bit liniyasidan kelgan kuchlanish kondensatorni zaryadlaydi: zaryad bor = <b>1</b>.');
+      c.lit('dWL'); await c.dot('addr',[[40,90],[160,90],[160,106]],T); c.unit('dGp',null); s17.querySelector('#dGp').classList.add('on');
+      c.lit(['dBL','dSrc','dDrn']); await c.token('1','data',[[120,60],[120,120],[144,120],[176,120],[218,120]],T*1.4); if(!c.alive()) return;
+      setCap(100); c.led('dBit',1); c.text('dBitT','bit = 1'); await c.delay(500); c.unlit(); s17.querySelector('#dGp').classList.remove('on');
+      c.step(1,'<b>Oqish.</b> Tranzistor yopiq, lekin kondensator mitti (~30 femtofarad): zaryad izolyator orqali sekin sizib chiqadi. 50% dan pastga tushsa, o\'qishda 1 o\'rniga 0 chiqadi — ma\'lumot yo\'qoladi.',true);
+      await leak(c,100,40,3200); if(!c.alive()) return;
+      c.step(2,'<b>Yangilash (refresh).</b> Shuning uchun kontroller har <b>64 ms</b> da har qatorni o\'qiydi: sense amp zaif zaryadni kuchaytiradi va yacheykani qayta yozadi. Vaqtida yetib keldi — 40% hali 1 deb o\'qiladi… lekin xavfli chegara yaqin.');
+      c.led('dRef',1,'warn blink'); c.unit('dRefU','warn'); c.lit(['dWL','dBL']); await c.dot('ctl',[[40,90],[160,90],[160,106]],T*0.7); s17.querySelector('#dGp').classList.add('on'); c.unit('dSA','on');
+      await c.dot('data',[[120,250],[120,120],[218,120]],T); setCap(100); c.led('dBit',1); c.text('dBitT','bit = 1'); tl.setAttribute('width','0'); c.led('dRef',0,'warn'); c.unit('dRefU',null); c.unit('dSA',null); c.unlit(); s17.querySelector('#dGp').classList.remove('on'); if(!c.alive()) return;
+      c.narr('<b>Yana 64 ms.</b> Bu jarayon kompyuter yoqiq ekan to\'xtamaydi: 16 GB xotiradagi milliardlab yacheyka sekundiga 15 marta qayta yoziladi. Shuning uchun DRAM "dinamik".');
+      await leak(c,100,55,1600); if(!c.alive()) return;
+      c.led('dRef',1,'warn'); c.lit(['dWL','dBL']); c.unit('dSA','on'); await c.dot('data',[[120,250],[120,120],[218,120]],T*0.7); setCap(100); tl.setAttribute('width','0'); c.led('dRef',0,'warn'); c.unit('dSA',null); c.unlit(); if(!c.alive()) return;
+      c.step(3,'<b>SRAM ushlab turadi.</b> Bu yerda kondensator yo\'q: T1/T2 va T3/T4 — ikki inverter halqa qilib ulangan. Q = 1 bo\'lsa, T3/T4 Q̄ = 0 beradi, Q̄ = 0 esa T1/T2 ni Q = 1 da ushlaydi. Tok bor ekan, holat o\'zi-o\'zini tiklaydi.');
+      c.led('sHold',1); c.unit('sHoldU','on'); c.lit(['sX1','sX2','sVdd']);
+      for(var k=0;k<3&&c.alive();k++){ await Promise.all([c.dot('data',[[610,170],[680,170],[680,150],[738,150]],T),c.dot('ctl',[[750,170],[700,170],[700,192],[622,192]],T)]); c.unit('sT3','on'); c.unit('sT2','on'); await c.delay(120); c.unit('sT3',null); c.unit('sT2',null); }
+      if(!c.alive()) return;
+      c.step(4,'<b>O\'qish.</b> So\'z liniyasi T5 va T6 ni ochadi: Q va Q̄ bit liniyalariga chiqadi, sense amp farqni (1 − 0) darhol aniqlaydi. Yangilash yo\'q, kutish yo\'q — ~1 ns.');
+      c.lit('sWL'); await c.dot('addr',[[480,90],[860,90]],T); c.unit('sT5','on'); c.unit('sT6','on'); c.lit(['sA1','sA2','sBL','sBLb']);
+      await Promise.all([c.token('1','data',[[610,170],[500,170],[500,250]],T),c.token('0','data',[[750,170],[850,170],[850,250]],T)]); if(!c.alive()) return;
+      c.unit('sT5',null); c.unit('sT6',null); c.unlit(); c.lit(['sX1','sX2']);
+      c.step(5,'<b>Xulosa.</b> DRAM: 1 tranzistor + 1 kondensator — zich va arzon, lekin oqadi va yangilashni talab qiladi → asosiy xotira (RAM). SRAM: 6 tranzistor — tez va barqaror, lekin 6 barobar katta va qimmat → protsessor ichidagi kesh.');
+    });
+  }
+
+  /* ---------- 18-rasm: HDD va SSD ---------- */
+  var f18=document.getElementById('fig18');
+  if(f18){
+    var s18=f18.querySelector('svg'), plat=s18.querySelector('#kPlat'), arm=s18.querySelector('#kArm');
+    async function count(c,id,from,to,ms,unit){ var t0=performance.now(); while(c.alive()){ var f=Math.min(1,(performance.now()-t0)/ms); c.text(id,(from+(to-from)*f).toFixed(1)+' '+unit); if(f>=1) break; await c.delay(50); } }
+    B.scene(f18,async function(c){
+      var T=450;
+      plat.classList.add('on'); arm.style.transform='rotate(0deg)';
+      c.text('kHt','0.0 ms'); c.text('kSt','0 µs'); c.text('kCtlT','kutmoqda'); c.text('kMapT','LBA 1048576 → ?'); c.led('kHead',0);
+      c.step(0,'OT ikkala diskdan bir xil narsani so\'raydi: <b>LBA 1 048 576</b> dan 4 KB blok. HDD da plastina allaqachon 7200 ayl/min da aylanib turibdi.');
+      await Promise.all([c.token('LBA 1048576','addr',[[370,20],[370,88]],T),c.token('LBA 1048576','addr',[[572,20],[572,60]],T)]); if(!c.alive()) return;
+      c.unit('kCtl','on'); c.led('kS1',1,'warn blink'); c.text('kCtlT','FTL qidiruvi…');
+      /* HDD boshlaydi: kallak harakati 8 ms (2.4 s) */
+      arm.style.transform='rotate(9deg)';
+      var hdd=(async function(){ await count(c,'kHt',0,8,2400,'ms'); if(!c.alive()) return; c.led('kS1',1,'warn'); c.led('kS2',1,'warn blink'); await count(c,'kHt',8,12,1300,'ms'); if(!c.alive()) return; c.led('kS2',1,'warn'); })();
+      c.step(1,'<b>SSD:</b> kontroller DRAM keshdagi xarita jadvalidan LBA ni topadi → <b>NAND 5, blok 517, sahifa 3</b>. Chip sahifani 8 kanalli shina orqali qaytaradi. Jami ~20 µs — HDD kallagi hali yo\'lda!');
+      c.lit('kCM'); await c.token('LBA','addr',[[662,95],[680,95]],T*0.6); c.unit('kCache','on'); c.text('kMapT','→ NAND 5 · blok 517 · sahifa 3'); await c.token('NAND 5 / 517 / 3','data',[[680,95],[662,95]],T*0.6); c.text('kCtlT','NAND 5 ni o\'qi');
+      c.lit('kBus'); await c.dot('addr',[[572,130],[572,140],[625,140],[625,216]],T); c.unit('kn5','on'); c.flash('kn5'); await c.delay(250);
+      await c.token('4 KB','data',[[625,216],[625,140],[572,140],[572,130]],T); c.text('kSt','20 µs'); c.text('kCtlT','tayyor: 4 KB → PCIe'); c.unit('kCtl','on'); c.unit('kCache',null); c.unlit(); if(!c.alive()) return;
+      await c.delay(400);
+      c.step(2,'<b>HDD:</b> kallak (aktuator) kerakli yo\'lga — 12-silindrga — mexanik siljimoqda. Bu ~8 ms: SSD allaqachon ishini tugatgan.',true);
+      await hdd; if(!c.alive()) return;
+      c.step(3,'<b>HDD:</b> kallak yo\'lda, endi plastina aylanib 7-sektorni kallak ostiga keltirishini kutish kerak — o\'rtacha yarim aylanish, ~4 ms.',true);
+      await c.delay(800); if(!c.alive()) return;
+      c.step(4,'<b>O\'qish.</b> Sektor kallak ostidan o\'tadi, magnit yo\'nalishlar tokka aylanadi — 4 KB SATA orqali ketadi. Jami ~12 ms.');
+      c.led('kHead',1); c.led('kS3',1); c.flash('kSec'); await count(c,'kHt',12,12.1,400,'ms'); c.lit('kSata'); await c.token('4 KB','data',[[330,316],[430,316]],T); if(!c.alive()) return;
+      c.led('kHead',0); c.unlit();
+      c.step(5,'<b>Xulosa.</b> SSD 20 µs, HDD 12 ms — <b>600 barobar</b> farq, chunki HDD da mexanika bor: kallak yuradi, plastina aylanadi. SSD da hamma narsa elektr: xarita → chip → sahifa. Shuning uchun OT yuklanishi va dastur ochilishi SSD da sezilarli tez.');
+      plat.classList.remove('on');
+    });
+  }
 })();
 </script>
+<script src="../js/quiz-data.js"></script>
+<script src="../js/quiz.js"></script>
 </body>
 </html>

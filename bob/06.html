@@ -7,25 +7,9 @@
 <meta name="description" content="Protsessorning qismlari: ALU, CU, registrlar, kesh; takt chastotasi, yadrolar va oqimlar, buyruqlar to'plami (ISA).">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/board.css">
 <style>
-/* 13-rasm: ko'p yadroli protsessor, kesh qidiruvi */
-.cpu4 .probe{transition:transform .55s cubic-bezier(.4,0,.2,1);opacity:0}
-.cpu4 .probe.show{opacity:1}
-.cpu4 .box.miss{stroke:var(--copper);fill:var(--copper-soft)}
-.cpu4 .box.hit{stroke:var(--accent);fill:var(--accent-soft)}
-.cpu4 .box.ask{stroke:var(--blue);fill:var(--blue-soft)}
-.cpu4 .tag{font-weight:600;opacity:0;transition:opacity .3s}
-.cpu4 .tag.show{opacity:1}
-.cpu4 .tag.miss{fill:var(--copper)}
-.cpu4 .tag.hit{fill:var(--accent)}
-/* takt: metronom va to'rtburchak to'lqin */
-.clk .pend{transform-origin:90px 34px;animation:tick .5s ease-in-out infinite alternate}
-@keyframes tick{from{transform:rotate(-26deg)}to{transform:rotate(26deg)}}
-.clk .wavedot{offset-path:path('M230 112 H270 V52 H310 V112 H350 V52 H390 V112 H430 V52 H470 V112 H510 V52 H550 V112 H590');animation:travel 4s linear infinite}
-.clk .edge{animation:edge 1s steps(1) infinite}
-@keyframes edge{0%,49%{fill:var(--line)}50%,100%{fill:var(--copper)}}
-.clk .ffq{animation:ffq 2s steps(1) infinite}
-@keyframes ffq{0%,49%{opacity:1}50%,100%{opacity:.25}}
+/* 6-bob: rasmlar umumiy css/board.css uslubida, sahifaga xos qo'shimcha uslub kerak emas */
 </style>
 </head>
 <body>
@@ -44,74 +28,130 @@
 
 <p><strong>Protsessor</strong> — kompyuterning "miyasi". U xotiradan buyruqlarni birma-bir olib, ularni bajaradi. Tashqi ko'rinishidan u taxminan 4x4 sm o'lchamdagi plastinka bo'lib, pastki qismida yuzlab yoki minglab kontakt (pin) bor. Uning ichida esa kremniy kristali — <strong>die</strong> — joylashgan, unda milliardlab tranzistor bor.</p>
 
-<figure class="fig" id="cpuFig">
-  <div class="controls"><button class="primary" type="button" id="cacheBtn">Kesh qidiruvini ko'rsat</button><span class="small muted">Yadro 1 ma'lumot so'raydi: L1 → L2 → L3 → RAM</span></div>
-  <svg class="sv cpu4" data-replay viewBox="0 0 680 384" role="img" aria-label="Zamonaviy 4 yadroli protsessor: har yadroda ALU, CU, registrlar, L1 va L2 kesh; umumiy L3 kesh; xotira kontrolleri va PCIe">
-    <text x="340" y="18" text-anchor="middle" class="ttl">Zamonaviy 4 yadroli protsessor (soddalashtirilgan)</text>
-    <!-- yadrolar -->
-    <g id="core1">
-      <rect x="20" y="30" width="150" height="166" rx="10" class="box soft" id="c1"/>
-      <text x="95" y="50" text-anchor="middle" class="ttl">Yadro 1</text>
-      <rect x="30" y="60" width="62" height="28" rx="6" class="box on"/><text x="61" y="78" text-anchor="middle" class="lbl">ALU</text>
-      <rect x="98" y="60" width="62" height="28" rx="6" class="box blue"/><text x="129" y="78" text-anchor="middle" class="lbl">CU</text>
-      <rect x="30" y="96" width="130" height="26" rx="6" class="box copper"/><text x="95" y="113" text-anchor="middle" class="lbl">Registrlar</text>
-      <rect x="30" y="130" width="130" height="58" rx="6" class="box"/><text x="95" y="146" text-anchor="middle" class="lbl">L1 + L2 kesh</text>
-      <rect x="36" y="154" width="56" height="26" rx="5" class="box" id="c1L1"/><text x="64" y="171" text-anchor="middle" class="lbl">L1</text>
-      <rect x="98" y="154" width="56" height="26" rx="5" class="box" id="c1L2"/><text x="126" y="171" text-anchor="middle" class="lbl">L2</text>
+<figure class="fig" id="fig13">
+  <div class="board-wrap">
+  <svg class="board" data-replay viewBox="0 0 900 560" role="img" aria-label="Zamonaviy 4 yadroli protsessor kristali: har yadroda ALU, CU, registrlar, L1 va L2 kesh; umumiy L3 kesh; xotira kontrolleri va DDR5 DIMM. Kesh qidiruvi L1 → L2 → L3 → DRAM va orqaga">
+    <defs><pattern id="g13" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="560" fill="url(#g13)"/>
+    <!-- kristall -->
+    <rect x="20" y="20" width="620" height="400" rx="16" class="die"/>
+    <text x="36" y="42" class="ttl">CPU · 4 yadro · kristall (die)</text>
+    <text x="624" y="42" text-anchor="end" class="mut xs">4.0 GHz · 1 takt = 0.25 ns</text>
+    <g id="coreG0">
+      <rect x="36" y="56" width="140" height="204" rx="8" class="unit" id="core1"/>
+      <text x="44" y="74" class="ttl">Yadro 1</text>
+      <rect x="44" y="82" width="60" height="22" rx="4" class="unit" id="alu0"/><text x="74" y="97" text-anchor="middle">ALU</text>
+      <rect x="108" y="82" width="60" height="22" rx="4" class="unit" id="cu0"/><text x="138" y="97" text-anchor="middle">CU</text>
+      <rect x="44" y="110" width="124" height="22" rx="4" class="unit" id="reg0"/><text x="106" y="125" text-anchor="middle">Registrlar 16×64 bit</text>
+      <rect x="44" y="138" width="124" height="52" rx="4" class="unit" id="L1_0"/>
+      <text x="50" y="152" class="ttl">L1 · 32 KB</text><text x="50" y="164" class="mut xs">~1 ns · 4 takt</text>
+      <rect x="50" y="170" width="60" height="14" rx="3" class="cell" id="L1c0"/><text x="80" y="180" text-anchor="middle" class="xs" id="L1t0"></text>
+      <text x="148" y="156" text-anchor="end" class="mut xs">hit</text><circle cx="158" cy="152" r="4.5" class="led" id="L1h0"/>
+      <text x="148" y="178" text-anchor="end" class="mut xs">miss</text><circle cx="158" cy="174" r="4.5" class="led bad" id="L1m0"/>
+      <rect x="44" y="196" width="124" height="52" rx="4" class="unit" id="L2_0"/>
+      <text x="50" y="210" class="ttl">L2 · 1 MB</text><text x="50" y="222" class="mut xs">~4 ns · 16 takt</text>
+      <rect x="50" y="228" width="60" height="14" rx="3" class="cell" id="L2c0"/><text x="80" y="238" text-anchor="middle" class="xs" id="L2t0"></text>
+      <text x="148" y="214" text-anchor="end" class="mut xs">hit</text><circle cx="158" cy="210" r="4.5" class="led" id="L2h0"/>
+      <text x="148" y="236" text-anchor="end" class="mut xs">miss</text><circle cx="158" cy="232" r="4.5" class="led bad" id="L2m0"/>
     </g>
-    <g id="core2">
-      <rect x="182" y="30" width="150" height="166" rx="10" class="box soft"/>
-      <text x="257" y="50" text-anchor="middle" class="ttl">Yadro 2</text>
-      <rect x="192" y="60" width="62" height="28" rx="6" class="box on"/><text x="223" y="78" text-anchor="middle" class="lbl">ALU</text>
-      <rect x="260" y="60" width="62" height="28" rx="6" class="box blue"/><text x="291" y="78" text-anchor="middle" class="lbl">CU</text>
-      <rect x="192" y="96" width="130" height="26" rx="6" class="box copper"/><text x="257" y="113" text-anchor="middle" class="lbl">Registrlar</text>
-      <rect x="192" y="130" width="130" height="58" rx="6" class="box"/><text x="257" y="146" text-anchor="middle" class="lbl">L1 + L2 kesh</text>
-      <rect x="198" y="154" width="56" height="26" rx="5" class="box"/><text x="226" y="171" text-anchor="middle" class="lbl">L1</text>
-      <rect x="260" y="154" width="56" height="26" rx="5" class="box"/><text x="288" y="171" text-anchor="middle" class="lbl">L2</text>
+    <g id="coreG1">
+      <rect x="186" y="56" width="140" height="204" rx="8" class="unit" id="core2"/>
+      <text x="194" y="74" class="ttl">Yadro 2</text>
+      <rect x="194" y="82" width="60" height="22" rx="4" class="unit" id="alu1"/><text x="224" y="97" text-anchor="middle">ALU</text>
+      <rect x="258" y="82" width="60" height="22" rx="4" class="unit" id="cu1"/><text x="288" y="97" text-anchor="middle">CU</text>
+      <rect x="194" y="110" width="124" height="22" rx="4" class="unit" id="reg1"/><text x="256" y="125" text-anchor="middle">Registrlar 16×64 bit</text>
+      <rect x="194" y="138" width="124" height="52" rx="4" class="unit" id="L1_1"/>
+      <text x="200" y="152" class="ttl">L1 · 32 KB</text><text x="200" y="164" class="mut xs">~1 ns · 4 takt</text>
+      <rect x="200" y="170" width="60" height="14" rx="3" class="cell" id="L1c1"/><text x="230" y="180" text-anchor="middle" class="xs" id="L1t1"></text>
+      <text x="298" y="156" text-anchor="end" class="mut xs">hit</text><circle cx="308" cy="152" r="4.5" class="led" id="L1h1"/>
+      <text x="298" y="178" text-anchor="end" class="mut xs">miss</text><circle cx="308" cy="174" r="4.5" class="led bad" id="L1m1"/>
+      <rect x="194" y="196" width="124" height="52" rx="4" class="unit" id="L2_1"/>
+      <text x="200" y="210" class="ttl">L2 · 1 MB</text><text x="200" y="222" class="mut xs">~4 ns · 16 takt</text>
+      <rect x="200" y="228" width="60" height="14" rx="3" class="cell" id="L2c1"/><text x="230" y="238" text-anchor="middle" class="xs" id="L2t1"></text>
+      <text x="298" y="214" text-anchor="end" class="mut xs">hit</text><circle cx="308" cy="210" r="4.5" class="led" id="L2h1"/>
+      <text x="298" y="236" text-anchor="end" class="mut xs">miss</text><circle cx="308" cy="232" r="4.5" class="led bad" id="L2m1"/>
     </g>
-    <g id="core3">
-      <rect x="344" y="30" width="150" height="166" rx="10" class="box soft"/>
-      <text x="419" y="50" text-anchor="middle" class="ttl">Yadro 3</text>
-      <rect x="354" y="60" width="62" height="28" rx="6" class="box on"/><text x="385" y="78" text-anchor="middle" class="lbl">ALU</text>
-      <rect x="422" y="60" width="62" height="28" rx="6" class="box blue"/><text x="453" y="78" text-anchor="middle" class="lbl">CU</text>
-      <rect x="354" y="96" width="130" height="26" rx="6" class="box copper"/><text x="419" y="113" text-anchor="middle" class="lbl">Registrlar</text>
-      <rect x="354" y="130" width="130" height="58" rx="6" class="box"/><text x="419" y="146" text-anchor="middle" class="lbl">L1 + L2 kesh</text>
-      <rect x="360" y="154" width="56" height="26" rx="5" class="box"/><text x="388" y="171" text-anchor="middle" class="lbl">L1</text>
-      <rect x="422" y="154" width="56" height="26" rx="5" class="box"/><text x="450" y="171" text-anchor="middle" class="lbl">L2</text>
+    <g id="coreG2">
+      <rect x="336" y="56" width="140" height="204" rx="8" class="unit" id="core3"/>
+      <text x="344" y="74" class="ttl">Yadro 3</text>
+      <rect x="344" y="82" width="60" height="22" rx="4" class="unit" id="alu2"/><text x="374" y="97" text-anchor="middle">ALU</text>
+      <rect x="408" y="82" width="60" height="22" rx="4" class="unit" id="cu2"/><text x="438" y="97" text-anchor="middle">CU</text>
+      <rect x="344" y="110" width="124" height="22" rx="4" class="unit" id="reg2"/><text x="406" y="125" text-anchor="middle">Registrlar 16×64 bit</text>
+      <rect x="344" y="138" width="124" height="52" rx="4" class="unit" id="L1_2"/>
+      <text x="350" y="152" class="ttl">L1 · 32 KB</text><text x="350" y="164" class="mut xs">~1 ns · 4 takt</text>
+      <rect x="350" y="170" width="60" height="14" rx="3" class="cell" id="L1c2"/><text x="380" y="180" text-anchor="middle" class="xs" id="L1t2"></text>
+      <text x="448" y="156" text-anchor="end" class="mut xs">hit</text><circle cx="458" cy="152" r="4.5" class="led" id="L1h2"/>
+      <text x="448" y="178" text-anchor="end" class="mut xs">miss</text><circle cx="458" cy="174" r="4.5" class="led bad" id="L1m2"/>
+      <rect x="344" y="196" width="124" height="52" rx="4" class="unit" id="L2_2"/>
+      <text x="350" y="210" class="ttl">L2 · 1 MB</text><text x="350" y="222" class="mut xs">~4 ns · 16 takt</text>
+      <rect x="350" y="228" width="60" height="14" rx="3" class="cell" id="L2c2"/><text x="380" y="238" text-anchor="middle" class="xs" id="L2t2"></text>
+      <text x="448" y="214" text-anchor="end" class="mut xs">hit</text><circle cx="458" cy="210" r="4.5" class="led" id="L2h2"/>
+      <text x="448" y="236" text-anchor="end" class="mut xs">miss</text><circle cx="458" cy="232" r="4.5" class="led bad" id="L2m2"/>
     </g>
-    <g id="core4">
-      <rect x="506" y="30" width="150" height="166" rx="10" class="box soft"/>
-      <text x="581" y="50" text-anchor="middle" class="ttl">Yadro 4</text>
-      <rect x="516" y="60" width="62" height="28" rx="6" class="box on"/><text x="547" y="78" text-anchor="middle" class="lbl">ALU</text>
-      <rect x="584" y="60" width="62" height="28" rx="6" class="box blue"/><text x="615" y="78" text-anchor="middle" class="lbl">CU</text>
-      <rect x="516" y="96" width="130" height="26" rx="6" class="box copper"/><text x="581" y="113" text-anchor="middle" class="lbl">Registrlar</text>
-      <rect x="516" y="130" width="130" height="58" rx="6" class="box"/><text x="581" y="146" text-anchor="middle" class="lbl">L1 + L2 kesh</text>
-      <rect x="522" y="154" width="56" height="26" rx="5" class="box"/><text x="550" y="171" text-anchor="middle" class="lbl">L1</text>
-      <rect x="584" y="154" width="56" height="26" rx="5" class="box"/><text x="612" y="171" text-anchor="middle" class="lbl">L2</text>
+    <g id="coreG3">
+      <rect x="486" y="56" width="140" height="204" rx="8" class="unit" id="core4"/>
+      <text x="494" y="74" class="ttl">Yadro 4</text>
+      <rect x="494" y="82" width="60" height="22" rx="4" class="unit" id="alu3"/><text x="524" y="97" text-anchor="middle">ALU</text>
+      <rect x="558" y="82" width="60" height="22" rx="4" class="unit" id="cu3"/><text x="588" y="97" text-anchor="middle">CU</text>
+      <rect x="494" y="110" width="124" height="22" rx="4" class="unit" id="reg3"/><text x="556" y="125" text-anchor="middle">Registrlar 16×64 bit</text>
+      <rect x="494" y="138" width="124" height="52" rx="4" class="unit" id="L1_3"/>
+      <text x="500" y="152" class="ttl">L1 · 32 KB</text><text x="500" y="164" class="mut xs">~1 ns · 4 takt</text>
+      <rect x="500" y="170" width="60" height="14" rx="3" class="cell" id="L1c3"/><text x="530" y="180" text-anchor="middle" class="xs" id="L1t3"></text>
+      <text x="598" y="156" text-anchor="end" class="mut xs">hit</text><circle cx="608" cy="152" r="4.5" class="led" id="L1h3"/>
+      <text x="598" y="178" text-anchor="end" class="mut xs">miss</text><circle cx="608" cy="174" r="4.5" class="led bad" id="L1m3"/>
+      <rect x="494" y="196" width="124" height="52" rx="4" class="unit" id="L2_3"/>
+      <text x="500" y="210" class="ttl">L2 · 1 MB</text><text x="500" y="222" class="mut xs">~4 ns · 16 takt</text>
+      <rect x="500" y="228" width="60" height="14" rx="3" class="cell" id="L2c3"/><text x="530" y="238" text-anchor="middle" class="xs" id="L2t3"></text>
+      <text x="598" y="214" text-anchor="end" class="mut xs">hit</text><circle cx="608" cy="210" r="4.5" class="led" id="L2h3"/>
+      <text x="598" y="236" text-anchor="end" class="mut xs">miss</text><circle cx="608" cy="232" r="4.5" class="led bad" id="L2m3"/>
     </g>
+    <!-- yadro → L3 simlari -->
+    <path class="wire w-data" id="cw0" d="M106 260 V278"/><path class="wire w-data" id="cw1" d="M256 260 V278"/><path class="wire w-data" id="cw2" d="M406 260 V278"/><path class="wire w-data" id="cw3" d="M556 260 V278"/>
     <!-- L3 -->
-    <line x1="95" y1="196" x2="95" y2="212" class="wire thin"/><line x1="257" y1="196" x2="257" y2="212" class="wire thin"/><line x1="419" y1="196" x2="419" y2="212" class="wire thin"/><line x1="581" y1="196" x2="581" y2="212" class="wire thin"/>
-    <rect x="20" y="212" width="636" height="40" rx="8" class="box" id="L3"/>
-    <text x="338" y="237" text-anchor="middle" class="ttl">L3 kesh (umumiy, 8-64 MB)</text>
+    <rect x="36" y="278" width="588" height="60" rx="8" class="unit" id="L3"/>
+    <text x="48" y="296" class="ttl">L3 kesh · barcha yadrolar uchun umumiy · 32 MB</text>
+    <text x="440" y="296" class="mut xs">~40 ns · 160 takt</text>
+    <circle cx="560" cy="292" r="4.5" class="led" id="L3h"/><circle cx="600" cy="292" r="4.5" class="led bad" id="L3m"/>
+    <text x="560" y="307" text-anchor="middle" class="mut xs">hit</text><text x="600" y="307" text-anchor="middle" class="mut xs">miss</text>
+    <rect x="48" y="316" width="52" height="16" rx="3" class="cell" id="L3c0"/><text x="74" y="327" text-anchor="middle" class="xs" id="L3t0"></text><rect x="105" y="316" width="52" height="16" rx="3" class="cell" id="L3c1"/><text x="131" y="327" text-anchor="middle" class="xs" id="L3t1"></text><rect x="162" y="316" width="52" height="16" rx="3" class="cell" id="L3c2"/><text x="188" y="327" text-anchor="middle" class="xs" id="L3t2"></text><rect x="219" y="316" width="52" height="16" rx="3" class="cell" id="L3c3"/><text x="245" y="327" text-anchor="middle" class="xs" id="L3t3"></text><rect x="276" y="316" width="52" height="16" rx="3" class="cell" id="L3c4"/><text x="302" y="327" text-anchor="middle" class="xs" id="L3t4"></text><rect x="333" y="316" width="52" height="16" rx="3" class="cell" id="L3c5"/><text x="359" y="327" text-anchor="middle" class="xs" id="L3t5"></text><rect x="390" y="316" width="52" height="16" rx="3" class="cell" id="L3c6"/><text x="416" y="327" text-anchor="middle" class="xs" id="L3t6"></text><rect x="447" y="316" width="52" height="16" rx="3" class="cell" id="L3c7"/><text x="473" y="327" text-anchor="middle" class="xs" id="L3t7"></text><rect x="504" y="316" width="52" height="16" rx="3" class="cell" id="L3c8"/><text x="530" y="327" text-anchor="middle" class="xs" id="L3t8"></text><rect x="561" y="316" width="52" height="16" rx="3" class="cell" id="L3c9"/><text x="587" y="327" text-anchor="middle" class="xs" id="L3t9"></text>
     <!-- kontrollerlar -->
-    <line x1="175" y1="252" x2="175" y2="272" class="wire thin"/><line x1="501" y1="252" x2="501" y2="272" class="wire thin"/>
-    <rect x="20" y="272" width="310" height="40" rx="8" class="box" id="MC"/>
-    <text x="175" y="297" text-anchor="middle" class="ttl">Xotira kontrolleri → RAM</text>
-    <rect x="346" y="272" width="310" height="40" rx="8" class="box"/>
-    <text x="501" y="297" text-anchor="middle" class="ttl">PCIe → GPU, SSD</text>
-    <!-- RAM (chip tashqarisida) -->
-    <line x1="175" y1="312" x2="175" y2="336" class="wire"/>
-    <rect x="20" y="336" width="310" height="40" rx="8" class="box soft" id="RAM"/>
-    <text x="175" y="361" text-anchor="middle" class="ttl">RAM (protsessor tashqarisida)</text>
-    <!-- teglar -->
-    <text x="64" y="193" text-anchor="middle" class="tag" id="tL1">–</text>
-    <text x="126" y="193" text-anchor="middle" class="tag" id="tL2">–</text>
-    <text x="600" y="237" text-anchor="middle" class="tag" id="tL3">–</text>
-    <text x="305" y="361" text-anchor="middle" class="tag" id="tRAM">–</text>
-    <!-- so'rov nuqtasi -->
-    <g class="probe" id="probe"><circle r="8" class="dot blue"/><text y="4" text-anchor="middle" style="fill:var(--surface);font-size:9px;font-weight:700">?</text></g>
+    <path class="wire w-data" id="wL3imc" d="M482 338 V356"/>
+    <rect x="36" y="356" width="290" height="50" rx="8" class="unit" id="PCIE"/>
+    <text x="48" y="374" class="ttl">PCIe 5.0 kontrolleri</text><text x="48" y="392" class="mut xs">x16 → GPU · x4 → NVMe SSD</text>
+    <rect x="340" y="356" width="284" height="50" rx="8" class="unit" id="IMC"/>
+    <text x="352" y="374" class="ttl">Xotira kontrolleri (IMC)</text><text x="352" y="392" class="mut xs">DDR5 · 2 kanal · 64 bit · ~80 ns</text>
+    <!-- tashqi shinalar -->
+    <path class="wire w-addr bus" id="bAddr" d="M624 372 H680"/>
+    <path class="wire w-data bus" id="bData" d="M624 384 H680"/>
+    <path class="wire w-ctl" id="bCtl" d="M624 396 H680"/>
+    <!-- DIMM -->
+    <rect x="680" y="56" width="200" height="364" rx="8" class="chip" id="DIMM"/>
+    <text x="692" y="76" class="ttl">DDR5 DIMM · 16 GB</text><text x="692" y="90" class="mut xs">4800 MT/s · CPU tashqarisida</text>
+    <path class="wire w-data" id="wDimm" d="M680 384 H734 V328"/>
+    <rect x="692" y="100" width="84" height="48" rx="4" class="unit" id="dr0"/><text x="734" y="120" text-anchor="middle" class="ttl">DRAM</text><text x="734" y="136" text-anchor="middle" class="mut xs">2 GB · 0</text><rect x="788" y="100" width="84" height="48" rx="4" class="unit" id="dr1"/><text x="830" y="120" text-anchor="middle" class="ttl">DRAM</text><text x="830" y="136" text-anchor="middle" class="mut xs">2 GB · 1</text><rect x="692" y="160" width="84" height="48" rx="4" class="unit" id="dr2"/><text x="734" y="180" text-anchor="middle" class="ttl">DRAM</text><text x="734" y="196" text-anchor="middle" class="mut xs">2 GB · 2</text><rect x="788" y="160" width="84" height="48" rx="4" class="unit" id="dr3"/><text x="830" y="180" text-anchor="middle" class="ttl">DRAM</text><text x="830" y="196" text-anchor="middle" class="mut xs">2 GB · 3</text><rect x="692" y="220" width="84" height="48" rx="4" class="unit" id="dr4"/><text x="734" y="240" text-anchor="middle" class="ttl">DRAM</text><text x="734" y="256" text-anchor="middle" class="mut xs">2 GB · 4</text><rect x="788" y="220" width="84" height="48" rx="4" class="unit" id="dr5"/><text x="830" y="240" text-anchor="middle" class="ttl">DRAM</text><text x="830" y="256" text-anchor="middle" class="mut xs">2 GB · 5</text><rect x="692" y="280" width="84" height="48" rx="4" class="unit" id="dr6"/><text x="734" y="300" text-anchor="middle" class="ttl">DRAM</text><text x="734" y="316" text-anchor="middle" class="mut xs">2 GB · 6</text><rect x="788" y="280" width="84" height="48" rx="4" class="unit" id="dr7"/><text x="830" y="300" text-anchor="middle" class="ttl">DRAM</text><text x="830" y="316" text-anchor="middle" class="mut xs">2 GB · 7</text>
+    <rect x="692" y="404" width="5" height="12" class="pin"/><rect x="700" y="404" width="5" height="12" class="pin"/><rect x="708" y="404" width="5" height="12" class="pin"/><rect x="716" y="404" width="5" height="12" class="pin"/><rect x="724" y="404" width="5" height="12" class="pin"/><rect x="732" y="404" width="5" height="12" class="pin"/><rect x="740" y="404" width="5" height="12" class="pin"/><rect x="748" y="404" width="5" height="12" class="pin"/><rect x="756" y="404" width="5" height="12" class="pin"/><rect x="764" y="404" width="5" height="12" class="pin"/><rect x="772" y="404" width="5" height="12" class="pin"/><rect x="780" y="404" width="5" height="12" class="pin"/><rect x="788" y="404" width="5" height="12" class="pin"/><rect x="796" y="404" width="5" height="12" class="pin"/><rect x="804" y="404" width="5" height="12" class="pin"/><rect x="812" y="404" width="5" height="12" class="pin"/><rect x="820" y="404" width="5" height="12" class="pin"/><rect x="828" y="404" width="5" height="12" class="pin"/><rect x="836" y="404" width="5" height="12" class="pin"/><rect x="844" y="404" width="5" height="12" class="pin"/><rect x="852" y="404" width="5" height="12" class="pin"/><rect x="860" y="404" width="5" height="12" class="pin"/><rect x="868" y="404" width="5" height="12" class="pin"/>
+    <!-- pastki panel -->
+    <rect x="20" y="436" width="300" height="104" rx="8" class="unit"/>
+    <text x="32" y="454" class="ttl">Kechikish hisoblagichi</text>
+    <rect x="32" y="462" width="276" height="40" rx="4" class="lcd"/>
+    <text x="44" y="488" class="lcdtxt" id="lat">0 ns</text><text x="296" y="488" text-anchor="end" class="lcdtxt" id="latTakt">0 takt</text>
+    <text x="32" y="524" class="mut xs">L1 1 · L2 4 · L3 40 · DRAM 80 ns (1 ns = 4 takt)</text>
+    <rect x="340" y="436" width="284" height="104" rx="8" class="unit"/>
+    <text x="352" y="454" class="ttl">So'rovlar statistikasi</text>
+    <text x="352" y="478" class="mut">so'rovlar: <tspan class="val" id="stReq" style="fill:var(--b-ink)">0</tspan></text>
+    <text x="352" y="498" class="mut">hit: <tspan class="val" id="stHit" style="fill:var(--b-data)">0</tspan>   miss: <tspan class="val" id="stMiss" style="fill:var(--b-warn)">0</tspan></text>
+    <text x="352" y="518" class="mut">topildi: <tspan id="stWhere" style="fill:var(--b-ink)">—</tspan></text>
+    <rect x="680" y="436" width="200" height="104" rx="8" class="unit"/>
+    <text x="692" y="454" class="ttl">Shinalar</text>
+    <line x1="692" y1="474" x2="716" y2="474" class="wire w-addr" style="opacity:1"/><text x="724" y="478">manzil (qayerga?)</text>
+    <line x1="692" y1="494" x2="716" y2="494" class="wire w-data" style="opacity:1"/><text x="724" y="498">ma'lumot (nima?)</text>
+    <line x1="692" y1="514" x2="716" y2="514" class="wire w-ctl" style="opacity:1"/><text x="724" y="518">boshqaruv (o'qi/yoz)</text>
+    <g class="tokens"></g>
   </svg>
-  <div class="out" id="cacheOut">Tugmani bosing: protsessor kerakli ma'lumotni qidiradi.</div>
+  </div>
+  <div class="board-ctl"><button type="button" class="primary" id="f13run">Boshla</button><span class="small muted">Yadro 1 ma'lumot so'raydi: L1 → L2 → L3 → DRAM va orqaga; keyin yana shu manzil — kesh hit.</span></div>
+  <div class="board-steps"><span>So'rov</span><span>L1</span><span>L2</span><span>L3</span><span>DRAM</span><span>Nusxa</span><span>Hit</span><span>Xulosa</span></div>
+  <div class="board-narr">"Boshla" tugmasini bosing yoki pastga suring: sahna o'zi boshlanadi.</div>
   <figcaption><span><b>13-rasm.</b> Zamonaviy ko'p yadroli protsessorning ichki tuzilishi</span></figcaption>
 </figure>
 
@@ -124,25 +164,55 @@
 <h2 id="6-2">6.2. Takt chastotasi</h2>
 <p>Protsessordagi barcha jarayonlar <strong>takt generatori</strong> (clock) tomonidan sinxronlashtiriladi. U kvars kristali asosida doimiy chastotada impulslar hosil qiladi — xuddi orkestrdagi metronom kabi. Har bir impulsda flip-floplar yangi qiymatlarni eslab qoladi va sxema bir qadam oldinga siljiydi. 4 GHz chastota — sekundiga 4 milliard takt, ya'ni bitta takt 0.25 nanosekund davom etadi. Bu vaqt ichida yorug'lik atigi 7.5 sm masofani bosib o'tadi!</p>
 
-<figure class="fig">
-  <svg class="sv clk" data-replay viewBox="0 0 640 160" role="img" aria-label="Takt generatori: metronom kabi tebranish va to'rtburchak impulslar; har ko'tarilish chetida flip-flop yangi qiymatni eslab qoladi">
-    <!-- metronom -->
-    <path d="M55 130 L125 130 L110 40 L70 40 Z" class="box soft"/>
-    <g class="pend"><line x1="90" y1="34" x2="90" y2="118" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/><circle cx="90" cy="60" r="7" class="dot copper"/></g>
-    <circle cx="90" cy="34" r="3" fill="var(--ink)"/>
-    <text x="90" y="150" text-anchor="middle" class="lbl">takt generatori</text>
-    <text x="90" y="26" text-anchor="middle">kvars kristali</text>
-    <!-- to'lqin -->
-    <path d="M230 112 H270 V52 H310 V112 H350 V52 H390 V112 H430 V52 H470 V112 H510 V52 H550 V112 H590" class="wire" style="stroke:var(--accent);stroke-width:2.5"/>
-    <circle class="wavedot dot" r="6"/>
-    <circle cx="270" cy="52" r="4" class="edge"/><circle cx="350" cy="52" r="4" class="edge"/><circle cx="430" cy="52" r="4" class="edge"/><circle cx="510" cy="52" r="4" class="edge"/>
-    <text x="215" y="56" text-anchor="end">1</text><text x="215" y="116" text-anchor="end">0</text>
-    <path d="M270 34 V28 H350 V34" fill="none" stroke="var(--muted)" stroke-width="1"/>
-    <text x="310" y="24" text-anchor="middle" class="lbl">1 takt = 0.25 ns (4 GHz)</text>
-    <text x="400" y="140" text-anchor="middle">↑ ko'tarilish chetida flip-floplar yangi qiymatni eslab qoladi</text>
-    <text x="560" y="24" text-anchor="middle">4 GHz = sekundiga 4 mlrd takt</text>
-    <text x="560" y="40" text-anchor="middle">1 taktda yorug'lik 7.5 sm yuradi</text>
+<figure class="fig" id="figClk">
+  <div class="board-wrap">
+  <svg class="board" data-replay viewBox="0 0 900 300" role="img" aria-label="Takt generatori: kvars kristali 100 MHz, PLL uni 4 GHz ga ko'paytiradi, ossillogrammada to'rtburchak impulslar; har ko'tarilish chetida D-flip-flop yangi qiymatni eslab qoladi">
+    <defs><pattern id="gclk" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" class="grid"/></pattern></defs>
+    <rect x="0" y="0" width="900" height="300" fill="url(#gclk)"/>
+    <!-- kvars -->
+    <rect x="30" y="40" width="170" height="90" rx="8" class="unit" id="uX"/>
+    <text x="42" y="58" class="ttl">Kvars kristali</text>
+    <circle cx="184" cy="54" r="5" class="led blue" id="lX"/>
+    <path class="wire w-ctl" d="M52 88 H72 M104 88 H118" style="stroke-dasharray:none"/>
+    <line x1="72" y1="72" x2="72" y2="104" class="wire" style="stroke:var(--b-ink);stroke-width:2.5"/><line x1="104" y1="72" x2="104" y2="104" class="wire" style="stroke:var(--b-ink);stroke-width:2.5"/>
+    <rect x="80" y="74" width="16" height="28" rx="2" class="unit" id="xtal"/>
+    <text x="154" y="92" text-anchor="middle" class="val">100 MHz</text>
+    <text x="42" y="122" class="mut xs">BCLK · ona platada</text>
+    <path class="wire w-ctl" id="w1" d="M200 85 H240"/>
+    <!-- PLL -->
+    <rect x="240" y="40" width="150" height="90" rx="8" class="unit" id="uPLL"/>
+    <text x="252" y="58" class="ttl">PLL · ×40</text>
+    <text x="315" y="96" text-anchor="middle" class="big" id="ghz">4.0 GHz</text>
+    <text x="252" y="122" class="mut xs">1 takt = 0.25 ns</text>
+    <path class="wire w-ctl" id="w2" d="M390 85 H430"/>
+    <!-- flip-flop -->
+    <rect x="430" y="40" width="200" height="90" rx="8" class="unit" id="uFF"/>
+    <text x="442" y="58" class="ttl">D-flip-flop (registr biti)</text>
+    <text x="442" y="90" class="mut">D</text><circle cx="466" cy="86" r="5.5" class="led blue" id="lD"/><text x="480" y="90" class="val" id="vD">1</text>
+    <text x="442" y="114" class="mut xs">▲ CLK</text><circle cx="486" cy="110" r="4.5" class="led warn" id="lClk"/>
+    <path class="wire w-data" d="M500 86 H556" id="wDQ"/>
+    <text x="568" y="90" class="mut">Q</text><circle cx="592" cy="86" r="5.5" class="led" id="lQ"/><text x="606" y="90" class="val" id="vQ">0</text>
+    <text x="510" y="122" class="mut xs" id="ffTxt">chetni kutmoqda</text>
+    <!-- hisobchi -->
+    <rect x="660" y="40" width="210" height="90" rx="8" class="unit" id="uCnt"/>
+    <text x="672" y="58" class="ttl">Hisobchi</text>
+    <rect x="672" y="66" width="186" height="52" rx="4" class="lcd"/>
+    <text x="682" y="86" class="lcdtxt" id="cTakt">takt: 0</text>
+    <text x="682" y="108" class="lcdtxt" id="cTime">vaqt: 0.00 ns</text>
+    <!-- ossillogramma -->
+    <rect x="30" y="150" width="840" height="130" rx="6" class="screen"/>
+    <text x="44" y="176" class="scr dim" style="font-size:11px">1</text><text x="44" y="244" class="scr dim" style="font-size:11px">0</text>
+    <line x1="58" y1="172" x2="860" y2="172" class="wire" style="stroke:#1E3A2C;stroke-dasharray:3 5"/>
+    <line x1="58" y1="240" x2="860" y2="240" class="wire" style="stroke:#1E3A2C;stroke-dasharray:3 5"/>
+    <path id="wave" class="wave" d="M70 240" style="transition:stroke-dashoffset .3s linear"/>
+    <g id="edges"></g>
+    <path d="M102 168 V163 H166 V168" class="wire" style="stroke:var(--b-ctl);stroke-width:1"/><text x="134" y="160" text-anchor="middle" class="xs label-warn">T = 0.25 ns</text>
+    <text x="860" y="272" text-anchor="end" class="mut xs">↑ ko'tarilish chetlari: flip-floplar aynan shu paytda yangi qiymatni eslab qoladi</text>
+    <g class="tokens"></g>
   </svg>
+  </div>
+  <div class="board-steps"><span>Kristal</span><span>PLL</span><span>Ko'tarilish cheti</span><span>Xulosa</span></div>
+  <div class="board-narr">Pastga suring: takt generatori ishga tushadi.</div>
   <figcaption><span><b>Takt generatori.</b> Metronom kabi doimiy chastotada impuls beradi; sxema har impulsda bir qadam oldinga siljiydi.</span></figcaption>
 </figure>
 
@@ -182,48 +252,95 @@
 </main>
 
 <script src="../js/site.js"></script>
-<script src="../js/quiz-data.js"></script>
-<script src="../js/quiz.js"></script>
+<script src="../js/board.js"></script>
 <script>
 (function(){
-  const $=KQI.$;
-  const fig=$('#cpuFig'),out=$('#cacheOut'),probe=$('#probe');
-  const boxes={c1:$('#c1'),L1:$('#c1L1'),L2:$('#c1L2'),L3:$('#L3'),MC:$('#MC'),RAM:$('#RAM')};
-  const tags={L1:$('#tL1'),L2:$('#tL2'),L3:$('#tL3'),RAM:$('#tRAM')};
-  const pos={core:[95,78],L1:[64,167],L2:[126,167],L3:[338,232],MC:[175,292],RAM:[175,356]};
-  let timers=[],running=false;
-  const move=k=>{probe.style.transform='translate('+pos[k][0]+'px,'+pos[k][1]+'px)';};
-  const set=(k,cls)=>{boxes[k].classList.remove('miss','hit','ask');if(cls)boxes[k].classList.add(cls);};
-  const tag=(k,txt,cls)=>{const t=tags[k];t.textContent=txt;t.classList.remove('miss','hit','show');if(txt){t.classList.add(cls,'show');}};
-  function reset(){
-    timers.forEach(clearTimeout);timers=[];running=false;
-    Object.keys(boxes).forEach(k=>set(k,null));Object.keys(tags).forEach(k=>tag(k,'',''));
-    probe.classList.remove('show');move('core');
-    out.textContent='Tugmani bosing: protsessor kerakli ma\'lumotni qidiradi.';
+  if(!window.KQIBoard) return;
+  var B=KQIBoard;
+  /* ---------- 13-rasm: kesh qidiruvi ---------- */
+  var fig=document.getElementById('fig13');
+  if(fig){
+    var P={reg:[106,121],L1:[106,164],L2:[106,222],L3:[106,300],L3x:[482,300],IMC:[482,381],IMCo:[624,384],DIMMi:[734,384],DRAM:[734,304]};
+    var S;
+    function lat(c,add){ S.ns+=add; c.text('lat',S.ns+' ns'); c.text('latTakt',(S.ns*4)+' takt'); }
+    function stats(c){ c.text('stReq',String(S.req)); c.text('stHit',String(S.hit)); c.text('stMiss',String(S.miss)); }
+    B.scene(fig,async function(c){
+      var T=480;
+      S={ns:0,req:0,hit:0,miss:0}; stats(c); c.text('lat','0 ns'); c.text('latTakt','0 takt'); c.text('stWhere','—');
+      ['L1t0','L2t0','L3t3'].forEach(function(id){ c.text(id,''); });
+      c.step(0,'Yadro 1 dagi dastur <b>0x1F40</b> manzildagi o\'zgaruvchini so\'radi. Registrlarda yo\'q — kesh qidiruvi boshlanadi: avval eng yaqin, eng tez xotira.');
+      c.unit('core1','on'); c.unit('reg0','on'); c.unit('cu0','on'); S.req=1; stats(c); await c.delay(1100); if(!c.alive()) return;
+      c.step(1,'<b>L1</b> (32 KB, ~1 ns): manzil tegi (tag) barcha satrlar bilan solishtirildi — mos kelmadi: <b>miss</b>. L2 ga o\'tamiz.');
+      await c.token('0x1F40','addr',[P.reg,P.L1],T); c.unit('L1_0','bad'); c.led('L1m0',1); lat(c,1); S.miss++; stats(c); await c.delay(700); if(!c.alive()) return;
+      c.step(2,'<b>L2</b> (1 MB, ~4 ns): bu yerda ham yo\'q — <b>miss</b>. Umumiy L3 ga murojaat. Kutish vaqti yig\'ilib bormoqda.');
+      await c.token('0x1F40','addr',[P.L1,P.L2],T); c.unit('L2_0','bad'); c.led('L2m0',1); lat(c,4); S.miss++; stats(c); await c.delay(700); if(!c.alive()) return;
+      c.step(3,'<b>L3</b> (32 MB, barcha yadrolar uchun umumiy, ~40 ns): satrlar ko\'p, qidiruv uzoqroq — yana <b>miss</b>. Endi kristalldan tashqariga, RAM ga chiqishga to\'g\'ri keladi.');
+      c.lit('cw0'); await c.token('0x1F40','addr',[P.L2,P.L3],T); c.unit('L3','bad'); c.led('L3m',1); lat(c,40); S.miss++; stats(c); await c.delay(800); if(!c.alive()) return;
+      c.step(4,'<b>Xotira kontrolleri</b> (IMC) manzilni ko\'k <b>manzil shinasi</b> va boshqaruv liniyasi (o\'qi) orqali DDR5 DIMM ga yuboradi. 6-DRAM chipida kerakli qator ochiladi — ~80 ns.');
+      c.lit(['wL3imc','bAddr','bCtl','wDimm']); c.unit('IMC','on');
+      await c.token('0x1F40','addr',[P.L3,P.L3x,P.IMC,P.IMCo,P.DIMMi,P.DRAM],T*3); if(!c.alive()) return;
+      c.unit('dr6','on'); c.flash('dr6'); lat(c,80); c.text('stWhere','DRAM (DIMM, 6-chip)'); await c.delay(700); if(!c.alive()) return;
+      c.step(5,'DRAM bitta baytni emas, 64 baytlik <b>kesh satrini</b> yashil <b>ma\'lumot shinasi</b> orqali qaytaradi. Satr L3 → L2 → L1 ga nusxalanadi, qiymat registrga tushadi. Jami ~125 ns = 500 takt kutish!');
+      c.unlit(); c.lit(['bData','wDimm','wL3imc','cw0']);
+      await c.token('64 B','data',[P.DRAM,P.DIMMi,P.IMCo,P.IMC,P.L3x,P.L3],T*3); if(!c.alive()) return;
+      c.cell('L3c3','hi'); c.text('L3t3','0x1F40'); c.unit('L3','on'); c.led('L3m',0); c.led('L3h',1);
+      await c.token('64 B','data',[P.L3,P.L2],T); c.cell('L2c0','hi'); c.text('L2t0','0x1F40'); c.unit('L2_0','on'); c.led('L2m0',0); c.led('L2h0',1);
+      await c.token('64 B','data',[P.L2,P.L1],T); c.cell('L1c0','hi'); c.text('L1t0','0x1F40'); c.unit('L1_0','on'); c.led('L1m0',0); c.led('L1h0',1);
+      await c.token('qiymat','data',[P.L1,P.reg],T); c.flash('reg0'); c.unit('reg0','on'); c.unit('alu0','on'); await c.delay(900); if(!c.alive()) return;
+      c.step(6,'Dastur <b>yana</b> shu manzilga murojaat qildi (masalan, sikl ichida). L1 dagi teg mos keldi — <b>kesh hit!</b> Atigi 1 ns: RAM ga borishning hojati yo\'q, 80 barobar tez.');
+      c.unlit(); c.unit('alu0',null); c.unit('L2_0',null); c.unit('L3',null); c.unit('IMC',null); c.unit('dr6',null); c.led('L2h0',0); c.led('L3h',0); c.led('L1h0',0);
+      S.req=2; stats(c); c.text('lat','1 ns'); c.text('latTakt','4 takt'); c.text('stWhere','L1 kesh');
+      await c.token('0x1F40','addr',[P.reg,P.L1],T); c.led('L1h0',1); c.flash('L1c0'); S.hit++; stats(c); await c.delay(300);
+      await c.token('qiymat','data',[P.L1,P.reg],T); c.flash('reg0'); c.unit('alu0','on'); await c.delay(600); if(!c.alive()) return;
+      c.step(7,'<b>Xulosa.</b> Birinchi murojaat: 3 ta miss + DRAM = ~125 ns (500 takt bekor turish). Keyingisi: L1 hit = 1 ns. Yaxshi dastur 95% dan ortiq murojaatni L1/L2 da yakunlaydi — shuning uchun qimmat SRAM keshi har yadroga alohida qo\'yiladi, L3 esa yadrolar o\'rtasida bo\'linadi.');
+    });
+    document.getElementById('f13run').onclick=function(){ fig.dispatchEvent(new CustomEvent('replay')); };
   }
-  const steps=[
-    ()=>{set('c1','ask');probe.classList.add('show');move('core');out.innerHTML='Yadro 1: <b>0x1F40</b> manzildagi ma\'lumot kerak. Avval eng yaqin kesh — L1.';},
-    ()=>{move('L1');set('L1','miss');tag('L1','miss','miss');out.innerHTML='L1 (~1 ns): <b>miss</b> — topilmadi. L2 ga o\'tamiz.';},
-    ()=>{move('L2');set('L2','miss');tag('L2','miss','miss');out.innerHTML='L2 (~4 ns): <b>miss</b>. Umumiy L3 ga murojaat.';},
-    ()=>{move('L3');set('L3','miss');tag('L3','miss','miss');out.innerHTML='L3 (~40 ns): <b>miss</b>. Xotira kontrolleri orqali RAM ga boramiz.';},
-    ()=>{move('MC');set('MC','ask');out.innerHTML='Xotira kontrolleri manzilni RAM ga yuboradi...';},
-    ()=>{move('RAM');set('RAM','hit');tag('RAM','topildi','hit');out.innerHTML='RAM (~80 ns): ma\'lumot topildi. Endi u yo\'l bo\'ylab keshlarga nusxalanadi.';},
-    ()=>{move('L3');set('MC',null);set('L3','hit');tag('L3','nusxa saqlandi','hit');out.innerHTML='Qaytish yo\'li: 64 baytlik kesh satri L3 ga yozildi.';},
-    ()=>{move('L2');set('L2','hit');tag('L2','nusxa','hit');out.innerHTML='...L2 ga yozildi.';},
-    ()=>{move('L1');set('L1','hit');tag('L1','nusxa','hit');out.innerHTML='...L1 ga yozildi. Ma\'lumot yadroga yetdi (jami ~125 ns).';},
-    ()=>{move('core');set('c1','hit');out.innerHTML='Yadro 1 ma\'lumotni oldi. Endi <b>yana shu manzil</b> kerak bo\'ldi...';},
-    ()=>{move('L1');tag('L1','hit!','hit');out.innerHTML='L1 (~1 ns): <b>kesh hit!</b> RAM ga bormasdan darhol olindi — 80 barobar tez. Yaxshi dasturlarda 95% dan ortiq murojaat shunday tugaydi.';},
-    ()=>{move('core');probe.classList.remove('show');running=false;}
-  ];
-  function play(){
-    reset();running=true;
-    steps.forEach((fn,i)=>timers.push(setTimeout(fn,KQI.reduce?i*250:400+i*900)));
+
+  /* ---------- Takt generatori ---------- */
+  var fc=document.getElementById('figClk');
+  if(fc){
+    var svg=fc.querySelector('svg'), wave=svg.querySelector('#wave'), edges=svg.querySelector('#edges');
+    var X0=70, DX=32, YH=172, YL=240, HALF=380;
+    function grow(d,prevLen){
+      wave.setAttribute('d',d);
+      var L=wave.getTotalLength();
+      wave.style.transition='none'; wave.style.strokeDasharray=L+' '+L; wave.style.strokeDashoffset=String(L-prevLen); void wave.getBBox();
+      wave.style.transition='stroke-dashoffset .3s linear'; wave.style.strokeDashoffset='0';
+      return L;
+    }
+    B.scene(fc,async function(c){
+      var Dpat=[1,1,0,0,1,0,1,1,1,0,0,1], D=1, Q=0, takt=0, d='M70 240', len=0;
+      edges.innerHTML=''; wave.setAttribute('d',d); wave.style.strokeDasharray='none'; wave.style.strokeDashoffset='0';
+      c.text('vD','1'); c.text('vQ','0'); c.led('lD',1); c.led('lQ',0); c.text('cTakt','takt: 0'); c.text('cTime','vaqt: 0.00 ns'); c.text('ffTxt','chetni kutmoqda');
+      c.step(0,'<b>Kvars kristali</b> kuchlanish berilganda o\'z chastotasida — 100 MHz — mexanik tebranadi (pyezoelektr effekti). Bu butun kompyuterning metronomi: bir xil, barqaror ritm.');
+      c.unit('uX','on'); c.led('lX',1,'blue blink'); await c.delay(1500); if(!c.alive()) return;
+      c.step(1,'<b>PLL</b> sxemasi kristal chastotasini 40 ga ko\'paytiradi: yadro takti 4.0 GHz. Bitta takt = 0.25 ns. Bu signal kristall bo\'ylab har bir flip-flopga tarqatiladi.');
+      c.lit('w1'); await c.dot('ctl',[[200,85],[240,85]],400); c.unit('uPLL','on'); c.lit('w2'); await c.dot('ctl',[[390,85],[430,85]],400); c.unit('uFF','on'); await c.delay(600); if(!c.alive()) return;
+      c.step(2,'Har <b>ko\'tarilish chetida</b> (0 → 1) flip-flop D kirishidagi qiymatni Q ga yozadi. Chetlar orasida D o\'zgarsa ham Q o\'zgarmaydi — shu sinxronlik milliardlab tranzistorni bir ritmda ushlaydi.');
+      for(var k=0;k<12&&c.alive();k++){
+        var x=X0+(2*k+1)*DX;
+        /* past yarim davr: D o'zgarishi mumkin */
+        D=Dpat[k]; c.text('vD',String(D)); c.led('lD',D);
+        d+=' H'+x; len=grow(d,len); c.led('lClk',0); await c.delay(HALF); if(!c.alive()) return;
+        /* ko'tarilish cheti */
+        d+=' V'+YH; len=grow(d,len); c.led('lClk',1);
+        edges.appendChild(B.el('circle',{cx:x,cy:YL+12,r:2.5,'class':'led warn on'}));
+        Q=D; c.text('vQ',String(Q)); c.led('lQ',Q); c.flash('uFF'); c.lit('wDQ'); c.text('ffTxt','chet! Q ← D = '+D);
+        takt++; c.text('cTakt','takt: '+takt); c.text('cTime','vaqt: '+(takt*0.25).toFixed(2)+' ns');
+        await c.delay(HALF*0.5); if(!c.alive()) return;
+        c.text('ffTxt','Q ushlab turibdi');
+        d+=' H'+(x+DX); len=grow(d,len); await c.delay(HALF*0.5); if(!c.alive()) return;
+        /* tushish cheti */
+        d+=' V'+YL; len=grow(d,len); c.led('lClk',0); c.lit('wDQ',false);
+      }
+      if(!c.alive()) return;
+      c.step(3,'<b>Xulosa.</b> 12 takt = 3 ns o\'tdi. 4 GHz da sekundiga 4 milliard shunday takt bo\'ladi; bitta taktda yorug\'lik atigi 7.5 sm yuradi — shuning uchun kristall kichik bo\'lishi shart. Chastotani yana oshirsak issiqlik keskin ortadi — bu "quvvat devori".');
+    });
   }
-  $('#cacheBtn').onclick=play;
-  fig.addEventListener('replay',play);
-  new MutationObserver(()=>{if(fig.classList.contains('play')&&!running&&!fig.dataset.auto){fig.dataset.auto='1';play();}}).observe(fig,{attributes:true,attributeFilter:['class']});
-  reset();
 })();
 </script>
+<script src="../js/quiz-data.js"></script>
+<script src="../js/quiz.js"></script>
 </body>
 </html>
