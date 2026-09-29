@@ -222,3 +222,19 @@ svg{max-width:100%;height:auto;display:block}
 .quiz-exp b{color:var(--ink)}
 .quiz-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;font-size:15px}
 .quiz-score b{color:var(--accent);font-size:18px;font-family:var(--display)}
+
+/* Muallif kartasi */
+.author{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;margin-top:48px;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.author img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-soft)}
+.author-name{font-family:var(--display);font-weight:700;font-size:16px}
+.author-name a{color:var(--ink);text-decoration:none}
+.author-name a:hover{color:var(--accent)}
+.author p{margin:6px 0 0;font-size:14px;color:var(--muted);line-height:1.55}
+.author-links{font-size:13px}
+.author-links a{font-weight:600;text-decoration:none}
+.author-links a:hover{text-decoration:underline}
+.byline{display:flex;align-items:center;gap:10px;margin:0 0 16px;font-size:14px;color:var(--muted)}
+.byline img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.byline a{color:var(--ink);font-weight:600;text-decoration:none}
+.byline a:hover{color:var(--accent)}
+@media (max-width:640px){.author{grid-template-columns:1fr}.author img{width:56px;height:56px}}
